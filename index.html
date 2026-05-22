@@ -1,0 +1,2949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPIC-AMP — Antimicrobial Peptide Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+<style>
+/* ============================================================
+   EPIC-AMP — NCBI BLAST PRO AESTHETIC
+   Clean scientific authority. Structured. Trustworthy.
+   ============================================================ */
+:root {
+    --ncbi-blue:        #0056a6;
+    --ncbi-blue-dark:   #003f7d;
+    --ncbi-blue-mid:    #1a6fc4;
+    --ncbi-blue-light:  #e8f0fb;
+    --ncbi-teal:        #006666;
+    --ncbi-teal-light:  #e0f2f2;
+    --accent-green:     #2e7d32;
+    --accent-red:       #c62828;
+    --accent-orange:    #e65100;
+    --accent-amber:     #f59e0b;
+    --bg-primary:       #f7f9fc;
+    --bg-white:         #ffffff;
+    --bg-panel:         #f0f4fa;
+    --border:           #d0daea;
+    --border-strong:    #b0bdd4;
+    --text-primary:     #1a2540;
+    --text-secondary:   #4a5778;
+    --text-muted:       #8a94a8;
+    --text-white:       #ffffff;
+    --shadow-sm:        0 1px 3px rgba(0,63,125,0.08);
+    --shadow-md:        0 3px 10px rgba(0,63,125,0.12);
+    --shadow-lg:        0 8px 24px rgba(0,63,125,0.15);
+    --radius-sm:        4px;
+    --radius-md:        6px;
+    --radius-lg:        10px;
+    --font-sans:        'IBM Plex Sans', sans-serif;
+    --font-mono:        'IBM Plex Mono', 'Source Code Pro', monospace;
+    /* AA Color Properties */
+    --aa-hydrophobic:   #ffd6a5;
+    --aa-charged-pos:   #aecbfa;
+    --aa-charged-neg:   #f8bbd0;
+    --aa-polar:         #c8e6c9;
+    --aa-special:       #e1bee7;
+    --aa-aromatic:      #ffe0b2;
+    --aa-invalid:       #ef9a9a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+/* ── TOP HEADER BAR ──────────────────────────────────────── */
+.site-header {
+    background: linear-gradient(135deg, var(--ncbi-blue-dark) 0%, var(--ncbi-blue) 60%, var(--ncbi-blue-mid) 100%);
+    border-bottom: 3px solid var(--ncbi-teal);
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+}
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.header-logo img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.25);
+}
+.header-title {
+    color: var(--text-white);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+.header-subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 1px;
+}
+.header-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.9);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+/* ── NAV TABS ─────────────────────────────────────────────── */
+.nav-bar {
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+.nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    padding: 0 32px;
+}
+.nav-tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border: none;
+    background: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    position: relative;
+    top: 1px;
+}
+.nav-tab:hover { color: var(--ncbi-blue); background: var(--ncbi-blue-light); }
+.nav-tab.active {
+    color: var(--ncbi-blue);
+    font-weight: 600;
+    border-bottom-color: var(--ncbi-blue);
+    background: var(--ncbi-blue-light);
+}
+.nav-tab i { font-size: 12px; }
+/* ── MAIN LAYOUT ─────────────────────────────────────────── */
+.main-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 32px 48px;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+/* ── SECTION CARD ─────────────────────────────────────────── */
+.card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.card-header {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.card-header-icon {
+    width: 28px; height: 28px;
+    background: var(--ncbi-blue);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+.card-header-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.card-header-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+.card-body { padding: 20px; }
+/* ── PAGE TITLE AREA ─────────────────────────────────────── */
+.page-intro {
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    background: linear-gradient(to right, var(--ncbi-blue-light), var(--bg-primary));
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--ncbi-blue);
+    border-radius: var(--radius-md);
+}
+.page-intro h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ncbi-blue-dark);
+    margin-bottom: 4px;
+}
+.page-intro p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+/* ── SEQUENCE INPUT ──────────────────────────────────────── */
+.seq-input-wrap { position: relative; }
+#sequence {
+    width: 100%;
+    height: 110px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    resize: vertical;
+    background: #fafcff;
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+}
+#sequence:focus {
+    outline: none;
+    border-color: var(--ncbi-blue);
+    box-shadow: 0 0 0 3px rgba(0,86,166,0.1);
+    background: white;
+}
+.seq-meta-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.seq-meta-bar .char-badge {
+    font-family: var(--font-mono);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+}
+/* Live AA Composition Bar */
+.aa-comp-bar-wrap {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: none;
+}
+.aa-comp-bar-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.aa-comp-segments { display: flex; height: 16px; border-radius: 4px; overflow: hidden; gap: 1px; }
+.aa-comp-segment { transition: width 0.3s ease; }
+.aa-comp-legend {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
+}
+.legend-dot {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; color: var(--text-secondary);
+}
+.legend-dot span {
+    width: 10px; height: 10px; border-radius: 2px; display: inline-block;
+}
+/* ── ALIGNMENT VIEWER ─────────────────────────────────────── */
+.alignment-viewer {
+    margin-top: 12px;
+    display: none;
+}
+.alignment-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+.aa-sequence-display {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 10px 12px;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    line-height: 1.4;
+}
+.aa-char {
+    display: inline-flex;
+    width: 22px; height: 22px;
+    align-items: center; justify-content: center;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: default;
+    position: relative;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.aa-char:hover {
+    transform: scale(1.15);
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.aa-char[data-prop="hydrophobic"] { background: var(--aa-hydrophobic); color: #7a4800; }
+.aa-char[data-prop="charged-pos"] { background: var(--aa-charged-pos); color: #003f7d; }
+.aa-char[data-prop="charged-neg"] { background: var(--aa-charged-neg); color: #880e4f; }
+.aa-char[data-prop="polar"]       { background: var(--aa-polar);       color: #1b5e20; }
+.aa-char[data-prop="special"]     { background: var(--aa-special);     color: #4a148c; }
+.aa-char[data-prop="aromatic"]    { background: var(--aa-aromatic);    color: #7a3800; }
+.aa-char[data-prop="invalid"]     { background: var(--aa-invalid);     color: #7f0000; text-decoration: line-through; }
+/* Position ruler */
+.aa-ruler {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    margin-bottom: 2px;
+}
+.ruler-tick {
+    width: 22px;
+    text-align: center;
+    font-size: 8px;
+}
+/* AA tooltip */
+.aa-tooltip-box {
+    position: fixed;
+    background: var(--text-primary);
+    color: white;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    pointer-events: none;
+    z-index: 9999;
+    white-space: nowrap;
+    display: none;
+    box-shadow: var(--shadow-md);
+}
+/* ── BACTERIA SELECTION ───────────────────────────────────── */
+.bacteria-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+}
+.bacteria-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.bacteria-item:has(input:checked) {
+    background: var(--ncbi-blue-light);
+    border-color: var(--ncbi-blue);
+}
+.bacteria-item input[type="checkbox"] {
+    appearance: none;
+    width: 15px; height: 15px;
+    border: 2px solid var(--border-strong);
+    border-radius: 3px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    position: relative;
+    cursor: pointer;
+}
+.bacteria-item input[type="checkbox"]:checked {
+    background: var(--ncbi-blue);
+    border-color: var(--ncbi-blue);
+}
+.bacteria-item input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 2px; top: -1px;
+    width: 7px; height: 10px;
+    border: 2px solid white;
+    border-top: none; border-left: none;
+    transform: rotate(40deg);
+}
+.bacteria-item label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-style: italic;
+    line-height: 1.3;
+}
+.bacteria-item:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+.bacteria-item:has(input:disabled) label { cursor: not-allowed; }
+/* ── BUTTONS ─────────────────────────────────────────────── */
+.btn-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-decoration: none;
+}
+.btn-primary {
+    background: var(--ncbi-blue);
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,86,166,0.3);
+    min-width: 160px;
+    justify-content: center;
+}
+.btn-primary:hover:not(:disabled) {
+    background: var(--ncbi-blue-dark);
+    box-shadow: 0 4px 10px rgba(0,63,125,0.35);
+    transform: translateY(-1px);
+}
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+.btn-secondary {
+    background: var(--bg-white);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-strong);
+}
+.btn-secondary:hover { background: var(--bg-panel); color: var(--text-primary); }
+
+.processing-info {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex; align-items: center; gap: 5px;
+}
+/* ── EMAIL INPUT ─────────────────────────────────────────── */
+#user-email {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-primary);
+    background: #fafcff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+#user-email:focus {
+    outline: none;
+    border-color: var(--ncbi-blue);
+    box-shadow: 0 0 0 3px rgba(0,86,166,0.1);
+}
+.form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.field-help {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+/* ── ERROR MESSAGE ───────────────────────────────────────── */
+.error-msg {
+    display: none;
+    background: #fff3f3;
+    border: 1px solid #ffb3b3;
+    border-left: 4px solid var(--accent-red);
+    color: var(--accent-red);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-top: 10px;
+    align-items: center;
+    gap: 8px;
+}
+.error-msg.show { display: flex; }
+/* ── RESULTS DASHBOARD ───────────────────────────────────── */
+.results-area { margin-top: 24px; }
+.results-area-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.results-area-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.dash-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+.dash-card-header {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.dash-card-body {
+    padding: 16px;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Classification Result */
+.class-result-display {
+    text-align: center;
+}
+.class-label {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+.class-label.amp   { color: var(--accent-green); }
+.class-label.nonamp { color: var(--accent-red); }
+.class-label.pending { color: var(--text-muted); font-size: 16px; font-weight: 400; }
+/* Confidence Gauge */
+.gauge-wrap {
+    width: 100%;
+    text-align: center;
+}
+.gauge-arc-svg {
+    width: 150px;
+    height: 80px;
+    display: block;
+    margin: 0 auto;
+}
+.gauge-track { fill: none; stroke: var(--bg-panel); stroke-width: 10; stroke-linecap: round; }
+.gauge-fill  { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1), stroke 0.5s; }
+.gauge-value-label {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 2px;
+}
+.gauge-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+/* MIC Bar Chart */
+.mic-chart-wrap { width: 100%; }
+.mic-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+.mic-bar-label {
+    width: 100px;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    text-align: right;
+}
+.mic-bar-track {
+    flex: 1;
+    height: 14px;
+    background: var(--bg-panel);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+.mic-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--ncbi-blue), var(--ncbi-teal));
+    border-radius: 3px;
+    width: 0;
+    transition: width 0.9s cubic-bezier(.4,0,.2,1);
+}
+.mic-bar-value {
+    width: 56px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ncbi-blue-dark);
+    flex-shrink: 0;
+}
+.mic-empty {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+    padding: 8px;
+}
+/* Report Box */
+.report-box {
+    width: 100%;
+}
+.download-btn-large {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1.5px dashed var(--ncbi-blue);
+    border-radius: var(--radius-md);
+    background: var(--ncbi-blue-light);
+    color: var(--ncbi-blue);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    text-decoration: none;
+    justify-content: center;
+    margin-top: 8px;
+}
+.download-btn-large:hover {
+    background: var(--ncbi-blue);
+    color: white;
+    border-style: solid;
+}
+.download-btn-large i { font-size: 18px; }
+/* Status line */
+.result-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--bg-panel);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+/* Loading spinner */
+.spin { animation: spin 1s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-pulse {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+.pulse-dots {
+    display: flex; gap: 6px;
+}
+.pulse-dot {
+    width: 8px; height: 8px;
+    background: var(--ncbi-blue);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+.pulse-dot:nth-child(2) { animation-delay: 0.2s; }
+.pulse-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+    0%, 100% { transform: scale(0.6); opacity: 0.4; }
+    50%       { transform: scale(1);   opacity: 1; }
+}
+/* ── METRICS TABLES ──────────────────────────────────────── */
+.metrics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 12px;
+}
+.metrics-table thead th {
+    background: var(--ncbi-blue);
+    color: white;
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    border: none;
+}
+.metrics-table thead th:first-child { border-radius: 6px 0 0 0; }
+.metrics-table thead th:last-child  { border-radius: 0 6px 0 0; }
+.metrics-table tbody tr { border-bottom: 1px solid var(--border); }
+.metrics-table tbody tr:last-child { border-bottom: none; }
+.metrics-table tbody tr:hover { background: var(--ncbi-blue-light); }
+.metrics-table td {
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-size: 13px;
+}
+.metrics-table td:first-child { font-weight: 600; }
+.metric-val {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ncbi-blue);
+    font-size: 13px;
+}
+/* ── SHAP SECTION ────────────────────────────────────────── */
+.shap-container {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-white);
+    margin-top: 12px;
+}
+.shap-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+/* ── ABOUT TEAM ──────────────────────────────────────────── */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+.team-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+    transition: box-shadow 0.2s;
+}
+.team-card:hover { box-shadow: var(--shadow-md); }
+.team-card img {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--ncbi-blue);
+    flex-shrink: 0;
+}
+.team-name { font-weight: 600; font-size: 13px; color: var(--text-primary); }
+.team-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+/* ── USAGE GUIDE ─────────────────────────────────────────── */
+.step-list { list-style: none; padding: 0; }
+.step-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+.step-item:last-child { border-bottom: none; }
+.step-circle {
+    width: 28px; height: 28px;
+    background: var(--ncbi-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.step-content h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
+.step-content p  { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer {
+    background: var(--ncbi-blue-dark);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 20px 32px;
+    font-size: 12px;
+    border-top: 3px solid var(--ncbi-teal);
+    margin-top: 40px;
+}
+footer a { color: rgba(255,255,255,0.85); }
+/* ── MODAL ───────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    visibility: hidden; opacity: 0;
+    transition: opacity 0.25s, visibility 0s 0.25s;
+}
+.modal-overlay.active {
+    visibility: visible; opacity: 1;
+    transition: opacity 0.25s;
+}
+.modal-box {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    max-width: 720px;
+    width: 95%;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+}
+.modal-close {
+    position: absolute; top: 12px; right: 16px;
+    font-size: 22px; cursor: pointer;
+    color: var(--text-muted);
+    background: none; border: none; padding: 0;
+    transition: color 0.2s;
+}
+.modal-close:hover { color: var(--accent-red); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .main-wrap { padding: 16px; }
+    .header-inner { height: 52px; padding: 0 16px; }
+    .nav-inner { padding: 0 8px; overflow-x: auto; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .bacteria-grid { grid-template-columns: repeat(2, 1fr); }
+    .team-grid { grid-template-columns: 1fr; }
+}
+/* ── SECTION HEADINGS ────────────────────────────────────── */
+.section-h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ncbi-blue-dark);
+    margin: 0 0 6px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--ncbi-blue);
+    display: inline-block;
+}
+.section-h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ncbi-blue);
+    margin: 18px 0 8px;
+}
+.prose {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+.prose ul { padding-left: 18px; }
+.prose li { margin-bottom: 4px; }
+/* Shap description scroll */
+.scroll-box {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-top: 10px;
+}
+.scroll-box h4 { color: var(--ncbi-blue); font-size: 13px; margin: 12px 0 6px; }
+.scroll-box h5 { color: var(--text-primary); font-size: 12px; margin: 8px 0 4px; }
+.scroll-box ul { padding-left: 18px; margin-bottom: 6px; }
+.scroll-box li { margin-bottom: 4px; font-size: 12px; }
+/* File input styling */
+#file-input {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 6px 0;
+}
+#file-input::file-selector-button {
+    padding: 5px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg-panel);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background 0.2s;
+}
+#file-input::file-selector-button:hover { background: var(--ncbi-blue-light); color: var(--ncbi-blue); }
+/* Status indicators */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.status-badge.green { background: #e8f5e9; color: #2e7d32; }
+.status-badge.red   { background: #ffebee; color: #c62828; }
+.status-badge.blue  { background: var(--ncbi-blue-light); color: var(--ncbi-blue); }
+.status-badge.gray  { background: var(--bg-panel); color: var(--text-muted); }
+/* Alert / info bar */
+.info-bar {
+    padding: 10px 14px;
+    background: var(--ncbi-blue-light);
+    border: 1px solid #b0c8e8;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--ncbi-blue-dark);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.info-bar i { margin-top: 1px; flex-shrink: 0; }
+/* ============================================================
+   PROGRESS STEPPER
+   ============================================================ */
+.stepper-wrap {
+    margin-bottom: 24px;
+}
+.stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    position: relative;
+    padding: 20px 0 4px;
+}
+/* connecting line behind everything */
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 34px;
+    left: calc(50% - 200px);
+    right: calc(50% - 200px);
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+}
+.stepper-progress-line {
+    position: absolute;
+    top: 34px;
+    left: calc(50% - 200px);
+    height: 2px;
+    background: linear-gradient(to right, var(--ncbi-blue), var(--ncbi-teal));
+    width: 0%;
+    max-width: 400px;
+    z-index: 1;
+    transition: width 0.55s cubic-bezier(.4,0,.2,1);
+}
+.stepper-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 160px;
+    position: relative;
+    z-index: 2;
+}
+.step-bubble {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    background: var(--bg-white);
+    position: relative;
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+/* Both children absolutely centered in the circle */
+.step-bubble .step-num,
+.step-bubble .step-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    text-align: center;
+}
+.step-bubble .step-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: block;
+}
+.step-bubble .step-icon {
+    font-size: 13px;
+    display: none;
+    color: white;
+}
+.step-label {
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.35s;
+    line-height: 1.3;
+}
+.step-sublabel {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 2px;
+    opacity: 0;
+    transition: opacity 0.35s;
+    letter-spacing: 0;
+    text-transform: none;
+}
+/* ACTIVE state */
+.stepper-step.active .step-bubble {
+    border-color: var(--ncbi-blue);
+    background: var(--ncbi-blue);
+    box-shadow: 0 0 0 4px rgba(0,86,166,0.15), var(--shadow-md);
+    transform: scale(1.08);
+}
+.stepper-step.active .step-bubble .step-num { color: white; }
+.stepper-step.active .step-label { color: var(--ncbi-blue); }
+.stepper-step.active .step-sublabel { opacity: 1; color: var(--ncbi-blue-mid); }
+/* DONE state */
+.stepper-step.done .step-bubble {
+    border-color: var(--accent-green);
+    background: var(--accent-green);
+    box-shadow: var(--shadow-sm);
+}
+.stepper-step.done .step-bubble .step-icon { display: block; color: white; }
+.stepper-step.done .step-bubble .step-num  { display: none; }
+.stepper-step.done .step-label { color: var(--accent-green); }
+.stepper-step.done .step-sublabel { opacity: 1; color: #4caf50; }
+/* PROCESSING animation on step 2 */
+.stepper-step.processing .step-bubble {
+    border-color: var(--accent-amber);
+    background: var(--accent-amber);
+    box-shadow: 0 0 0 4px rgba(245,158,11,0.18), var(--shadow-md);
+    animation: stepPulse 1.2s ease-in-out infinite;
+}
+.stepper-step.processing .step-bubble .step-num { color: white; }
+.stepper-step.processing .step-label { color: var(--accent-orange); }
+.stepper-step.processing .step-sublabel { opacity: 1; color: var(--accent-orange); }
+@keyframes stepPulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(245,158,11,0.18), var(--shadow-md); }
+    50%       { box-shadow: 0 0 0 8px rgba(245,158,11,0.08), var(--shadow-md); }
+}
+/* ERROR state */
+.stepper-step.error .step-bubble {
+    border-color: var(--accent-red);
+    background: var(--accent-red);
+    box-shadow: 0 0 0 4px rgba(198,40,40,0.15);
+}
+.stepper-step.error .step-bubble .step-num { color: white; }
+.stepper-step.error .step-label { color: var(--accent-red); }
+.stepper-step.error .step-sublabel { opacity: 1; color: var(--accent-red); }
+/* Stepper status bar below steps */
+.stepper-status {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    min-height: 18px;
+    transition: color 0.3s;
+    font-style: italic;
+}
+@media (max-width: 600px) {
+    .stepper::before,
+    .stepper-progress-line { left: 10%; right: 10%; max-width: 80%; }
+    .step-label { font-size: 10px; }
+}
+/* ── TRY EXAMPLE BUTTON ────────────────────────────────────── */
+.btn-example {
+    background: linear-gradient(135deg, #e8f0fb 0%, #dbeafe 100%);
+    color: var(--ncbi-blue);
+    border: 1px solid #b0c8e8;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+.btn-example:hover {
+    background: var(--ncbi-blue);
+    color: white;
+    border-color: var(--ncbi-blue);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,86,166,0.25);
+}
+.btn-example i { font-size: 11px; }
+/* Example picker dropdown */
+.example-picker {
+    position: relative;
+    display: inline-block;
+}
+.example-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    min-width: 300px;
+    overflow: hidden;
+}
+.example-dropdown.open { display: block; animation: fadeUp 0.2s ease; }
+.example-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.example-item:last-child { border-bottom: none; }
+.example-item:hover { background: var(--ncbi-blue-light); }
+.example-item-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.example-item-seq {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.example-badge {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.badge-amp    { background: #e8f5e9; color: #2e7d32; }
+.badge-nonamp { background: #ffebee; color: #c62828; }
+/* ── CONNECTION STATUS DOT ──────────────────────────────────── */
+.conn-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    margin-left: 12px;
+}
+.conn-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #888;
+    transition: background 0.4s, box-shadow 0.4s;
+    flex-shrink: 0;
+}
+.conn-dot.connecting { background: var(--accent-amber); animation: stepPulse 1.2s infinite; }
+.conn-dot.connected  { background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,0.6); }
+.conn-dot.error      { background: var(--accent-red); }
+#conn-label          { font-size: 10px; }
+/* ── TOAST ──────────────────────────────────────────────────── */
+.toast-wrap {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+.toast {
+    background: var(--text-primary);
+    color: white;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: toastIn 0.3s ease;
+    pointer-events: auto;
+    max-width: 320px;
+}
+.toast.success { background: var(--accent-green); }
+.toast.info    { background: var(--ncbi-blue); }
+.toast.error   { background: var(--accent-red); }
+.toast.warning { background: var(--accent-orange); }
+@keyframes toastIn  { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+@keyframes toastOut { from { opacity:1; transform: translateY(0); }    to { opacity:0; transform: translateY(12px); } }
+/* ── KBD SHORTCUT HINT ──────────────────────────────────────── */
+.kbd-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+kbd {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--text-secondary);
+}
+/* ── SEQUENCE STATS ROW ─────────────────────────────────────── */
+.seq-stats-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.seq-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--bg-panel);
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+}
+.seq-stat i { font-size: 10px; color: var(--ncbi-blue); }
+/* ── RESULT COPY BUTTON ─────────────────────────────────────── */
+.copy-result-btn {
+    font-size: 10px;
+    padding: 3px 8px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-sans);
+}
+.copy-result-btn:hover { background: var(--ncbi-blue); color: white; border-color: var(--ncbi-blue); }
+/* ── CHAR COUNT COLOR RING ──────────────────────────────────── */
+.char-badge.valid   { background: #e8f5e9; border-color: #a5d6a7; color: var(--accent-green); }
+.char-badge.warning { background: #fff8e1; border-color: #ffe082; color: var(--accent-orange); }
+.char-badge.invalid { background: #ffebee; border-color: #ef9a9a; color: var(--accent-red); }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+        <div class="header-logo">
+            <img src="logo.png" alt="EPIC-AMP Logo" width="44" height="44">
+            <div>
+                <div class="header-title">EPIC-AMP</div>
+                <div class="header-subtitle">Antimicrobial Peptide Classifier &amp; MIC Predictor</div>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+            <div class="conn-status">
+                <div class="conn-dot connecting" id="conn-dot"></div>
+                <span id="conn-label">Connecting…</span>
+            </div>
+            <div class="header-badge"><i class="fas fa-flask"></i> Zewail City · BCBU</div>
+        </div>
+    </div>
+</header>
+<nav class="nav-bar">
+    <div class="nav-inner">
+        <button class="nav-tab active" data-tab="prediction">
+            <i class="fas fa-search"></i> Prediction
+        </button>
+        <button class="nav-tab" data-tab="model">
+            <i class="fas fa-chart-bar"></i> Model Metrics
+        </button>
+        <button class="nav-tab" data-tab="about">
+            <i class="fas fa-info-circle"></i> About
+        </button>
+        <button class="nav-tab" data-tab="usage">
+            <i class="fas fa-book-open"></i> Usage Guide
+        </button>
+    </div>
+</nav>
+<main class="main-wrap">
+<div class="tab-panel active" id="panel-prediction">
+    <div class="page-intro">
+        <h1><i class="fas fa-dna" style="margin-right:7px;color:var(--ncbi-blue);"></i>AMP &amp; MIC Predictor</h1>
+        <p>Enter an amino acid sequence (10–100 residues) or upload a FASTA file. The tool will classify the peptide and — if antimicrobial — predict Minimum Inhibitory Concentrations against selected bacteria.</p>
+    </div>
+    <div class="stepper-wrap">
+        <div class="stepper" id="main-stepper">
+            <div class="stepper-progress-line" id="stepper-line"></div>
+            <div class="stepper-step active" id="step-1" data-step="1">
+                <div class="step-bubble">
+                    <span class="step-num">1</span>
+                    <i class="fas fa-check step-icon"></i>
+                </div>
+                <div class="step-label">Input</div>
+                <div class="step-sublabel" id="step-1-sub">Enter sequence</div>
+            </div>
+            <div class="stepper-step" id="step-2" data-step="2">
+                <div class="step-bubble">
+                    <span class="step-num">2</span>
+                    <i class="fas fa-circle-notch step-icon spin"></i>
+                </div>
+                <div class="step-label">Analyse</div>
+                <div class="step-sublabel" id="step-2-sub">Submit to model</div>
+            </div>
+            <div class="stepper-step" id="step-3" data-step="3">
+                <div class="step-bubble">
+                    <span class="step-num">3</span>
+                    <i class="fas fa-check step-icon"></i>
+                </div>
+                <div class="step-label">Results</div>
+                <div class="step-sublabel" id="step-3-sub">View prediction</div>
+            </div>
+        </div>
+        <div class="stepper-status" id="stepper-status">Enter a valid sequence to begin.</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-keyboard"></i></div>
+            <div class="card-header-title">Sequence Input</div>
+            <div class="card-header-sub" style="display:flex;align-items:center;gap:10px;">
+                <div class="example-picker" id="example-picker">
+                    <button class="btn-example" id="example-btn" type="button">
+                        <i class="fas fa-flask"></i> Try Example
+                    </button>
+                    <div class="example-dropdown" id="example-dropdown">
+                        <div class="example-item" data-seq="GIGKFLHSAKKFGKAFVGEIMNS" data-label="AMP · Magainin-2 (23 aa)" data-type="amp">
+                            <div class="example-item-title"><span class="example-badge badge-amp">AMP</span> Magainin-2 — 23 aa</div>
+                            <div class="example-item-seq">GIGKFLHSAKKFGKAFVGEIMNS</div>
+                        </div>
+                        <div class="example-item" data-seq="KWKLFKKIEKVGQNIRDGIIKAGPAVAVVGQATQIAK" data-label="AMP · Cecropin-Melittin CA(1-7)M(2-9) (37 aa)" data-type="amp">
+                            <div class="example-item-title"><span class="example-badge badge-amp">AMP</span> Cecropin A — 37 aa</div>
+                            <div class="example-item-seq">KWKLFKKIEKVGQNIRDGIIKAGPAVAVVGQATQIAK</div>
+                        </div>
+                        <div class="example-item" data-seq="MKWVTFISLLFLFSSAYSRGVFRRDAHKSEVAHRFKDLGEENFKALVLIAFAQYLQQCPF" data-label="Non-AMP · Serum albumin fragment (59 aa)" data-type="nonamp">
+                            <div class="example-item-title"><span class="example-badge badge-nonamp">Non-AMP</span> Albumin fragment — 59 aa</div>
+                            <div class="example-item-seq">MKWVTFISLLFLFSSAYSRGVFRRDAHKSEVAHRFKDL…</div>
+                        </div>
+                        <div class="example-item" data-seq="MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGSEFELRRQACGRSTKDL" data-label="Non-AMP · His-tag fusion construct (50 aa)" data-type="nonamp">
+                            <div class="example-item-title"><span class="example-badge badge-nonamp">Non-AMP</span> His-tag construct — 50 aa</div>
+                            <div class="example-item-seq">MGSSHHHHHHSSGLVPRGSHMASMTGGQQMGRGSEFEL…</div>
+                        </div>
+                    </div>
+                </div>
+                <input type="file" id="file-input" accept=".fasta,.fa,.fna" title="Upload FASTA file">
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="seq-input-wrap">
+                <textarea id="sequence"
+                    placeholder="Enter amino acid sequence (e.g. ACDEFGHIKLMNPQRSTVWY...) or upload a FASTA file above"
+                    maxlength="100"
+                    spellcheck="false"></textarea>
+                <div class="seq-meta-bar">
+                    <span id="seq-validation-msg" style="color:var(--text-muted);font-size:11px;">Standard AA characters only: ACDEFGHIKLMNPQRSTVWY</span>
+                    <span class="char-badge" id="char-badge-wrap"><span id="char-count">0</span> / 100 aa</span>
+                </div>
+                <div class="seq-stats-row" id="seq-stats-row" style="display:none;">
+                    <div class="seq-stat"><i class="fas fa-ruler-horizontal"></i> <span id="stat-length">0</span> aa</div>
+                    <div class="seq-stat"><i class="fas fa-fire"></i> <span id="stat-hydro">0%</span> hydrophobic</div>
+                    <div class="seq-stat"><i class="fas fa-plus-circle"></i> <span id="stat-cation">0%</span> cationic</div>
+                    <div class="seq-stat"><i class="fas fa-weight"></i> MW ~ <span id="stat-mw">0</span> Da</div>
+                </div>
+            </div>
+            <div class="aa-comp-bar-wrap" id="aa-comp-bar-wrap">
+                <div class="aa-comp-bar-title">Amino Acid Property Composition</div>
+                <div class="aa-comp-segments" id="aa-comp-segments"></div>
+                <div class="aa-comp-legend">
+                    <div class="legend-dot"><span style="background:var(--aa-hydrophobic)"></span>Hydrophobic (AVILMFW)</div>
+                    <div class="legend-dot"><span style="background:var(--aa-charged-pos)"></span>Cationic (KRH)</div>
+                    <div class="legend-dot"><span style="background:var(--aa-charged-neg)"></span>Anionic (DE)</div>
+                    <div class="legend-dot"><span style="background:var(--aa-polar)"></span>Polar (STNQ)</div>
+                    <div class="legend-dot"><span style="background:var(--aa-special)"></span>Special (CGP)</div>
+                    <div class="legend-dot"><span style="background:var(--aa-aromatic)"></span>Aromatic (YW)</div>
+                </div>
+            </div>
+            <div class="alignment-viewer" id="alignment-viewer">
+                <div class="alignment-title"><i class="fas fa-align-left"></i> &nbsp;Sequence Property Viewer — hover a residue for details</div>
+                <div class="aa-ruler" id="aa-ruler"></div>
+                <div class="aa-sequence-display" id="aa-sequence-display"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-bacteria"></i></div>
+            <div class="card-header-title">Select Bacteria for MIC Prediction</div>
+            <div class="card-header-sub" style="font-size:11px;color:var(--text-muted)">Only available when classified as AMP</div>
+        </div>
+        <div class="card-body">
+            <div class="info-bar">
+                <i class="fas fa-info-circle"></i>
+                <span>MIC prediction is performed only for sequences classified as Antimicrobial Peptides (AMPs). Select one or more target organisms below.</span>
+            </div>
+            <div class="bacteria-grid">
+                <div class="bacteria-item">
+                    <input type="checkbox" id="mic-ecoli" value="e_coli" disabled>
+                    <label for="mic-ecoli"><em>E. coli</em></label>
+                </div>
+                <div class="bacteria-item">
+                    <input type="checkbox" id="mic-paeruginosa" value="p_aeruginosa" disabled>
+                    <label for="mic-paeruginosa"><em>P. aeruginosa</em></label>
+                </div>
+                <div class="bacteria-item">
+                    <input type="checkbox" id="mic-saureus" value="s_aureus" disabled>
+                    <label for="mic-saureus"><em>S. aureus</em></label>
+                </div>
+                <div class="bacteria-item">
+                    <input type="checkbox" id="mic-kpneumoniae" value="k_pneumoniae" disabled>
+                    <label for="mic-kpneumoniae"><em>K. pneumoniae</em></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-paper-plane"></i></div>
+            <div class="card-header-title">Submit Analysis</div>
+        </div>
+        <div class="card-body">
+            <div style="margin-bottom:14px;">
+                <label class="form-label" for="user-email">Email address <span style="color:var(--accent-red)">*</span></label>
+                <input type="email" id="user-email" placeholder="you@institution.edu — for receiving the PDF report">
+                <div id="email-error" class="error-msg" style="margin-top:6px;padding:6px 10px;font-size:12px;"></div>
+                <div id="email-status" class="field-help"></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                <div class="btn-row" style="margin-top:0;">
+                    <button class="btn btn-secondary" id="clear-btn"><i class="fas fa-times"></i> Clear</button>
+                    <button class="btn btn-primary" id="predict-btn" disabled>
+                        <i class="fas fa-play"></i> Submit Analysis
+                    </button>
+
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+                    <div class="processing-info">
+                        <i class="fas fa-clock"></i>
+                        <span id="processing-time-info">Est. processing time: ~30 seconds</span>
+                    </div>
+                    <div class="kbd-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to submit</div>
+                </div>
+            </div>
+            <div class="error-msg" id="error"></div>
+        </div>
+    </div>
+    <div class="results-area" id="results-area">
+        <div class="results-area-title"><i class="fas fa-poll"></i> &nbsp;Results Dashboard</div>
+        <div class="dashboard-grid">
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <i class="fas fa-tag"></i> Classification
+                </div>
+                <div class="dash-card-body" id="amp-classification-output">
+                    <div class="class-result-display">
+                        <div class="class-label pending">Awaiting input…</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <i class="fas fa-tachometer-alt"></i> Confidence Score
+                </div>
+                <div class="dash-card-body" id="confidence-output">
+                    <div class="gauge-wrap">
+                        <svg class="gauge-arc-svg" viewBox="0 0 150 80">
+                            <path class="gauge-track" d="M15,75 A60,60 0 0,1 135,75"/>
+                            <path class="gauge-fill" id="gauge-fill" d="M15,75 A60,60 0 0,1 135,75"
+                                stroke="#d0daea"
+                                stroke-dasharray="188.5"
+                                stroke-dashoffset="188.5"/>
+                        </svg>
+                        <div class="gauge-value-label" id="gauge-value">—</div>
+                        <div class="gauge-sub">Model confidence</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dash-card" style="margin-bottom:16px;">
+            <div class="dash-card-header">
+                <i class="fas fa-chart-bar"></i> Predicted MIC Values (µM) — selected bacteria
+            </div>
+            <div class="dash-card-body" id="mic-chart-output" style="flex-direction:column;align-items:stretch;padding:16px 20px;">
+                <div class="mic-empty">MIC results will appear here after analysis. Select bacteria above before submitting.</div>
+            </div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <i class="fas fa-file-pdf"></i> Detailed Report
+            </div>
+            <div class="dash-card-body" id="additional-details-output" style="flex-direction:column;align-items:stretch;">
+                <div class="mic-empty">The downloadable PDF report will appear here.</div>
+                <a id="download-link" style="display:none;" class="download-btn-large">
+                    <i class="fas fa-download"></i> <span>Download Detailed Report (PDF)</span>
+                </a>
+                <div class="result-status" id="email-status-result" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="tab-panel" id="panel-model">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="card-header-title">MLP Classifier Performance Metrics</div>
+            <div class="card-header-sub">Architecture: Multi-Layer Perceptron (MLP)</div>
+        </div>
+        <div class="card-body">
+            <p class="prose">Best-trial results from MLP hyperparameter search (trial #49) on AAC + CTD features with RFE selection. Metrics reflect training and validation performance of the final selected model.</p>
+            <table class="metrics-table">
+                <thead><tr><th>Metric</th><th>Value</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td>Training Accuracy</td><td><span class="metric-val">0.9941</span></td><td>Proportion of correctly classified sequences on the training set.</td></tr>
+                    <tr><td>Validation Accuracy</td><td><span class="metric-val">0.9682</span></td><td>Accuracy on the held-out validation split used during model development.</td></tr>
+                    <tr><td>Training Loss</td><td><span class="metric-val">0.0412</span></td><td>Binary cross-entropy loss on the training set (lower is better).</td></tr>
+                    <tr><td>Validation Loss</td><td><span class="metric-val">0.1261</span></td><td>Binary cross-entropy loss on the validation set.</td></tr>
+                    <tr><td>Loss Gap</td><td><span class="metric-val">0.0849</span></td><td>Difference between validation and training loss — small gap indicates limited overfitting.</td></tr>
+                </tbody>
+            </table>
+            <p class="prose" style="margin-top:14px;font-size:12px;color:var(--text-muted);">
+                <i class="fas fa-info-circle"></i>
+                <strong>Architecture:</strong> 1 hidden layer · 256 units · ReLU activation · L2 regularisation (1e-5) · Dropout 0.3 · Learning rate 1e-3
+            </p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="card-header-title">Regression Performance Metrics (MIC)</div>
+            <div class="card-header-sub">Per-organism MIC regression</div>
+        </div>
+        <div class="card-body">
+            <p class="prose">Separate regression models predict MIC for each organism. Performance evaluated via MSE (log-scale), R², Pearson correlation, and Kendall's tau.</p>
+            <table class="metrics-table">
+                <thead><tr><th>Bacterium</th><th>MSE (log)</th><th>MSE</th><th>R²</th><th>MAE</th><th>Pearson</th><th>Kendall</th></tr></thead>
+                <tbody>
+                    <tr><td><em>E. coli</em></td><td class="metric-val">0.0481</td><td class="metric-val">0.4864</td><td class="metric-val">0.7023</td><td class="metric-val">0.1375</td><td class="metric-val">0.8394</td><td class="metric-val">0.6725</td></tr>
+                    <tr><td><em>P. aeruginosa</em></td><td class="metric-val">0.0517</td><td class="metric-val">0.5227</td><td class="metric-val">0.6864</td><td class="metric-val">0.1233</td><td class="metric-val">0.8311</td><td class="metric-val">0.6922</td></tr>
+                    <tr><td><em>S. aureus</em></td><td class="metric-val">0.0517</td><td class="metric-val">0.4988</td><td class="metric-val">0.6828</td><td class="metric-val">0.1472</td><td class="metric-val">0.8278</td><td class="metric-val">0.6536</td></tr>
+                    <tr><td><em>K. pneumoniae</em></td><td class="metric-val">0.0538</td><td class="metric-val">0.4292</td><td class="metric-val">0.7416</td><td class="metric-val">0.1479</td><td class="metric-val">0.8693</td><td class="metric-val">0.7194</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-microscope"></i></div>
+            <div class="card-header-title">Model Interpretability — SHAP &amp; LIME</div>
+        </div>
+        <div class="card-body">
+            <p class="prose">SHAP (SHapley Additive exPlanations) quantifies each feature's global contribution across all predictions. LIME (Local Interpretable Model-agnostic Explanations) explains individual predictions and appears in the downloadable PDF report.</p>
+            <div class="section-h3">Global SHAP Feature Importance</div>
+            <div class="shap-container">
+                <img src="shap.png" alt="Global SHAP Feature Importance Plot" onerror="this.parentElement.innerHTML='<p style=\'text-align:center;padding:30px;color:var(--text-muted);font-size:12px;\'>SHAP plot image (shap.png) not found in this directory.</p>'">
+            </div>
+            <div class="section-h3">Interpretation</div>
+            <div class="scroll-box">
+                <p>The model's AMP predictions are driven by a combination of sequence-based, structural, and biophysical descriptors:</p>
+                <h4>A. Sequence-Based Features</h4>
+                <h5>APAAC13 &amp; APAAC5 — Amphiphilic Pseudo-Amino Acid Composition</h5>
+                <ul><li>Encode hydrophobicity, charge, and side-chain properties. Higher values positively influence AMP classification, reflecting the amphiphilic nature essential for membrane disruption.</li></ul>
+                <h5>Amino Acid Composition (M, C)</h5>
+                <ul>
+                    <li><strong>Methionine (M):</strong> Associated with structural stability; positive SHAP impact.</li>
+                    <li><strong>Cysteine (C):</strong> Forms disulfide bonds stabilising defensin-like structures; high content positively predicts AMP activity.</li>
+                </ul>
+                <h4>B. Structural &amp; Biophysical Features</h4>
+                <ul>
+                    <li><strong>HydrophobicityD3001:</strong> Critical feature — more hydrophobic peptides strongly favoured, consistent with membrane insertion mechanisms.</li>
+                    <li><strong>PolarityD1001:</strong> Balances hydrophobicity to maintain membrane solubility and interaction.</li>
+                    <li><strong>SolventAccessibilityD3001:</strong> Exposed residues positively contribute, facilitating membrane contact.</li>
+                    <li><strong>ChargeD2001:</strong> Net positive charge (cationic AMPs) strongly predicts activity against negatively-charged bacterial membranes.</li>
+                    <li><strong>PolarizabilityD3001 &amp; NormalizedVDWVD3001:</strong> Influence membrane penetration and steric fit.</li>
+                </ul>
+                <h4>C. Geary Autocorrelation Descriptors</h4>
+                <ul>
+                    <li><strong>GearyAuto_Hydrophobicity30:</strong> Clustering of hydrophobic residues at lag 30 — reflects amphipathic helix formation.</li>
+                    <li><strong>GearyAuto_Steric30 &amp; 29:</strong> Backbone flexibility at spatial lags 29–30; moderate flexibility aids interaction with diverse membrane compositions.</li>
+                    <li><strong>GearyAuto_ResidueASA30:</strong> Consistent pattern of residue surface exposure at lag 30 improves bacterial targeting.</li>
+                </ul>
+            </div>
+            <div class="section-h3" style="margin-top:20px;">Sample Test Sequences</div>
+            <table class="metrics-table" style="margin-top:8px;">
+                <thead><tr><th>#</th><th>Description</th><th>Expected</th><th>Sequence (truncated)</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>Magainin-2 (23 aa)</td><td><span class="status-badge green">P-AMP</span></td><td style="font-family:var(--font-mono);font-size:11px;">GIGKFLHSAKKFGKAFVGEIM…</td></tr>
+                    <tr><td>2</td><td>Cecropin A (37 aa)</td><td><span class="status-badge green">P-AMP</span></td><td style="font-family:var(--font-mono);font-size:11px;">KWKLFKKIEKVGQNIRDGII…</td></tr>
+                    <tr><td>3</td><td>Albumin fragment (59 aa)</td><td><span class="status-badge red">Non-AMP</span></td><td style="font-family:var(--font-mono);font-size:11px;">MKWVTFISLLFLFSSAYSRG…</td></tr>
+                    <tr><td>4</td><td>His-tag construct (50 aa)</td><td><span class="status-badge red">Non-AMP</span></td><td style="font-family:var(--font-mono);font-size:11px;">MGSSHHHHHHSSGLVPRGSH…</td></tr>
+                    <tr><td>5</td><td>Invalid chars</td><td><span class="status-badge gray">Rejected</span></td><td style="font-family:var(--font-mono);font-size:11px;">MEKAALIFIG(XX)…</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="tab-panel" id="panel-about">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-info-circle"></i></div>
+            <div class="card-header-title">About EPIC-AMP</div>
+        </div>
+        <div class="card-body">
+            <p class="prose">This web application provides a streamlined interface for classifying amino acid sequences as Antimicrobial Peptides (AMPs) or Non-AMPs, and for predicting the Minimum Inhibitory Concentration (MIC) of potential AMPs against clinically relevant bacteria. AMPs are key components of the innate immune system and represent a promising avenue for combating drug-resistant pathogens.</p>
+            <div class="section-h3">Model Selection Criteria</div>
+            <p class="prose">Over 225 combinations of feature extraction and selection methods were evaluated across four machine learning architectures for each target organism. The final classifier is a <strong>Multi-Layer Perceptron (MLP)</strong> trained on AAC + CTD features with RFE-based feature selection. The final models were selected based on:</p>
+            <ul class="prose" style="margin-left:18px;">
+                <li><strong>High Accuracy, F1-score, and Validation Accuracy</strong> on a held-out test set.</li>
+                <li><strong>Robustness to sequence length variation</strong> within the 10–100 aa range.</li>
+                <li><strong>Generalisation</strong> across diverse AMP families and taxonomic origins.</li>
+                <li><strong>Regression capability</strong> assessed by MSE, R², Pearson correlation, and Kendall's tau.</li>
+            </ul>
+            <div class="section-h3">Intended Use</div>
+            <p class="prose">This tool is intended for research and educational purposes. It provides computational predictions to guide experimental work but does not replace laboratory validation. Predictions should be interpreted in the context of the reported model metrics.</p>
+            <div class="section-h3">Our Team</div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <img src="team-member-1.jpg" alt="Ali Abdalhalim" onerror="this.src='https://ui-avatars.com/api/?name=Ali+Abdalhalim&background=0056a6&color=fff'">
+                    <div><div class="team-name">Ali Abdalhalim</div><div class="team-role">Computational Biologist</div></div>
+                </div>
+                <div class="team-card">
+                    <img src="team-member-2.jpg" alt="Ahmed Amr" onerror="this.src='https://ui-avatars.com/api/?name=Ahmed+Amr&background=0056a6&color=fff'">
+                    <div><div class="team-name">Ahmed Amr</div><div class="team-role">Computational Biologist</div></div>
+                </div>
+                <div class="team-card">
+                    <img src="team-member-4.jpg" alt="Prof. Eman Badr" onerror="this.src='https://ui-avatars.com/api/?name=Eman+Badr&background=006666&color=fff'">
+                    <div><div class="team-name">Prof. Eman Badr</div><div class="team-role">Full Professor &amp; Director of BCBU</div></div>
+                </div>
+            </div>
+            <div class="section-h3" style="margin-top:20px;">Acknowledgements</div>
+            <ul class="prose" style="margin-left:18px;">
+                <li>Bioinformatics and Computational Biology Unit (BCBU), Zewail City</li>
+                <li>The Centre for Genomics, Zewail City</li>
+            </ul>
+            <div class="section-h3">Contact</div>
+            <p class="prose">For questions, collaboration inquiries, or feedback: <a href="mailto:epicamp.sup@gmail.com" style="color:var(--ncbi-blue);">epicamp.sup@gmail.com</a></p>
+        </div>
+    </div>
+</div>
+<div class="tab-panel" id="panel-usage">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-book-open"></i></div>
+            <div class="card-header-title">How to Use EPIC-AMP</div>
+        </div>
+        <div class="card-body">
+            <ul class="step-list">
+                <li class="step-item">
+                    <div class="step-circle">1</div>
+                    <div class="step-content">
+                        <h4>Prepare your sequence</h4>
+                        <p>Ensure your peptide sequence uses only standard amino acid single-letter codes (ACDEFGHIKLMNPQRSTVWY). Length must be between 10 and 100 residues. For FASTA format, ensure the file has a <code>&gt;</code> header line followed by the sequence.</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-circle">2</div>
+                    <div class="step-content">
+                        <h4>Enter or upload</h4>
+                        <p>Type/paste directly into the text area, or use the file picker to upload a <code>.fasta</code>, <code>.fa</code>, or <code>.fna</code> file. As you type, the <strong>Sequence Property Viewer</strong> will colour each residue by its biophysical properties and the composition bar will update in real-time.</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-circle">3</div>
+                    <div class="step-content">
+                        <h4>Select target bacteria (optional)</h4>
+                        <p>If you want MIC predictions, tick one or more bacteria in the selection panel. These checkboxes activate automatically once a valid sequence is entered. MIC prediction only runs if the peptide is classified as an AMP.</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-circle">4</div>
+                    <div class="step-content">
+                        <h4>Submit the analysis</h4>
+                        <p>Enter your email address and click <strong>Submit Analysis</strong>. The button will display elapsed processing time. Analysis typically completes within ~30 seconds.</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-circle">5</div>
+                    <div class="step-content">
+                        <h4>Interpret the Results Dashboard</h4>
+                        <p>The <strong>Classification</strong> panel shows AMP or Non-AMP. The <strong>Confidence Gauge</strong> displays model certainty. The <strong>MIC Chart</strong> shows bar-chart predictions (µM) for selected organisms. Download the full PDF report including LIME explanation and global SHAP plot.</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-circle">6</div>
+                    <div class="step-content">
+                        <h4>Clear and repeat</h4>
+                        <p>Click <strong>Clear</strong> to reset all fields and results before analysing a new sequence.</p>
+                    </div>
+                </li>
+            </ul>
+            <div class="section-h3" style="margin-top:20px;">Troubleshooting</div>
+            <table class="metrics-table">
+                <thead><tr><th>Issue</th><th>Likely Cause</th><th>Solution</th></tr></thead>
+                <tbody>
+                    <tr><td>Invalid characters error</td><td>Non-standard AA characters (B, J, O, U, X, Z or symbols)</td><td>Remove or replace with valid residues</td></tr>
+                    <tr><td>Length out of range</td><td>Sequence &lt;10 or &gt;100 characters</td><td>Trim or extend to within 10–100 aa</td></tr>
+                    <tr><td>FASTA parse error</td><td>Malformed FASTA file</td><td>Ensure file starts with &gt;header line and contains only the sequence on subsequent lines</td></tr>
+                    <tr><td>Prediction timeout</td><td>HuggingFace Space may be cold-starting</td><td>Wait ~60s and retry; Space auto-resumes</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</main>
+<div class="aa-tooltip-box" id="aa-tooltip"></div>
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<footer>
+    <p style="margin-bottom:4px;">© 2025 Bioinformatics and Computational Biology Unit (BCBU) — Zewail City</p>
+    <address style="font-style:normal;color:rgba(255,255,255,0.55);font-size:11px;">Ahmed Zewail Street, October Gardens, Giza, Egypt</address>
+    <p style="margin-top:6px;font-size:11px;"><a href="mailto:epicamp.sup@gmail.com" style="color:rgba(160,200,255,0.85);text-decoration:none;">epicamp.sup@gmail.com</a></p>
+</footer>
+<script type="module">
+    import { Client } from "https://esm.sh/@gradio/client";
+    /* ── CONFIG ─────────────────────────────────────────────── */
+    const GRADIO_PREDICTION_TARGET_ID = "nonzeroexit/AMP-Classifier";
+    const IS_EMAIL_SENDING_ENABLED    = true;
+    const MAILER_SPACE_ID             = "nonzeroexit/AMP-Mailer";
+    const HF_TOKEN                    = null;  // ← if Space is Private: paste your HF read token "hf_xxxx"
+                                               // ← if Space is Public:  leave as null
+    const SHEET_WEBHOOK_URL           = 'https://script.google.com/macros/s/AKfycbzF8_W8uwshY2THg7atOc9TmRqerLKAJyZbs9_-hP5kj99LMYTqn2e4Ki8SwNzZo8Oc/exec';
+    /* ── AA PROPERTY MAP ─────────────────────────────────────── */
+    const AA_PROPS = {
+        A:'hydrophobic', V:'hydrophobic', I:'hydrophobic', L:'hydrophobic',
+        M:'hydrophobic', F:'aromatic',    W:'aromatic',
+        K:'charged-pos', R:'charged-pos', H:'charged-pos',
+        D:'charged-neg', E:'charged-neg',
+        S:'polar', T:'polar', N:'polar', Q:'polar',
+        C:'special', G:'special', P:'special',
+        Y:'polar'
+    };
+    const AA_NAMES = {
+        A:'Alanine', R:'Arginine', N:'Asparagine', D:'Aspartate', C:'Cysteine',
+        Q:'Glutamine', E:'Glutamate', G:'Glycine', H:'Histidine', I:'Isoleucine',
+        L:'Leucine', K:'Lysine', M:'Methionine', F:'Phenylalanine', P:'Proline',
+        S:'Serine', T:'Threonine', W:'Tryptophan', Y:'Tyrosine', V:'Valine'
+    };
+    const PROP_LABELS = {
+        'hydrophobic': 'Hydrophobic',
+        'charged-pos': 'Cationic (+)',
+        'charged-neg': 'Anionic (−)',
+        'polar':       'Polar / uncharged',
+        'special':     'Special / structural',
+        'aromatic':    'Aromatic',
+        'invalid':     'Invalid character'
+    };
+    /* ── DOM REFS ─────────────────────────────────────────────── */
+    const sequenceInput    = document.getElementById('sequence');
+    const charCount        = document.getElementById('char-count');
+    const errorDiv         = document.getElementById('error');
+    const predictBtn       = document.getElementById('predict-btn');
+    const clearBtn         = document.getElementById('clear-btn');
+    const fileInput        = document.getElementById('file-input');
+    const downloadLink     = document.getElementById('download-link');
+    const ampClassOutput   = document.getElementById('amp-classification-output');
+    const confidenceOutput = document.getElementById('confidence-output');
+    const micChartOutput   = document.getElementById('mic-chart-output');
+    const additionalOutput = document.getElementById('additional-details-output');
+    const micCheckboxes    = document.querySelectorAll('.bacteria-grid input[type="checkbox"]');
+    const userEmailInput   = document.getElementById('user-email');
+    const emailErrorDiv    = document.getElementById('email-error');
+    const emailStatusDiv   = document.getElementById('email-status');
+    const emailStatusResult= document.getElementById('email-status-result');
+    const seqValidMsg      = document.getElementById('seq-validation-msg');
+    const aaCompBarWrap    = document.getElementById('aa-comp-bar-wrap');
+    const aaCompSegments   = document.getElementById('aa-comp-segments');
+    const alignViewer      = document.getElementById('alignment-viewer');
+    const aaSeqDisplay     = document.getElementById('aa-sequence-display');
+    const aaRuler          = document.getElementById('aa-ruler');
+    const aaTooltip        = document.getElementById('aa-tooltip');
+    const processingInfo   = document.getElementById('processing-time-info');
+    const connDot          = document.getElementById('conn-dot');
+    const connLabel        = document.getElementById('conn-label');
+    const exampleBtn       = document.getElementById('example-btn');
+    const exampleDropdown  = document.getElementById('example-dropdown');
+    const examplePicker    = document.getElementById('example-picker');
+    const seqStatsRow      = document.getElementById('seq-stats-row');
+    const statLength       = document.getElementById('stat-length');
+    const statHydro        = document.getElementById('stat-hydro');
+    const statCation       = document.getElementById('stat-cation');
+    const statMw           = document.getElementById('stat-mw');
+    const charBadgeWrap    = document.getElementById('char-badge-wrap');
+    const toastWrap        = document.getElementById('toast-wrap');
+    /* ── STATE ─────────────────────────────────────────────── */
+    let clientInstance, debounceTimer, countUpIntervalId;
+    /* ── STEPPER ────────────────────────────────────────────── */
+    const stepEls   = [null,
+        document.getElementById('step-1'),
+        document.getElementById('step-2'),
+        document.getElementById('step-3')
+    ];
+    const stepperLine   = document.getElementById('stepper-line');
+    const stepperStatus = document.getElementById('stepper-status');
+    const step1Sub = document.getElementById('step-1-sub');
+    const step2Sub = document.getElementById('step-2-sub');
+    const step3Sub = document.getElementById('step-3-sub');
+    const LINE_WIDTHS = { 1: '0%', 2: '50%', 3: '100%' };
+    function setStep(n, state, statusMsg) {
+        for (let i = 1; i <= 3; i++) {
+            const el = stepEls[i];
+            if (!el) continue;
+            el.classList.remove('active', 'done', 'processing', 'error');
+            if (i < n) {
+                el.classList.add('done');
+            } else if (i === n) {
+                el.classList.add(state);
+            }
+        }
+        if (stepperLine) {
+            if (n === 1) stepperLine.style.width = '0%';
+            else if (n === 2 && state === 'done') stepperLine.style.width = '50%';
+            else if (n === 2) stepperLine.style.width = '30%';
+            else if (n === 3) stepperLine.style.width = '100%';
+        }
+        if (stepperStatus && statusMsg !== undefined) {
+            stepperStatus.textContent = statusMsg;
+            stepperStatus.style.color = state === 'error' ? 'var(--accent-red)'
+                : state === 'done' && n === 3 ? 'var(--accent-green)'
+                : state === 'processing'      ? 'var(--accent-orange)'
+                : 'var(--text-muted)';
+        }
+    }
+    /* ── TOAST NOTIFICATIONS ─────────────────────────────────── */
+    function showToast(msg, type = 'info', duration = 3200) {
+        if (!toastWrap) return;
+        const t = document.createElement('div');
+        t.className = 'toast ' + type;
+        const icons = { success:'check-circle', info:'info-circle', error:'times-circle', warning:'exclamation-triangle' };
+        t.innerHTML = '<i class="fas fa-' + (icons[type]||'info-circle') + '"></i> ' + msg;
+        toastWrap.appendChild(t);
+        setTimeout(() => {
+            t.style.animation = 'toastOut 0.3s ease forwards';
+            setTimeout(() => t.remove(), 300);
+        }, duration);
+    }
+    /* ── SEQUENCE STATS ──────────────────────────────────────── */
+    const MW_TABLE = {A:89,R:174,N:132,D:133,C:121,Q:146,E:147,G:75,H:155,I:131,
+                      L:131,K:146,M:149,F:165,P:115,S:105,T:119,W:204,Y:181,V:117};
+    const HYDRO_SET  = new Set(['A','V','I','L','M','F','W','P']);
+    const CATION_SET = new Set(['K','R','H']);
+    function updateSeqStats(seq) {
+        if (!seq || seq.length < 3) { if (seqStatsRow) seqStatsRow.style.display = 'none'; return; }
+        if (seqStatsRow) seqStatsRow.style.display = 'flex';
+        const n = seq.length;
+        let hydro = 0, cation = 0, mw = 18;
+        for (const ch of seq) {
+            if (HYDRO_SET.has(ch))  hydro++;
+            if (CATION_SET.has(ch)) cation++;
+            mw += (MW_TABLE[ch] || 110) - 18;
+        }
+        if (statLength) statLength.textContent = n;
+        if (statHydro)  statHydro.textContent  = Math.round(hydro / n * 100) + '%';
+        if (statCation) statCation.textContent  = Math.round(cation / n * 100) + '%';
+        if (statMw)     statMw.textContent      = mw.toLocaleString();
+        if (charBadgeWrap) {
+            charBadgeWrap.classList.remove('valid','warning','invalid');
+            if (n >= 10 && n <= 100 && !/[^ACDEFGHIKLMNPQRSTVWY]/i.test(seq)) {
+                charBadgeWrap.classList.add('valid');
+            } else if (n > 100 || /[^ACDEFGHIKLMNPQRSTVWY]/i.test(seq)) {
+                charBadgeWrap.classList.add('invalid');
+            } else {
+                charBadgeWrap.classList.add('warning');
+            }
+        }
+    }
+    /* ── EXAMPLE PICKER ──────────────────────────────────────── */
+    function setupExamplePicker() {
+        if (!exampleBtn || !exampleDropdown) return;
+        exampleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            exampleDropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            if (examplePicker && !examplePicker.contains(e.target)) {
+                exampleDropdown.classList.remove('open');
+            }
+        });
+        exampleDropdown.querySelectorAll('.example-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const seq   = item.dataset.seq;
+                const label = item.dataset.label;
+                const type  = item.dataset.type;
+                if (!seq) return;
+                sequenceInput.value = seq.toUpperCase();
+                exampleDropdown.classList.remove('open');
+                onSeqInput();
+                if (type === 'amp') {
+                    micCheckboxes.forEach(cb => { cb.disabled = false; cb.checked = true; });
+                }
+                showToast('Loaded: ' + label, 'info', 2500);
+                sequenceInput.focus();
+            });
+        });
+    }
+    /* ── TABS ─────────────────────────────────────────────── */
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+        });
+    });
+    /* ── INIT ─────────────────────────────────────────────── */
+    async function initClient() {
+        try {
+            clientInstance = await Client.connect(GRADIO_PREDICTION_TARGET_ID);
+            console.log("Gradio prediction client ready.");
+            if (connDot)  { connDot.classList.remove('connecting'); connDot.classList.add('connected'); }
+            if (connLabel) connLabel.textContent = 'Model ready';
+            showToast('Prediction service connected', 'success', 2800);
+            updateBtnState();
+        } catch (err) {
+            console.error("Gradio init failed:", err);
+            if (connDot)  { connDot.classList.remove('connecting'); connDot.classList.add('error'); }
+            if (connLabel) connLabel.textContent = 'Connection failed';
+            showError('Could not connect to prediction service: ' + err.message);
+            showToast('Connection failed — check your network', 'error', 5000);
+            if (predictBtn) predictBtn.disabled = true;
+        }
+    }
+    window.onload = () => {
+        initClient();
+        fileInput?.addEventListener('change', handleFileSelect);
+        sequenceInput?.addEventListener('input', onSeqInput);
+        sequenceInput?.addEventListener('paste', handlePaste);
+        sequenceInput?.addEventListener('keypress', handleKeyPress);
+        userEmailInput?.addEventListener('input', updateBtnState);
+        clearBtn?.addEventListener('click', clearAll);
+        predictBtn?.addEventListener('click', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(runPrediction, 300); });
+        clearAll();
+        document.addEventListener('mousemove', e => {
+            if (!e.target.classList.contains('aa-char')) aaTooltip.style.display = 'none';
+        });
+        setupExamplePicker();
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                if (predictBtn && !predictBtn.disabled) {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(runPrediction, 300);
+                    showToast('Submitting via Ctrl+Enter…', 'info', 1800);
+                }
+            }
+            if (e.key === 'Escape' && exampleDropdown) {
+                exampleDropdown.classList.remove('open');
+            }
+        });
+    };
+
+    /* ── SEQUENCE EVENTS ──────────────────────────────────── */
+    function onSeqInput() {
+        updateCharCount();
+        renderAlignmentViewer();
+        renderCompBar();
+        updateValidationMsg();
+        updateMicCheckboxes();
+        updateBtnState();
+        updateSeqStats(sequenceInput.value.toUpperCase());
+        resetDashboard();
+        setStep(1, 'active', 'Enter a valid sequence to begin.');
+    }
+    function handlePaste(e) {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        const clean = paste.replace(/[\s\r\n]+/g, '').toUpperCase();
+        const start = sequenceInput.selectionStart, end = sequenceInput.selectionEnd;
+        let val = sequenceInput.value.slice(0, start) + clean + sequenceInput.value.slice(end);
+        if (val.length > 100) val = val.slice(0, 100);
+        sequenceInput.value = val;
+        onSeqInput();
+    }
+    function handleKeyPress(e) {
+        if (e.key.length > 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (!/^[ACDEFGHIKLMNPQRSTVWY]$/i.test(e.key)) e.preventDefault();
+    }
+    function updateCharCount() {
+        const n = sequenceInput.value.length;
+        charCount.textContent = n;
+        if (charCount && charCount.parentElement) charCount.parentElement.style.color = (n > 100 || n < 1) ? 'var(--accent-red)' : (n < 10 ? 'var(--accent-orange)' : 'var(--accent-green)');
+    }
+    function updateValidationMsg() {
+        const v = validateSequence(sequenceInput.value);
+        seqValidMsg.textContent = v.isValid ? '✓ Valid sequence' : v.message;
+        if (seqValidMsg) seqValidMsg.style.color = v.isValid ? 'var(--accent-green)' : 'var(--accent-orange)';
+    }
+    function validateSequence(seq) {
+        if (!seq) return { isValid: false, message: 'Enter a sequence to begin.' };
+        if (/[^ACDEFGHIKLMNPQRSTVWY]/i.test(seq)) return { isValid: false, message: 'Contains invalid characters — only ACDEFGHIKLMNPQRSTVWY allowed.' };
+        if (seq.length < 10) return { isValid: false, message: `Too short (${seq.length} aa) — minimum 10 required.` };
+        if (seq.length > 100) return { isValid: false, message: `Too long (${seq.length} aa) — maximum 100 allowed.` };
+        return { isValid: true, message: '' };
+    }
+    function updateMicCheckboxes() {
+        const v = validateSequence(sequenceInput.value);
+        micCheckboxes.forEach(cb => {
+            cb.disabled = !v.isValid;
+            if (!v.isValid) cb.checked = false;
+        });
+    }
+    function updateBtnState() {
+        const v = validateSequence(sequenceInput.value);
+        if (predictBtn) predictBtn.disabled = !v.isValid || !clientInstance;
+        const seq = sequenceInput ? sequenceInput.value : '';
+        if (!seq) {
+            setStep(1, 'active', 'Enter a valid sequence to begin.');
+            if (step1Sub) step1Sub.textContent = 'Enter sequence';
+        } else if (v.isValid) {
+            setStep(1, 'active', 'Sequence valid — select bacteria and submit.');
+            if (step1Sub) step1Sub.textContent = seq.length + ' aa ✓';
+        } else {
+            setStep(1, 'active', v.message);
+            if (step1Sub) step1Sub.textContent = 'Fix errors above';
+        }
+    }
+    /* ── ALIGNMENT VIEWER ─────────────────────────────────── */
+    function renderAlignmentViewer() {
+        const seq = sequenceInput.value.toUpperCase();
+        if (!seq) {
+            if (alignViewer) alignViewer.style.display = 'none';
+            if (aaCompBarWrap) aaCompBarWrap.style.display = 'none';
+            return;
+        }
+        if (alignViewer) alignViewer.style.display = 'block';
+        if (aaCompBarWrap) aaCompBarWrap.style.display = 'block';
+        aaRuler.innerHTML = '';
+        for (let i = 0; i < seq.length; i++) {
+            const tick = document.createElement('div');
+            tick.className = 'ruler-tick';
+            tick.textContent = (i + 1) % 5 === 0 ? (i + 1) : (i === 0 ? '1' : '');
+            aaRuler.appendChild(tick);
+        }
+        aaSeqDisplay.innerHTML = '';
+        for (let i = 0; i < seq.length; i++) {
+            const ch = seq[i];
+            const prop = AA_PROPS[ch] || 'invalid';
+            const span = document.createElement('span');
+            span.className = 'aa-char';
+            span.dataset.prop = prop;
+            span.dataset.pos = i + 1;
+            span.dataset.aa = ch;
+            span.textContent = ch;
+            span.addEventListener('mouseenter', showAaTooltip);
+            aaSeqDisplay.appendChild(span);
+        }
+    }
+    function showAaTooltip(e) {
+        const el = e.target;
+        const aa = el.dataset.aa;
+        const pos = el.dataset.pos;
+        const prop = el.dataset.prop;
+        const name = AA_NAMES[aa] || 'Unknown';
+        aaTooltip.innerHTML = `<strong>${aa} (${name})</strong><br>Position ${pos} &bull; ${PROP_LABELS[prop] || prop}`;
+        if (!aaTooltip) return;
+        aaTooltip.style.display = 'block';
+        aaTooltip.style.left = (e.clientX + 12) + 'px';
+        aaTooltip.style.top  = (e.clientY - 10) + 'px';
+    }
+    /* ── COMPOSITION BAR ─────────────────────────────────── */
+    function renderCompBar() {
+        const seq = sequenceInput.value.toUpperCase();
+        if (!seq) { aaCompBarWrap.style.display = 'none'; return; }
+        const counts = {};
+        for (const ch of seq) {
+            const p = AA_PROPS[ch] || 'invalid';
+            counts[p] = (counts[p] || 0) + 1;
+        }
+        const colorMap = {
+            'hydrophobic': 'var(--aa-hydrophobic)',
+            'charged-pos': 'var(--aa-charged-pos)',
+            'charged-neg': 'var(--aa-charged-neg)',
+            'polar':       'var(--aa-polar)',
+            'special':     'var(--aa-special)',
+            'aromatic':    'var(--aa-aromatic)',
+            'invalid':     'var(--aa-invalid)',
+        };
+        aaCompSegments.innerHTML = '';
+        const total = seq.length;
+        for (const [prop, color] of Object.entries(colorMap)) {
+            if (counts[prop]) {
+                const seg = document.createElement('div');
+                seg.className = 'aa-comp-segment';
+                seg.style.background = color;
+                seg.style.width = ((counts[prop] / total) * 100).toFixed(1) + '%';
+                seg.title = `${PROP_LABELS[prop]}: ${counts[prop]} (${((counts[prop]/total)*100).toFixed(0)}%)`;
+                aaCompSegments.appendChild(seg);
+            }
+        }
+    }
+    /* ── CLEAR ─────────────────────────────────────────────── */
+    function clearAll() {
+        sequenceInput.value = '';
+        fileInput.value = '';
+        charCount.textContent = '0';
+        if (charCount && charCount.parentElement) charCount.parentElement.style.color = 'var(--text-muted)';
+        seqValidMsg.textContent = 'Standard AA characters only: ACDEFGHIKLMNPQRSTVWY';
+        if (seqValidMsg) seqValidMsg.style.color = 'var(--text-muted)';
+        clearError();
+        userEmailInput.value = '';
+        emailErrorDiv.style.display = 'none';
+        emailStatusDiv.textContent = IS_EMAIL_SENDING_ENABLED ? 'Report will be emailed automatically after analysis.' : 'Email sending is currently disabled.';
+        if (alignViewer) alignViewer.style.display = 'none';
+        if (aaCompBarWrap) aaCompBarWrap.style.display = 'none';
+        micCheckboxes.forEach(cb => { cb.checked = false; cb.disabled = true; });
+        resetDashboard();
+        if (countUpIntervalId) { clearInterval(countUpIntervalId); countUpIntervalId = null; }
+        if (predictBtn) { predictBtn.textContent = 'Submit Analysis'; predictBtn.innerHTML = '<i class="fas fa-play"></i> Submit Analysis'; }
+        updateBtnState();
+        setStep(1, 'active', 'Enter a valid sequence to begin.');
+        if (step1Sub) step1Sub.textContent = 'Enter sequence';
+    }
+    function resetDashboard() {
+        ampClassOutput.innerHTML = '<div class="class-result-display"><div class="class-label pending">Awaiting input…</div></div>';
+        confidenceOutput.innerHTML =
+            '<div class="gauge-wrap">' +
+              '<svg class="gauge-arc-svg" viewBox="0 0 150 80">' +
+                '<path class="gauge-track" d="M15,75 A60,60 0 0,1 135,75"/>' +
+                '<path class="gauge-fill" d="M15,75 A60,60 0 0,1 135,75"' +
+                '  stroke="#d0daea" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>' +
+              '</svg>' +
+              '<div class="gauge-value-label" style="color:var(--text-muted)">—</div>' +
+              '<div class="gauge-sub">Model confidence</div>' +
+            '</div>';
+        micChartOutput.innerHTML = '<div class="mic-empty">MIC results will appear here after analysis. Select bacteria above before submitting.</div>';
+        Array.from(additionalOutput.childNodes).forEach(node => {
+            if (node !== downloadLink && node !== emailStatusResult) node.remove();
+        });
+        const placeholder = document.createElement('div');
+        placeholder.className = 'mic-empty report-placeholder';
+        placeholder.textContent = 'The downloadable PDF report will appear here.';
+        additionalOutput.insertBefore(placeholder, downloadLink);
+        if (downloadLink) {
+            downloadLink.style.display = 'none';
+            downloadLink.removeAttribute('href');
+            downloadLink.removeAttribute('download');
+            if (downloadLink && downloadLink.querySelector('span')) downloadLink.querySelector('span').textContent = 'Download Detailed Report (PDF)';
+        }
+        if (emailStatusResult) emailStatusResult.style.display = 'none';
+    }
+    /* ── GAUGE ─────────────────────────────────────────────── */
+    function setGauge(fraction, color) {
+        const arc = 188.5;
+        const fill = document.getElementById('gauge-fill');
+        if (!fill) return;
+        fill.style.strokeDashoffset = (arc - fraction * arc).toString();
+        fill.style.stroke = color;
+    }
+    /* ── FASTA ─────────────────────────────────────────────── */
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const allowed = ['.fasta','.fa','.fna'];
+        if (!allowed.some(ext => file.name.toLowerCase().endsWith(ext))) {
+            showError('Invalid file type. Please upload a .fasta, .fa, or .fna file.');
+            fileInput.value = '';
+            return;
+        }
+        clearError();
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const seq = parseFASTA(ev.target.result);
+                if (seq) {
+                    sequenceInput.value = seq;
+                    onSeqInput();
+                } else {
+                    showError("No valid sequence found in the FASTA file.");
+                    fileInput.value = '';
+                }
+            } catch (err) {
+                showError(err.message || "Error processing FASTA file.");
+                fileInput.value = '';
+            }
+        };
+        reader.onerror = () => { showError("Error reading file."); fileInput.value = ''; };
+        reader.readAsText(file);
+    }
+    function parseFASTA(text) {
+        const lines = text.trim().split(/[\r\n]+/);
+        let seq = '', header = false;
+        for (const line of lines) {
+            const t = line.trim();
+            if (t.startsWith('>')) { if (header && seq) return seq.toUpperCase(); header = true; seq = ''; }
+            else if (header) seq += t.replace(/\s/g,'');
+            else seq += t.replace(/\s/g,'');
+        }
+        if (!seq) throw new Error("FASTA file appears empty or has no sequence data.");
+        return seq.toUpperCase();
+    }
+    /* ── ERROR HELPERS ─────────────────────────────────────── */
+    function showError(msg) { errorDiv.textContent = msg; errorDiv.classList.add('show'); }
+    function clearError()   { errorDiv.textContent = ''; errorDiv.classList.remove('show'); }
+    /* ── PREDICTION ─────────────────────────────────────────── */
+    async function runPrediction() {
+        if (!clientInstance) { showError("Service not ready. Please wait and retry."); return; }
+        const seq = sequenceInput.value.trim().toUpperCase();
+        const v = validateSequence(seq);
+        if (!v.isValid) { showError(v.message); return; }
+        clearError();
+        predictBtn.disabled = true;
+        predictBtn.innerHTML = '<i class="fas fa-circle-notch spin"></i> Processing…';
+        setStep(2, 'processing', 'Model is analysing your sequence…');
+        if (step2Sub) step2Sub.textContent = 'Running…';
+        const loadingHTML = '<div class="loading-pulse"><div class="pulse-dots"><div class="pulse-dot"></div><div class="pulse-dot"></div><div class="pulse-dot"></div></div><span>Analysing...</span></div>';
+        ampClassOutput.innerHTML = loadingHTML;
+        confidenceOutput.innerHTML = loadingHTML;
+        micChartOutput.innerHTML = loadingHTML;
+        Array.from(additionalOutput.childNodes).forEach(function(node) {
+            if (node !== downloadLink && node !== emailStatusResult) node.remove();
+        });
+        var loadingNode = document.createElement('div');
+        loadingNode.innerHTML = loadingHTML;
+        additionalOutput.insertBefore(loadingNode.firstChild, downloadLink);
+        if (downloadLink) downloadLink.style.display = 'none';
+        micCheckboxes.forEach(cb => cb.disabled = true);
+        if (emailStatusResult) emailStatusResult.style.display = 'none';
+        let elapsed = 0;
+        if (countUpIntervalId) clearInterval(countUpIntervalId);
+        countUpIntervalId = setInterval(() => {
+            elapsed++;
+            if (processingInfo) processingInfo.textContent = 'Processing — ' + elapsed + 's elapsed…';
+        }, 1000);
+        let ampLabel = 'Unknown', ampConf = 0;
+        let micData = {}, limeFeatures = [];
+        try {
+            const result = await clientInstance.predict("/predict", [seq]);
+            if (!result?.data?.[0] || typeof result.data[0] !== 'string') throw new Error("Unexpected response format.");
+            const raw = result.data[0];
+            console.log("Raw Gradio output:\n", raw);
+            const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+            const labelMatch = raw.match(/Prediction:\s*(.+)/i);
+            const confMatch  = raw.match(/Confidence:\s*([\d.]+)%/i);
+            if (labelMatch) ampLabel = labelMatch[1].trim();
+            if (confMatch)  ampConf  = parseFloat(confMatch[1]) / 100;
+            let section = null;
+            for (const line of lines) {
+                if (/Predicted MIC Values/i.test(line))           { section = 'mic'; continue; }
+                if (/Top Features Influencing Prediction/i.test(line)) { section = 'lime'; continue; }
+                if (section === 'mic') {
+                    // Only parse MIC lines: organism names never contain numbers alone after the colon
+                    const m = line.match(/^-\s*([^:]+?):\s*([\d.]+)\s*(?:µM|uM|μM)?$/i);
+                    if (m) micData[m[1].trim()] = parseFloat(m[2]);
+                } else if (section === 'lime') {
+                    const m = line.match(/-\s*(.+?)\s*:\s*([+-]?[\d.]+)/i);
+                    if (m) limeFeatures.push({ feature: m[1].trim(), value: parseFloat(m[2]) });
+                }
+            }
+            const isAMP = ampLabel.toLowerCase().includes('amp') && !ampLabel.toLowerCase().includes('non-amp');
+            ampClassOutput.innerHTML = `
+                <div class="class-result-display">
+                    <div class="class-label ${isAMP ? 'amp' : 'nonamp'}">${ampLabel}</div>
+                    <div style="margin-top:6px;">
+                        <span class="status-badge ${isAMP ? 'green' : 'red'}">
+                            <i class="fas fa-${isAMP ? 'check' : 'times'}"></i> ${isAMP ? 'Antimicrobial Peptide' : 'Non-AMP'}
+                        </span>
+                    </div>
+                </div>`;
+            const gColor = isAMP ? '#2e7d32' : '#c62828';
+            confidenceOutput.innerHTML =
+                '<div class="gauge-wrap">' +
+                  '<svg class="gauge-arc-svg" viewBox="0 0 150 80">' +
+                    '<path class="gauge-track" d="M15,75 A60,60 0 0,1 135,75"/>' +
+                    '<path id="gauge-fill" class="gauge-fill" d="M15,75 A60,60 0 0,1 135,75"' +
+                    '  stroke="' + gColor + '"' +
+                    '  stroke-dasharray="188.5"' +
+                    '  stroke-dashoffset="188.5"/>' +
+                  '</svg>' +
+                  '<div class="gauge-value-label" style="color:' + gColor + '">' + (ampConf * 100).toFixed(1) + '%</div>' +
+                  '<div class="gauge-sub">Model confidence</div>' +
+                '</div>';
+            requestAnimationFrame(() => setGauge(ampConf, gColor));
+            const checkedBacteria = [...micCheckboxes].filter(cb => cb.checked).map(cb => {
+                return cb.parentElement.querySelector('label em')?.textContent?.trim() || cb.value;
+            });
+            const micEntries = Object.entries(micData).filter(([bact]) => {
+                return checkedBacteria.some(sel => bact.toLowerCase().replace(/[\s.]/g,'').includes(sel.toLowerCase().replace(/[\s.]/g,'').slice(0,5)));
+            });
+            if (micEntries.length > 0 && isAMP) {
+                const maxMIC = Math.max(...micEntries.filter(([,v])=>typeof v==='number').map(([,v])=>v), 1);
+                micChartOutput.innerHTML = `<div class="mic-chart-wrap">${micEntries.map(([bact, val]) => {
+                    const pct = typeof val === 'number' ? Math.min((val / maxMIC) * 100, 100) : 0;
+                    const label = typeof val === 'number' ? `${val.toFixed(2)} µM` : String(val);
+                    return `<div class="mic-bar-row">
+                        <div class="mic-bar-label"><em>${bact}</em></div>
+                        <div class="mic-bar-track"><div class="mic-bar-fill" style="width:${pct}%"></div></div>
+                        <div class="mic-bar-value">${label}</div>
+                    </div>`;
+                }).join('')}</div>`;
+            } else {
+                micChartOutput.innerHTML = `<div class="mic-empty">${!isAMP ? 'Sequence classified as Non-AMP — MIC prediction not applicable.' : 'No bacteria selected or no MIC predictions returned.'}</div>`;
+            }
+            setStep(3, 'active', 'Analysis complete — results below.');
+            if (step3Sub) step3Sub.textContent = ampLabel;
+            const ra = document.getElementById('results-area');
+            if (ra) ra.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast('Classification: ' + ampLabel + ' (' + (ampConf*100).toFixed(1) + '% confidence)', isAMP ? 'success' : 'info', 4000);
+            if (isAMP) micCheckboxes.forEach(cb => cb.disabled = false);
+            else {
+                // Re-enable for re-use only if sequence is still valid (non-AMP can still be re-analysed)
+                const vCheck = validateSequence(seq);
+                if (vCheck.isValid) micCheckboxes.forEach(cb => cb.disabled = false);
+            }
+            let pdfDoc = null;
+            try { pdfDoc = await buildPDF(seq, ampLabel, ampConf, micData, limeFeatures); }
+            catch (pdfErr) { console.error("PDF gen error:", pdfErr); }
+            function clearAdditionalOutput() {
+                Array.from(additionalOutput.childNodes).forEach(function(node) {
+                    if (node !== downloadLink && node !== emailStatusResult) node.remove();
+                });
+            }
+            if (pdfDoc) {
+                const blob = pdfDoc.output('blob');
+                const url  = URL.createObjectURL(blob);
+                const fname = 'EPIC-AMP_' + seq.slice(0,8) + '_' + new Date().toISOString().slice(0,10) + '.pdf';
+                downloadLink.href = url;
+                downloadLink.download = fname;
+                downloadLink.querySelector('span').textContent = 'Download Report - ' + ampLabel;
+                clearAdditionalOutput();
+                const msgEl = document.createElement('p');
+                msgEl.style.cssText = 'font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:4px;';
+                msgEl.textContent = 'Report generated. Click to download.';
+                additionalOutput.insertBefore(msgEl, downloadLink);
+                downloadLink.style.display = 'flex';
+                setStep(3, 'done', 'Report ready — download below.');
+                if (step3Sub) step3Sub.textContent = 'PDF ready';
+                showToast('PDF report ready to download', 'success', 3000);
+                if (SHEET_WEBHOOK_URL && userEmailInput?.value?.trim()) {
+                    fetch(SHEET_WEBHOOK_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email:      userEmailInput.value.trim(),
+                            label:      ampLabel,
+                            confidence: (ampConf * 100).toFixed(1) + '%',
+                            sequence:   seq.slice(0, 50) + (seq.length > 50 ? '…' : '')
+                        })
+                    }).catch(() => {});
+                }
+                if (emailStatusResult) {
+                    additionalOutput.appendChild(emailStatusResult);
+                    emailStatusResult.style.display = 'flex';
+                    if (IS_EMAIL_SENDING_ENABLED && userEmailInput?.value?.trim()) {
+                        const toEmail = userEmailInput.value.trim();
+                        const pdfB64  = pdfDoc.output('datauristring').split(',')[1];
+                        const seqPrev = seq.slice(0, 50) + (seq.length > 50 ? '…' : '');
+                        emailStatusResult.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending report to ' + toEmail + '…';
+                        try {
+                            const mailer = await Client.connect(MAILER_SPACE_ID, {
+                                hf_token: HF_TOKEN
+                            });
+                            const result = await mailer.predict("/send", [
+                                toEmail, pdfB64, ampLabel,
+                                (ampConf * 100).toFixed(1) + '%', seqPrev
+                            ]);
+                            const status = Array.isArray(result?.data) ? result.data[0] : String(result?.data || '');
+                            if (status === 'sent') {
+                                emailStatusResult.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-green)"></i> Report emailed successfully to ' + toEmail;
+                            } else {
+                                emailStatusResult.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--accent-orange)"></i> Email failed — please use the download button. (' + status + ')';
+                            }
+                        } catch (mailErr) {
+                            console.error('Mailer error:', mailErr);
+                            emailStatusResult.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--accent-orange)"></i> Email error — please use the download button.';
+                        }
+                    } else {
+                        emailStatusResult.innerHTML = '<i class="fas fa-info-circle"></i> Email sending disabled — use the download button above.';
+                    }
+                }
+            } else {
+                clearAdditionalOutput();
+                const errEl = document.createElement('div');
+                errEl.className = 'mic-empty';
+                errEl.style.color = 'var(--accent-orange)';
+                errEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> PDF generation failed. See browser console for details.';
+                additionalOutput.insertBefore(errEl, downloadLink);
+            }
+        } catch (err) {
+            console.error("Prediction error:", err);
+            showError('Prediction failed: ' + err.message + '. The HuggingFace Space may be starting up — please retry in a moment.');
+            setStep(2, 'error', 'Prediction failed. Please retry.');
+            if (step2Sub) step2Sub.textContent = 'Error';
+            showToast('Prediction error — please retry', 'error', 5000);
+            ampClassOutput.innerHTML = '<div class="class-result-display"><div class="class-label pending" style="color:var(--accent-red)">Error</div></div>';
+            confidenceOutput.innerHTML = '<div class="mic-empty">—</div>';
+            micChartOutput.innerHTML = '<div class="mic-empty">Unavailable due to prediction error.</div>';
+            Array.from(additionalOutput.childNodes).forEach(function(node) {
+                if (node !== downloadLink && node !== emailStatusResult) node.remove();
+            });
+            const errEl2 = document.createElement('div');
+            errEl2.className = 'mic-empty';
+            errEl2.textContent = 'Unavailable due to prediction error.';
+            additionalOutput.insertBefore(errEl2, downloadLink);
+        } finally {
+            clearInterval(countUpIntervalId); countUpIntervalId = null;
+            processingInfo.textContent = 'Est. processing time: ~30 seconds';
+            predictBtn.innerHTML = '<i class="fas fa-play"></i> Submit Analysis';
+            updateBtnState();
+        }
+    }
+    /* ── PDF GENERATION ──────────────────────────────────── */
+    async function getBase64(src) {
+        return new Promise(res => {
+            const img = new Image(); img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                if (!img.naturalWidth) { res(null); return; }
+                const c = document.createElement('canvas');
+                c.width = img.naturalWidth; c.height = img.naturalHeight;
+                c.getContext('2d').drawImage(img, 0, 0);
+                res(c.toDataURL('image/png'));
+            };
+            img.onerror = () => res(null);
+            img.src = src;
+        });
+    }
+    async function buildPDF(seq, label, conf, micResults, limeFeats) {
+        if (!window.jspdf?.jsPDF) { console.error("jsPDF not loaded"); return null; }
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        const W = pdf.internal.pageSize.width;
+        const H = pdf.internal.pageSize.height;
+        const PRI  = [0, 63, 125];
+        const PRIL = [26, 111, 196];
+        const TXT  = [51, 51, 51];
+        const GRN  = [39, 174, 96];
+        const RED  = [198, 40, 40];
+        const LGRAY= [210, 218, 232];
+        const isAMP = label.toLowerCase().includes('amp') && !label.toLowerCase().includes('non-amp');
+        const dateStr = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+        const logoB64   = await getBase64(document.querySelector('.header-logo img')?.src || '');
+        const banner64  = await getBase64('image2.png');
+        const shapB64   = await getBase64('shap.png');
+        function pageHeader(sectionTitle) {
+            pdf.setFillColor(0, 40, 90);
+            pdf.rect(0, 0, W, 18, 'F');
+            pdf.setFillColor(26, 111, 196);
+            pdf.rect(0, 15, W, 3, 'F');
+            if (logoB64) {
+                try { pdf.addImage(logoB64, 'PNG', 8, 2, 13, 13); } catch(e) {}
+            }
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(8.5); pdf.setTextColor(255,255,255);
+            pdf.text('EPIC-AMP', logoB64 ? 24 : 10, 8);
+            pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(160, 200, 255);
+            pdf.text('Explainable Antimicrobial Peptide Platform', logoB64 ? 24 : 10, 14);
+            pdf.setFont('helvetica','normal'); pdf.setFontSize(7.5); pdf.setTextColor(200, 220, 255);
+            pdf.text(sectionTitle, W - 10, 11, { align:'right' });
+        }
+        function pageFooter(pageNum, total) {
+            pdf.setFillColor(245, 247, 252);
+            pdf.rect(0, H - 14, W, 14, 'F');
+            pdf.setDrawColor(210, 218, 232); pdf.setLineWidth(0.3);
+            pdf.line(0, H - 14, W, H - 14);
+            pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(160, 168, 185);
+            pdf.text('EPIC-AMP  |  Zewail City of Science and Technology  |  BCBU', 10, H - 8);
+            pdf.setTextColor(26, 111, 196);
+            pdf.text('epicamp.sup@gmail.com', 10, H - 3);
+            pdf.setTextColor(160, 168, 185);
+            pdf.text('Page ' + pageNum + ' of ' + total, W - 10, H - 5.5, { align:'right' });
+        }
+        function sectionTitle(text, yPos) {
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(14); pdf.setTextColor(0, 63, 125);
+            pdf.text(text, 15, yPos);
+            pdf.setDrawColor(26, 111, 196); pdf.setLineWidth(0.6);
+            pdf.line(15, yPos + 2.5, W - 15, yPos + 2.5);
+            return yPos + 12;
+        }
+        var bannerH = 52;
+        if (banner64) {
+            const bi = new Image(); bi.src = banner64;
+            await new Promise(r => { bi.onload = r; bi.onerror = r; });
+            if (bi.naturalWidth) {
+                var bw = W, bh = bw * (bi.naturalHeight / bi.naturalWidth);
+                if (bh > 70) bh = 70;
+                bannerH = bh;
+                pdf.addImage(banner64, 'PNG', 0, 0, bw, bh);
+            }
+        } else {
+            pdf.setFillColor(0, 40, 90);
+            pdf.rect(0, 0, W, bannerH, 'F');
+            pdf.setFillColor(26, 111, 196);
+            pdf.rect(0, bannerH - 4, W, 4, 'F');
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(22); pdf.setTextColor(255,255,255);
+            pdf.text('EPIC-AMP', W / 2, bannerH / 2 - 3, { align:'center' });
+            pdf.setFont('helvetica','normal'); pdf.setFontSize(10); pdf.setTextColor(160,200,255);
+            pdf.text('Explainable Antimicrobial Peptide Platform', W / 2, bannerH / 2 + 7, { align:'center' });
+        }
+        pdf.setFillColor(26, 111, 196);
+        pdf.rect(0, bannerH, W, 1.5, 'F');
+        var by = bannerH + 1.5;
+        pdf.setFillColor(247, 249, 253);
+        pdf.rect(0, by, W, 20, 'F');
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(16); pdf.setTextColor(0, 40, 90);
+        pdf.text('Analysis Report', W / 2, by + 10, { align:'center' });
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(8.5); pdf.setTextColor(100, 115, 145);
+        pdf.text('Generated on ' + dateStr + '   |   Zewail City of Science and Technology  \u00B7  BCBU', W / 2, by + 17, { align:'center' });
+        by += 22;
+        pdf.setDrawColor(210, 218, 232); pdf.setLineWidth(0.4);
+        pdf.line(15, by, W - 15, by);
+        by += 7;
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(26, 111, 196);
+        pdf.text('QUICK SUMMARY', 15, by);
+        pdf.setDrawColor(26, 111, 196); pdf.setLineWidth(0.4);
+        pdf.line(15, by + 1.5, W - 15, by + 1.5);
+        by += 7;
+        pdf.setFillColor(248, 250, 255);
+        pdf.roundedRect(15, by, W - 30, 22, 2, 2, 'F');
+        pdf.setDrawColor(210, 218, 232); pdf.setLineWidth(0.3);
+        pdf.roundedRect(15, by, W - 30, 22, 2, 2, 'S');
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(6.5); pdf.setTextColor(26, 111, 196);
+        pdf.text('INPUT SEQUENCE', 20, by + 6);
+        pdf.setFont('courier','normal'); pdf.setFontSize(7.5); pdf.setTextColor(40, 40, 40);
+        var seqPrev = seq.length > 80 ? seq.slice(0, 80) + '...' : seq;
+        pdf.text(seqPrev, 20, by + 13);
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(6.5); pdf.setTextColor(150, 158, 175);
+        pdf.text(seq.length + ' amino acids', W - 20, by + 19, { align:'right' });
+        by += 26;
+        var hasMIC  = Object.keys(micResults).length > 0;
+        var hasLIME = limeFeats.length > 0;
+        var hasShap = !!shapB64;
+        var cardGap = 3;
+        var cw4 = (W - 30 - cardGap * 3) / 4;
+        var cardH = 34;
+        var cardDefs = [
+            { label:'CLASSIFICATION',
+              value: label,
+              sub: isAMP ? 'Antimicrobial Peptide (AMP)' : 'Non-Antimicrobial Peptide',
+              fill: isAMP ? [232,245,233] : [255,235,238],
+              border: isAMP ? GRN : RED, valColor: isAMP ? GRN : RED },
+            { label:'CONFIDENCE SCORE',
+              value: (conf*100).toFixed(1)+'%',
+              sub: conf >= 0.7 ? 'High confidence' : conf >= 0.5 ? 'Moderate confidence' : 'Low confidence',
+              fill:[240,245,255], border:[26,111,196], valColor:[0,40,90] },
+            { label:'SEQUENCE LENGTH',
+              value: seq.length + ' aa',
+              sub: seq.length >= 10 && seq.length <= 100 ? 'Valid range (10-100)' : 'Out of accepted range',
+              fill:[240,248,255], border:[210,218,232], valColor:[0,63,125] },
+            { label:'MIC TARGETS',
+              value: hasMIC ? Object.keys(micResults).length + ' organisms' : 'N/A',
+              sub: hasMIC ? 'Predictions available' : 'Not requested',
+              fill:[240,250,244], border:[210,218,232], valColor: hasMIC ? [39,174,96] : [150,158,175] }
+        ];
+        cardDefs.forEach(function(c, i) {
+            var cx = 15 + i * (cw4 + cardGap);
+            pdf.setFillColor(c.fill[0], c.fill[1], c.fill[2]);
+            pdf.roundedRect(cx, by, cw4, cardH, 2, 2, 'F');
+            pdf.setFillColor(c.border[0], c.border[1], c.border[2]);
+            pdf.rect(cx, by, 2.5, cardH, 'F');
+            pdf.setDrawColor(c.border[0], c.border[1], c.border[2]); pdf.setLineWidth(0.4);
+            pdf.roundedRect(cx, by, cw4, cardH, 2, 2, 'S');
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(5.5); pdf.setTextColor(150,158,175);
+            pdf.text(c.label, cx + 6, by + 7);
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(9);
+            pdf.setTextColor(c.valColor[0], c.valColor[1], c.valColor[2]);
+            var maxTxtW = cw4 - 10;
+            var valLines = pdf.splitTextToSize(c.value, maxTxtW);
+            pdf.text(valLines, cx + 6, by + 15);
+            var subY = by + 15 + valLines.length * 5;
+            pdf.setFont('helvetica','normal'); pdf.setFontSize(6); pdf.setTextColor(120,128,145);
+            var subLines = pdf.splitTextToSize(c.sub, maxTxtW);
+            pdf.text(subLines, cx + 6, subY);
+        });
+        by += cardH + 4;
+        if (hasMIC) {
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(6.5); pdf.setTextColor(26,111,196);
+            pdf.text('PREDICTED MIC VALUES (\u00B5M)', 15, by + 5);
+            pdf.setDrawColor(26,111,196); pdf.setLineWidth(0.3);
+            pdf.line(15, by + 6.5, W - 15, by + 6.5);
+            by += 9;
+            var micEntries = Object.entries(micResults);
+            var colW = (W - 30) / micEntries.length;
+            micEntries.forEach(function(kv, i) {
+                var mx = 15 + i * colW;
+                var micVal = typeof kv[1] === 'number' ? kv[1].toFixed(3) : String(kv[1]);
+                pdf.setFillColor(244, 247, 253);
+                pdf.roundedRect(mx + 1, by, colW - 2, 22, 2, 2, 'F');
+                pdf.setDrawColor(210,218,232); pdf.setLineWidth(0.25);
+                pdf.roundedRect(mx + 1, by, colW - 2, 22, 2, 2, 'S');
+                pdf.setFont('helvetica','italic'); pdf.setFontSize(7); pdf.setTextColor(80,90,110);
+                pdf.text(kv[0], mx + colW/2, by + 8, { align:'center' });
+                pdf.setFont('helvetica','bold'); pdf.setFontSize(9); pdf.setTextColor(0,63,125);
+                pdf.text(micVal, mx + colW/2, by + 17, { align:'center' });
+            });
+            by += 27;
+        } else {
+            by += 4;
+        }
+        by += 3;
+        pdf.setFillColor(0, 40, 90);
+        pdf.roundedRect(15, by, W - 30, 10, 2, 2, 'F');
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.setTextColor(255,255,255);
+        pdf.text('TABLE OF CONTENTS', 21, by + 7);
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(160,200,255);
+        pdf.text('Section', W - 45, by + 7);
+        pdf.text('Page', W - 21, by + 7, { align:'right' });
+        by += 12;
+        var pg = 2;
+        var tocData = [
+            { num:'1', icon:'SEQ', title:'Input Sequence',
+              desc:'Full amino acid sequence with length and composition',
+              page: pg++ },
+            { num:'2', icon:'CLS', title:'Classification & Confidence',
+              desc:'AMP / Non-AMP prediction with confidence score breakdown',
+              page: pg++ },
+            { num:'3', icon:'MIC', title:'Predicted MIC Values',
+              desc:'Minimum Inhibitory Concentration per target bacterium (\u00B5M)',
+              page: hasMIC ? pg++ : null },
+            { num:'4', icon:'XAI', title:'Feature Explanation (LIME & SHAP)',
+              desc:'Local LIME attributions and global SHAP feature importance',
+              page: (hasLIME || hasShap) ? pg++ : null }
+        ];
+        var tocRowH = 13;
+        tocData.forEach(function(row, idx) {
+            var avail = row.page !== null;
+            var rowBg = avail ? (idx % 2 === 0 ? [247,249,254] : [255,255,255]) : [250,250,252];
+            pdf.setFillColor(rowBg[0], rowBg[1], rowBg[2]);
+            pdf.rect(15, by, W - 30, tocRowH, 'F');
+            var tagColor = avail ? (idx===0?[26,111,196]:idx===1?[39,174,96]:idx===2?[230,81,0]:[126,87,194]) : [190,195,205];
+            pdf.setFillColor(tagColor[0], tagColor[1], tagColor[2]);
+            pdf.rect(15, by, 3, tocRowH, 'F');
+            pdf.setFillColor(tagColor[0], tagColor[1], tagColor[2]);
+            pdf.roundedRect(21, by + 2, 8, 8, 1, 1, 'F');
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(6.5); pdf.setTextColor(255,255,255);
+            pdf.text(row.num, 25, by + 7.5, { align:'center' });
+            pdf.setFillColor(avail ? 235 : 242, avail ? 240 : 243, avail ? 252 : 248);
+            pdf.roundedRect(32, by + 2.5, 10, 7, 1, 1, 'F');
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(5); pdf.setTextColor(tagColor[0], tagColor[1], tagColor[2]);
+            pdf.text(row.icon, 37, by + 7.5, { align:'center' });
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(8);
+            pdf.setTextColor(avail ? 20 : 160, avail ? 35 : 165, avail ? 80 : 180);
+            pdf.text(row.title, 45, by + 6.5);
+            pdf.setFont('helvetica','normal'); pdf.setFontSize(6);
+            pdf.setTextColor(avail ? 110 : 175, avail ? 118 : 180, avail ? 140 : 195);
+            pdf.text(row.desc, 45, by + 11);
+            var pageLabel = avail ? 'pg. ' + row.page : 'N/A';
+            pdf.setFont('helvetica', avail ? 'bold' : 'normal'); pdf.setFontSize(8);
+            pdf.setTextColor(avail ? tagColor[0] : 180, avail ? tagColor[1] : 185, avail ? tagColor[2] : 195);
+            pdf.text(pageLabel, W - 18, by + 7.5, { align:'right' });
+            pdf.setFillColor(210, 218, 232);
+            var titleW2 = pdf.getTextWidth(row.title);
+            var pgW2    = pdf.getTextWidth(pageLabel);
+            var lx1 = 46 + titleW2 + 2, lx2 = W - 20 - pgW2 - 2;
+            for (var dx = lx1; dx < lx2 - 1; dx += 2.2) {
+                pdf.circle(dx, by + 7, 0.3, 'F');
+            }
+            pdf.setDrawColor(225, 230, 242); pdf.setLineWidth(0.15);
+            pdf.line(15, by + tocRowH, W - 15, by + tocRowH);
+            by += tocRowH;
+        });
+        pdf.setFillColor(26, 111, 196);
+        pdf.rect(15, by, W - 30, 1, 'F');
+        by += 5;
+        pdf.setFillColor(245, 247, 252);
+        pdf.rect(0, H - 14, W, 14, 'F');
+        pdf.setDrawColor(210, 218, 232); pdf.setLineWidth(0.3);
+        pdf.line(0, H - 14, W, H - 14);
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(160, 168, 185);
+        pdf.text('EPIC-AMP  |  Zewail City of Science and Technology  |  BCBU', 10, H - 8);
+        pdf.setTextColor(26, 111, 196);
+        pdf.text('epicamp.sup@gmail.com', 10, H - 3);
+        pdf.setTextColor(160, 168, 185);
+        pdf.text('Page 1', W - 10, H - 5.5, { align:'right' });
+        pdf.addPage();
+        pageHeader('Section 1 — Input Sequence');
+        var y = 26;
+        y = sectionTitle('1.  Input Sequence', y);
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(8.5); pdf.setTextColor(130,138,155);
+        pdf.text('Full amino acid sequence submitted for analysis (' + seq.length + ' residues).', 15, y, { maxWidth: W - 30 });
+        y += 10;
+        var seqLines = pdf.splitTextToSize(seq, W - 44);
+        var seqBoxH = 10 + seqLines.length * 5.5 + 4;
+        pdf.setFillColor(248, 250, 255);
+        pdf.roundedRect(15, y, W - 30, seqBoxH, 3, 3, 'F');
+        pdf.setDrawColor(26, 111, 196); pdf.setLineWidth(0.4);
+        pdf.roundedRect(15, y, W - 30, seqBoxH, 3, 3, 'S');
+        pdf.setFillColor(26, 111, 196);
+        pdf.rect(15, y, 3, seqBoxH, 'F');
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(6.5); pdf.setTextColor(26, 111, 196);
+        pdf.text('SEQUENCE', 22, y + 7);
+        pdf.setFont('courier','normal'); pdf.setFontSize(9); pdf.setTextColor(30, 30, 30);
+        pdf.text(seqLines, 22, y + 13);
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(150,158,175);
+        pdf.text(seq.length + ' amino acids', W - 20, y + seqBoxH - 3, { align:'right' });
+        y += seqBoxH + 10;
+        var statsData = [
+            { k:'Length', v: seq.length + ' aa' },
+            { k:'Hydrophobic', v: (function(){ var h=0; for(var i=0;i<seq.length;i++) if('AVILMFWP'.includes(seq[i]))h++; return Math.round(h/seq.length*100)+'%'; })() },
+            { k:'Cationic (+)', v: (function(){ var c=0; for(var i=0;i<seq.length;i++) if('KRH'.includes(seq[i]))c++; return Math.round(c/seq.length*100)+'%'; })() },
+            { k:'Anionic (−)',  v: (function(){ var a=0; for(var i=0;i<seq.length;i++) if('DE'.includes(seq[i]))a++; return Math.round(a/seq.length*100)+'%'; })() }
+        ];
+        var sw = (W - 30 - 9) / 4;
+        statsData.forEach(function(s, i) {
+            var sx = 15 + i * (sw + 3);
+            pdf.setFillColor(240, 244, 252);
+            pdf.roundedRect(sx, y, sw, 18, 2, 2, 'F');
+            pdf.setDrawColor(210,218,232); pdf.setLineWidth(0.3);
+            pdf.roundedRect(sx, y, sw, 18, 2, 2, 'S');
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(5.5); pdf.setTextColor(150,158,175);
+            pdf.text(s.k.toUpperCase(), sx + sw/2, y + 6, { align:'center' });
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(10); pdf.setTextColor(0,40,90);
+            pdf.text(s.v, sx + sw/2, y + 14, { align:'center' });
+        });
+        y += 25;
+        pdf.addPage();
+        pageHeader('Section 2 — Classification & Confidence');
+        y = 26;
+        y = sectionTitle('2.  Classification & Confidence', y);
+        pdf.autoTable({
+            startY: y,
+            head: [['Metric', 'Value']],
+            body: [
+                ['Classification', label],
+                ['Confidence Score', (conf * 100).toFixed(2) + '%'],
+                ['Confidence Level', conf >= 0.7 ? 'High' : conf >= 0.5 ? 'Moderate' : 'Low'],
+                ['Sequence Length', seq.length + ' amino acids'],
+                ['Prediction Type', isAMP ? 'Antimicrobial Peptide (AMP)' : 'Non-Antimicrobial Peptide']
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [0,40,90], textColor: 255, fontSize: 10, fontStyle: 'bold', cellPadding: 6 },
+            bodyStyles: { fontSize: 10, cellPadding: 5.5 },
+            alternateRowStyles: { fillColor: [244, 247, 253] },
+            didParseCell: function(d) {
+                if (d.section === 'body' && d.column.index === 1) {
+                    if (d.row.raw[0] === 'Classification') {
+                        d.cell.styles.fontStyle = 'bold';
+                        d.cell.styles.textColor = isAMP ? GRN : RED;
+                        d.cell.styles.fontSize = 11;
+                    }
+                    if (d.row.raw[0] === 'Confidence Score') {
+                        d.cell.styles.fontStyle = 'bold';
+                        d.cell.styles.textColor = conf >= 0.7 ? GRN : conf >= 0.5 ? [230,81,0] : RED;
+                    }
+                }
+            },
+            columnStyles: { 0: { cellWidth: 65, fontStyle: 'bold', fillColor: [237, 242, 252] } },
+            margin: { left: 15, right: 15 }
+        });
+        y = pdf.lastAutoTable.finalY + 10;
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.setTextColor(0,40,90);
+        pdf.text('Confidence Indicator', 15, y + 5);
+        y += 9;
+        var barW = W - 30, barH2 = 7;
+        pdf.setFillColor(220, 226, 240);
+        pdf.roundedRect(15, y, barW, barH2, 2, 2, 'F');
+        var fillC = conf >= 0.7 ? GRN : conf >= 0.5 ? [230,81,0] : RED;
+        pdf.setFillColor(fillC[0], fillC[1], fillC[2]);
+        pdf.roundedRect(15, y, Math.max(barW * conf, 3), barH2, 2, 2, 'F');
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(7); pdf.setTextColor(fillC[0], fillC[1], fillC[2]);
+        pdf.text((conf*100).toFixed(1) + '%', 15 + barW * conf + 2, y + 5.5);
+        y += barH2 + 5;
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(6.5); pdf.setTextColor(160,168,185);
+        pdf.text('0%', 15, y + 3);
+        pdf.text('50%', 15 + barW/2, y + 3, { align:'center' });
+        pdf.text('100%', 15 + barW, y + 3, { align:'right' });
+        y += 12;
+        var micRows = Object.entries(micResults).map(function(kv) {
+            return [kv[0], typeof kv[1] === 'number' ? kv[1].toFixed(3) + ' \u00B5M' : String(kv[1])];
+        });
+        if (micRows.length > 0) {
+            pdf.addPage();
+            pageHeader('Section 3 — Predicted MIC Values');
+            y = 26;
+            y = sectionTitle('3.  Predicted MIC Values', y);
+            pdf.setFont('helvetica','normal'); pdf.setFontSize(8.5); pdf.setTextColor(130,138,155);
+            pdf.text('Predicted Minimum Inhibitory Concentration (\u00B5M) for each selected target organism.', 15, y, { maxWidth: W - 30 });
+            y += 12;
+            pdf.autoTable({
+                startY: y,
+                head: [['Target Organism', 'Predicted MIC (\u00B5M)', 'Activity Level']],
+                body: micRows.map(function(r) {
+                    var val = parseFloat(r[1]);
+                    var lvl = val < 4 ? 'High Activity' : val < 16 ? 'Moderate Activity' : 'Low Activity';
+                    return [r[0], r[1], lvl];
+                }),
+                theme: 'striped',
+                headStyles: { fillColor: [0,40,90], textColor: 255, fontSize: 10, fontStyle: 'bold', cellPadding: 6 },
+                bodyStyles: { fontSize: 10, cellPadding: 5.5 },
+                alternateRowStyles: { fillColor: [244, 247, 253] },
+                didParseCell: function(d) {
+                    if (d.section === 'body') {
+                        if (d.column.index === 0) {
+                            d.cell.styles.fontStyle = 'italic';
+                            d.cell.styles.fillColor = [237, 242, 252];
+                        }
+                        if (d.column.index === 1) {
+                            d.cell.styles.halign = 'right';
+                            d.cell.styles.fontStyle = 'bold';
+                            d.cell.styles.textColor = PRIL;
+                        }
+                        if (d.column.index === 2) {
+                            var v = parseFloat(d.row.raw[1]);
+                            d.cell.styles.halign = 'center';
+                            d.cell.styles.fontStyle = 'bold';
+                            d.cell.styles.textColor = v < 4 ? GRN : v < 16 ? [230,81,0] : RED;
+                        }
+                    }
+                },
+                columnStyles: { 0: { cellWidth: 75 }, 1: { cellWidth: 55, halign:'right' }, 2: { halign:'center' } },
+                margin: { left: 15, right: 15 }
+            });
+            y = pdf.lastAutoTable.finalY + 14;
+            pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.setTextColor(0,40,90);
+            pdf.text('MIC Comparison Chart', 15, y + 5);
+            y += 11;
+            var maxMic = Math.max.apply(null, Object.values(micResults).map(Number));
+            var barSlotW = (W - 30) / micRows.length;
+            var maxBarH = 35;
+            micRows.forEach(function(r, i) {
+                var val = parseFloat(r[1]);
+                var bh = maxMic > 0 ? Math.max((val / maxMic) * maxBarH, 2) : 2;
+                var bx = 15 + i * barSlotW + barSlotW * 0.15;
+                var bw2 = barSlotW * 0.7;
+                var barColor = val < 4 ? GRN : val < 16 ? [230,81,0] : RED;
+                pdf.setFillColor(barColor[0], barColor[1], barColor[2]);
+                pdf.roundedRect(bx, y + maxBarH - bh, bw2, bh, 1, 1, 'F');
+                pdf.setFont('helvetica','bold'); pdf.setFontSize(6.5); pdf.setTextColor(barColor[0], barColor[1], barColor[2]);
+                pdf.text(val.toFixed(2), bx + bw2 / 2, y + maxBarH - bh - 2, { align:'center' });
+                pdf.setFont('helvetica','italic'); pdf.setFontSize(6); pdf.setTextColor(80,90,110);
+                pdf.text(r[0], bx + bw2 / 2, y + maxBarH + 5, { align:'center' });
+            });
+            y += maxBarH + 12;
+        }
+        if (limeFeats.length > 0 || shapB64) {
+            pdf.addPage();
+            pageHeader('Section 4 — Feature Explanation (LIME & SHAP)');
+            y = 26;
+            if (limeFeats.length > 0) {
+                y = sectionTitle('4a.  LIME — Local Feature Attribution', y);
+                pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(130,138,155);
+                pdf.text('Features ranked by absolute LIME weight. Positive = favours AMP; Negative = favours Non-AMP.', 15, y, { maxWidth: W - 30 });
+                y += 9;
+                var limeRows = limeFeats.slice().sort(function(a,b){ return Math.abs(b.value)-Math.abs(a.value); })
+                    .map(function(f, i){
+                        return [String(i+1), f.feature, f.value > 0 ? 'AMP (+)' : 'Non-AMP (-)', f.value.toFixed(4)];
+                    });
+                pdf.autoTable({
+                    startY: y,
+                    head: [['#', 'Feature', 'Direction', 'Weight']],
+                    body: limeRows,
+                    theme: 'striped',
+                    headStyles: { fillColor: [0,40,90], textColor: 255, fontSize: 8, fontStyle: 'bold',
+                                  cellPadding: { top:4, bottom:4, left:5, right:5 } },
+                    bodyStyles: { fontSize: 7.5, cellPadding: { top:3, bottom:3, left:5, right:5 } },
+                    alternateRowStyles: { fillColor: [244, 247, 253] },
+                    didParseCell: function(d) {
+                        if (d.section === 'body') {
+                            var v = parseFloat(d.row.raw[3]);
+                            if (d.column.index === 0) { d.cell.styles.halign = 'center'; d.cell.styles.textColor = [150,158,175]; }
+                            if (d.column.index === 2) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.halign = 'center'; d.cell.styles.textColor = v > 0 ? GRN : RED; }
+                            if (d.column.index === 3) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.halign = 'right';  d.cell.styles.textColor = v > 0 ? GRN : RED; }
+                        }
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 8,  fillColor: [237,242,252] },
+                        1: { cellWidth: 88, fillColor: [237,242,252] },
+                        2: { cellWidth: 26, halign:'center' },
+                        3: { cellWidth: 22, halign:'right' }
+                    },
+                    margin: { left: 15, right: 15 }
+                });
+                y = pdf.lastAutoTable.finalY + 12;
+            }
+            if (shapB64) {
+                if (y + 50 > H - 20) { pdf.addPage(); pageHeader('Section 4 — Feature Explanation (LIME & SHAP)'); y = 26; }
+                y = sectionTitle('4b.  SHAP — Global Feature Importance', y);
+                pdf.setFont('helvetica','normal'); pdf.setFontSize(8); pdf.setTextColor(130,138,155);
+                pdf.text('SHAP values show each feature\'s global contribution to AMP/Non-AMP classification across all training samples.', 15, y, { maxWidth: W - 30 });
+                y += 10;
+                var si = new Image(); si.src = shapB64;
+                await new Promise(function(r){ si.onload = r; si.onerror = r; });
+                if (si.naturalWidth) {
+                    var avH = H - y - 20;
+                    var iw = W - 20, ih = iw * (si.naturalHeight / si.naturalWidth);
+                    if (ih > avH) { ih = avH; iw = ih * (si.naturalWidth / si.naturalHeight); }
+                    pdf.addImage(shapB64, 'PNG', (W - iw) / 2, y, iw, ih);
+                }
+            }
+        }
+        var total = pdf.internal.getNumberOfPages();
+        for (var p = 1; p <= total; p++) {
+            pdf.setPage(p);
+            pageFooter(p, total);
+        }
+        return pdf;
+    }
+    </script>
+</body>
+</html>
