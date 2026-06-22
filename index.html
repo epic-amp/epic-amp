@@ -1963,20 +1963,25 @@ kbd {
         });
     });
     /* ── INIT ─────────────────────────────────────────────── */
+    // Note: the page no longer needs an upfront connection to HF.
+    // Predictions are sent to /api/predict (a Vercel serverless proxy) which
+    // forwards to the HF Space server-side, bypassing the browser's CORS check.
     async function initClient() {
         try {
-            clientInstance = await Client.connect(GRADIO_PREDICTION_TARGET_ID);
-            console.log("Gradio prediction client ready.");
+            // Mark the prediction service as ready immediately. The proxy is
+            // hosted on the same origin so there's nothing to "connect" to.
+            clientInstance = { ready: true };
+            console.log("Prediction proxy ready (Vercel API route).");
             if (connDot)  { connDot.classList.remove('connecting'); connDot.classList.add('connected'); }
             if (connLabel) connLabel.textContent = 'Model ready';
             showToast('Prediction service connected', 'success', 2800);
             updateBtnState();
         } catch (err) {
-            console.error("Gradio init failed:", err);
+            console.error("Init failed:", err);
             if (connDot)  { connDot.classList.remove('connecting'); connDot.classList.add('error'); }
             if (connLabel) connLabel.textContent = 'Connection failed';
-            showError('Could not connect to prediction service: ' + err.message);
-            showToast('Connection failed — check your network', 'error', 5000);
+            showError('Could not initialize prediction service: ' + err.message);
+            showToast('Connection failed', 'error', 5000);
             if (predictBtn) predictBtn.disabled = true;
         }
     }
@@ -2284,9 +2289,19 @@ kbd {
         let ampLabel = 'Unknown', ampConf = 0;
         let micData = {}, limeFeatures = [];
         try {
-            const result = await clientInstance.predict("/predict", [seq]);
-            if (!result?.data?.[0] || typeof result.data[0] !== 'string') throw new Error("Unexpected response format.");
-            const raw = result.data[0];
+            // Call the Vercel proxy (same-origin, no CORS).
+            const proxyRes = await fetch("/api/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sequence: seq }),
+            });
+            if (!proxyRes.ok) {
+                const errBody = await proxyRes.json().catch(() => ({}));
+                throw new Error(errBody.error || `Proxy error ${proxyRes.status}`);
+            }
+            const proxyJson = await proxyRes.json();
+            if (typeof proxyJson.result !== 'string') throw new Error("Unexpected response format.");
+            const raw = proxyJson.result;
             console.log("Raw Gradio output:\n", raw);
             const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
             const labelMatch = raw.match(/Prediction:\s*(.+)/i);
