@@ -12,7 +12,9 @@
 // Then the frontend calls:  POST /api/predict   with body { sequence: "..." }
 
 const SPACE_BASE = "https://nonzeroexit-amp-classifier.hf.space";
-const PREDICT_ENDPOINT = "/call/predict"; // Gradio 4+ REST endpoint
+// Gradio 5.x prefixes API routes with /gradio_api (visible in /config as
+// "api_prefix":"/gradio_api"). The named endpoint is "predict".
+const PREDICT_ENDPOINT = "/gradio_api/call/predict";
 
 export const config = {
   // Allow up to 60 seconds — Spaces can be slow on cold start
