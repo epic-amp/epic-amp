@@ -1565,24 +1565,24 @@ kbd {
     <div class="card">
         <div class="card-header">
             <div class="card-header-icon"><i class="fas fa-check-circle"></i></div>
-            <div class="card-header-title">MLP Classifier Performance Metrics</div>
-            <div class="card-header-sub">Architecture: Multi-Layer Perceptron (MLP)</div>
+            <div class="card-header-title">Random Forest Classifier Performance Metrics</div>
+            <div class="card-header-sub">Architecture: Random Forest (sklearn RandomForestClassifier)</div>
         </div>
         <div class="card-body">
-            <p class="prose">Best-trial results from MLP hyperparameter search (trial #49) on AAC + CTD features with RFE selection. Metrics reflect training and validation performance of the final selected model.</p>
+            <p class="prose">The best classification performance was achieved by a Random Forest classifier combined with Boruta feature selection. Metrics below reflect held-out test-set evaluation of the deployed model.</p>
             <table class="metrics-table">
                 <thead><tr><th>Metric</th><th>Value</th><th>Description</th></tr></thead>
                 <tbody>
-                    <tr><td>Training Accuracy</td><td><span class="metric-val">0.9941</span></td><td>Proportion of correctly classified sequences on the training set.</td></tr>
-                    <tr><td>Validation Accuracy</td><td><span class="metric-val">0.9682</span></td><td>Accuracy on the held-out validation split used during model development.</td></tr>
-                    <tr><td>Training Loss</td><td><span class="metric-val">0.0412</span></td><td>Binary cross-entropy loss on the training set (lower is better).</td></tr>
-                    <tr><td>Validation Loss</td><td><span class="metric-val">0.1261</span></td><td>Binary cross-entropy loss on the validation set.</td></tr>
-                    <tr><td>Loss Gap</td><td><span class="metric-val">0.0849</span></td><td>Difference between validation and training loss — small gap indicates limited overfitting.</td></tr>
+                    <tr><td>Accuracy</td><td><span class="metric-val">96.0%</span></td><td>Proportion of correctly classified sequences on the held-out test set.</td></tr>
+                    <tr><td>Recall (Sensitivity)</td><td><span class="metric-val">96.0%</span></td><td>Of all true AMPs, the fraction correctly identified by the model.</td></tr>
+                    <tr><td>F1-Score</td><td><span class="metric-val">95.8%</span></td><td>Harmonic mean of precision and recall; balances false positives and false negatives.</td></tr>
+                    <tr><td>Precision</td><td><span class="metric-val">—</span></td><td>Of sequences predicted AMP, the fraction that were truly AMP (positive predictive value).</td></tr>
+                    <tr><td>ROC-AUC</td><td><span class="metric-val">—</span></td><td>Area under the ROC curve; threshold-independent measure of separability.</td></tr>
                 </tbody>
             </table>
             <p class="prose" style="margin-top:14px;font-size:12px;color:var(--text-muted);">
                 <i class="fas fa-info-circle"></i>
-                <strong>Architecture:</strong> 1 hidden layer · 256 units · ReLU activation · L2 regularisation (1e-5) · Dropout 0.3 · Learning rate 1e-3
+                <strong>Architecture:</strong> Random Forest ensemble · sklearn RandomForestClassifier · Boruta-selected descriptors from the CTD, AAC (single + dipeptide), Geary/Moran/Moreau-Broto autocorrelation, and APAAC feature pool.
             </p>
         </div>
     </div>
@@ -1665,7 +1665,7 @@ kbd {
         <div class="card-body">
             <p class="prose">This web application provides a streamlined interface for classifying amino acid sequences as Antimicrobial Peptides (AMPs) or Non-AMPs, and for predicting the Minimum Inhibitory Concentration (MIC) of potential AMPs against clinically relevant bacteria. AMPs are key components of the innate immune system and represent a promising avenue for combating drug-resistant pathogens.</p>
             <div class="section-h3">Model Selection Criteria</div>
-            <p class="prose">Over 225 combinations of feature extraction and selection methods were evaluated across four machine learning architectures for each target organism. The final classifier is a <strong>Multi-Layer Perceptron (MLP)</strong> trained on AAC + CTD features with RFE-based feature selection. The final models were selected based on:</p>
+            <p class="prose">Over 225 combinations of feature extraction and selection methods were evaluated across four machine learning architectures for each target organism. The final classifier is a <strong>Random Forest</strong> with <strong>Boruta</strong> feature selection, applied to a combined AAC + CTD + Autocorrelation + APAAC descriptor pool. The final models were selected based on:</p>
             <ul class="prose" style="margin-left:18px;">
                 <li><strong>High Accuracy, F1-score, and Validation Accuracy</strong> on a held-out test set.</li>
                 <li><strong>Robustness to sequence length variation</strong> within the 10–100 aa range.</li>
