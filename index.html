@@ -1965,7 +1965,9 @@ kbd {
     /* ── INIT ─────────────────────────────────────────────── */
     async function initClient() {
         try {
-            clientInstance = await Client.connect(GRADIO_PREDICTION_TARGET_ID);
+            clientInstance = await Client.connect(GRADIO_PREDICTION_TARGET_ID, {
+                with_credentials: false
+            });
             console.log("Gradio prediction client ready.");
             if (connDot)  { connDot.classList.remove('connecting'); connDot.classList.add('connected'); }
             if (connLabel) connLabel.textContent = 'Model ready';
@@ -2408,7 +2410,8 @@ kbd {
                         emailStatusResult.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending report to ' + toEmail + '…';
                         try {
                             const mailer = await Client.connect(MAILER_SPACE_ID, {
-                                hf_token: HF_TOKEN
+                                hf_token: HF_TOKEN,
+                                with_credentials: false
                             });
                             const result = await mailer.predict("/send", [
                                 toEmail, pdfB64, ampLabel,
