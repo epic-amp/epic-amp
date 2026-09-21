@@ -2309,18 +2309,73 @@ kbd {
             if (labelMatch) ampLabel = labelMatch[1].trim();
             if (confMatch)  ampConf  = parseFloat(confMatch[1]) / 100;
             let section = null;
+            
             for (const line of lines) {
-                if (/Predicted MIC Values/i.test(line))           { section = 'mic'; continue; }
-                if (/Top Features Influencing Prediction/i.test(line)) { section = 'lime'; continue; }
+            
+                // =========================
+                // Detect LIME section
+                // =========================
+                if (
+                    /^LIME\s+EXPLANATION/i.test(line) ||
+                    /Top features influencing this prediction/i.test(line)
+                ) {
+                    section = 'lime';
+                    continue;
+                }
+            
+                // =========================
+                // Detect MIC section
+                // =========================
+                if (
+                    /^PREDICTED\s+MIC/i.test(line) ||
+                    /Predicted MIC Values/i.test(line)
+                ) {
+                    section = 'mic';
+                    continue;
+                }
+            
+                // =========================
+                // Parse MIC
+                // =========================
                 if (section === 'mic') {
-                    // Only parse MIC lines: organism names never contain numbers alone after the colon
-                    const m = line.match(/^-\s*([^:]+?):\s*([\d.]+)\s*(?:µM|uM|μM)?$/i);
-                    if (m) micData[m[1].trim()] = parseFloat(m[2]);
-                } else if (section === 'lime') {
-                    const m = line.match(/-\s*(.+?)\s*:\s*([+-]?[\d.]+)/i);
-                    if (m) limeFeatures.push({ feature: m[1].trim(), value: parseFloat(m[2]) });
+            
+                    const m = line.match(
+                        /^-?\s*([^:]+?)\s*:\s*([-+]?\d*\.?\d+)\s*(?:µM|uM|μM)?$/i
+                    );
+            
+                    if (m) {
+                        micData[m[1].trim()] = parseFloat(m[2]);
+                    }
+            
+                    continue;
+                }
+            
+                // =========================
+                // Parse LIME
+                // =========================
+                if (section === 'lime') {
+            
+                    const m = line.match(
+                        /^[↑↓]?\s*-?\s*(.*?)\s*:\s*([-+]?\d*\.?\d+)\s*$/i
+                    );
+            
+                    if (m) {
+            
+                        const feature = m[1].trim();
+                        const value = parseFloat(m[2]);
+            
+                        if (feature && Number.isFinite(value)) {
+                            limeFeatures.push({
+                                feature: feature,
+                                value: value
+                            });
+                        }
+                    }
                 }
             }
+            
+            console.log("Parsed MIC:", micData);
+            console.log("Parsed LIME:", limeFeatures);
             const isAMP = ampLabel.toLowerCase().includes('amp') && !ampLabel.toLowerCase().includes('non-amp');
             ampClassOutput.innerHTML = `
                 <div class="class-result-display">
