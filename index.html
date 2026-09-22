@@ -2309,71 +2309,37 @@ kbd {
             if (labelMatch) ampLabel = labelMatch[1].trim();
             if (confMatch)  ampConf  = parseFloat(confMatch[1]) / 100;
             let section = null;
-            
             for (const line of lines) {
-            
-                // =========================
-                // Detect LIME section
-                // =========================
-                if (
-                    /^LIME\s+EXPLANATION/i.test(line) ||
-                    /Top features influencing this prediction/i.test(line)
-                ) {
-                    section = 'lime';
-                    continue;
-                }
-            
-                // =========================
-                // Detect MIC section
-                // =========================
-                if (
-                    /^PREDICTED\s+MIC/i.test(line) ||
-                    /Predicted MIC Values/i.test(line)
-                ) {
-                    section = 'mic';
-                    continue;
-                }
-            
-                // =========================
-                // Parse MIC
-                // =========================
+                // ── Section headers ──────────────────────────────────────
+                // New backend format: "PREDICTED MIC" / "LIME EXPLANATION"
+                // Old backend format: "Predicted MIC Values" / "Top Features Influencing Prediction"
+                if (/^=+$/.test(line)) continue;                      // skip "=====" underlines
+                if (/PREDICTED\s+MIC/i.test(line))      { section = 'mic';  continue; }
+                if (/LIME\s+EXPLANATION/i.test(line))   { section = 'lime'; continue; }
+                if (/AMP\s+CLASSIFICATION/i.test(line)) { section = null;   continue; }
+                if (/Top\s+features?\s+influencing/i.test(line)) { section = 'lime'; continue; }
+                if (/^Prediction:/i.test(line) || /^Confidence:/i.test(line)) continue;
+                if (/MIC prediction skipped/i.test(line)) { section = null; continue; }
+
                 if (section === 'mic') {
-            
-                    const m = line.match(
-                        /^-?\s*([^:]+?)\s*:\s*([-+]?\d*\.?\d+)\s*(?:µM|uM|μM)?$/i
-                    );
-            
-                    if (m) {
-                        micData[m[1].trim()] = parseFloat(m[2]);
-                    }
-            
-                    continue;
-                }
-            
-                // =========================
-                // Parse LIME
-                // =========================
-                if (section === 'lime') {
-            
-                    const m = line.match(
-                        /^[↑↓]?\s*-?\s*(.*?)\s*:\s*([-+]?\d*\.?\d+)\s*$/i
-                    );
-            
-                    if (m) {
-            
-                        const feature = m[1].trim();
-                        const value = parseFloat(m[2]);
-            
-                        if (feature && Number.isFinite(value)) {
-                            limeFeatures.push({
-                                feature: feature,
-                                value: value
-                            });
+                    // Matches "E. coli: 19.26 µM", "- E.coli: 19.26", "K. pneumoniae: 62.72 μM"
+                    const m = line.match(/^[-•↑↓\s]*([A-Za-z][^:]*?):\s*([\d.]+)\s*(?:µM|uM|μM)?\s*$/i);
+                    if (m) micData[m[1].trim()] = parseFloat(m[2]);
+                } else if (section === 'lime') {
+                    // Matches "↓ APAAC13 > 0.56: -0.0398", "- APAAC4 <= 0.27: -0.0100"
+                    // Feature text may itself contain ">", "<", "<=" and numbers,
+                    // so split on the LAST colon to separate feature from weight.
+                    const idx = line.lastIndexOf(':');
+                    if (idx > 0) {
+                        const featRaw = line.slice(0, idx).replace(/^[-•↑↓\s]+/, '').trim();
+                        const valRaw  = line.slice(idx + 1).trim();
+                        const val = parseFloat(valRaw.replace(/[−–—]/g, '-'));  // normalise unicode minus
+                        if (featRaw && !isNaN(val)) {
+                            limeFeatures.push({ feature: featRaw, value: val });
                         }
                     }
                 }
             }
-            
             console.log("Parsed MIC:", micData);
             console.log("Parsed LIME:", limeFeatures);
             const isAMP = ampLabel.toLowerCase().includes('amp') && !ampLabel.toLowerCase().includes('non-amp');
@@ -2403,9 +2369,19 @@ kbd {
             const checkedBacteria = [...micCheckboxes].filter(cb => cb.checked).map(cb => {
                 return cb.parentElement.querySelector('label em')?.textContent?.trim() || cb.value;
             });
-            const micEntries = Object.entries(micData).filter(([bact]) => {
-                return checkedBacteria.some(sel => bact.toLowerCase().replace(/[\s.]/g,'').includes(sel.toLowerCase().replace(/[\s.]/g,'').slice(0,5)));
-            });
+            // If the user ticked specific organisms, show only those.
+            // If none were ticked, show everything the backend returned
+            // (rather than showing nothing at all).
+            const normalise = s => s.toLowerCase().replace(/[\s.]/g, '');
+            const micEntries = checkedBacteria.length === 0
+                ? Object.entries(micData)
+                : Object.entries(micData).filter(([bact]) => {
+                    const b = normalise(bact);
+                    return checkedBacteria.some(sel => {
+                        const s = normalise(sel);
+                        return b.includes(s.slice(0, 5)) || s.includes(b.slice(0, 5));
+                    });
+                });
             if (micEntries.length > 0 && isAMP) {
                 const maxMIC = Math.max(...micEntries.filter(([,v])=>typeof v==='number').map(([,v])=>v), 1);
                 micChartOutput.innerHTML = `<div class="mic-chart-wrap">${micEntries.map(([bact, val]) => {
