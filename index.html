@@ -1971,7 +1971,7 @@ kbd {
             // Mark the prediction service as ready immediately. The proxy is
             // hosted on the same origin so there's nothing to "connect" to.
             clientInstance = { ready: true };
-            console.log("Prediction proxy ready (Vercel API route).");
+            console.log("Prediction proxy ready (Vercel API route). [EPIC-AMP frontend v3 — new parser]");
             if (connDot)  { connDot.classList.remove('connecting'); connDot.classList.add('connected'); }
             if (connLabel) connLabel.textContent = 'Model ready';
             showToast('Prediction service connected', 'success', 2800);
@@ -2323,7 +2323,7 @@ kbd {
 
                 if (section === 'mic') {
                     // Matches "E. coli: 19.26 µM", "- E.coli: 19.26", "K. pneumoniae: 62.72 μM"
-                    const m = line.match(/^[-•↑↓\s]*([A-Za-z][^:]*?):\s*([\d.]+)\s*(?:µM|uM|μM)?\s*$/i);
+                    const m = line.match(/^[^A-Za-z]*([A-Za-z][^:]*?):\s*([\d.]+)/);  // no end anchor: tolerate any unit text
                     if (m) micData[m[1].trim()] = parseFloat(m[2]);
                 } else if (section === 'lime') {
                     // Matches "↓ APAAC13 > 0.56: -0.0398", "- APAAC4 <= 0.27: -0.0100"
