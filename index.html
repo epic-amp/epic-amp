@@ -1524,10 +1524,12 @@ kbd {
 .tool-btn.primary { background: var(--ncbi-blue); color: white; border-color: var(--ncbi-blue); }
 .tool-btn.primary:hover:not(:disabled) { background: var(--ncbi-blue-dark); }
 .neighbor-status { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
-.neighbor-banner { padding: 9px 12px; border-radius: var(--radius-md); font-size: 12.5px; margin-bottom: 12px; display: flex; gap: 8px; align-items: flex-start; }
+.neighbor-banner { padding: 10px 13px; border-radius: var(--radius-md); font-size: 12.5px; line-height: 1.55; margin-bottom: 12px; display: flex; gap: 9px; align-items: flex-start; }
+.neighbor-banner > i { margin-top: 2px; flex-shrink: 0; }
+.banner-head { display: block; }
 .neighbor-banner.exact { background: #e8f5e9; border: 1px solid #a5d6a7; color: #1b5e20; }
 .neighbor-banner.close { background: var(--ncbi-blue-light); border: 1px solid #b6cdee; color: var(--ncbi-blue-dark); }
-.neighbor-banner.far { background: #fff8e1; border: 1px solid #ffe082; color: #7a4a00; }
+.neighbor-banner.novel { background: #fff8e1; border: 1px solid #ffe082; color: #7a4a00; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-md); }
 .neighbor-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 720px; }
 .neighbor-table th { background: var(--bg-panel); color: var(--text-secondary); font-weight: 600; text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; }
@@ -3707,21 +3709,33 @@ kbd {
         return (rec[8] || []).map(([db, id]) =>
             `<a class="db-badge db-${db}" href="${DB_LINKS[db](id)}" target="_blank" rel="noopener" title="${escHtml(db)} ${escHtml(id)}">${escHtml(db)} · ${escHtml(id)}</a>`).join(sep);
     }
-    function dbNames(rec) { return [...new Set((rec[8] || []).map(s => s[0]))]; }
+    function dbNames(rec) { return [...new Set((rec[8] || []).map(x => x[0]))]; }
+    function joinList(items) {
+        return items.length < 2 ? (items[0] || '') : items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
+    }
     function neighborBanner(nb) {
         const top = nb.hits[0];
-        if (!top) return '';
-        const name = top.rec[2];
-        if (nb.mode === 'sequence' && top.rec[1] === nb.seq) {
-            return `<div class="neighbor-banner exact"><i class="fas fa-check-circle" style="margin-top:2px;"></i><div>Exact match: this sequence is a known peptide${name ? ' (' + escHtml(name) + ')' : ''}, listed in ${dbNames(top.rec).join(', ')}.<div style="margin-top:6px;">${entryLinks(top.rec)}</div></div></div>`;
+        if (!top || nb.mode !== 'sequence') return '';
+        const name = top.rec[2], dbs = joinList(dbNames(top.rec)), pct = top.score.toFixed(1);
+        if (top.rec[1] === nb.seq) {
+            return `<div class="neighbor-banner exact"><i class="fas fa-check-circle"></i><div>
+                <strong class="banner-head">This peptide is already published.</strong>
+                Your exact sequence is recorded in ${dbs}${name ? ' as ' + escHtml(name) : ''}, so its measured activity is shown below.
+                <div style="margin-top:6px;">${entryLinks(top.rec)}</div></div></div>`;
         }
-        if (nb.mode === 'sequence' && top.score >= 70) {
-            return `<div class="neighbor-banner close"><i class="fas fa-info-circle" style="margin-top:2px;"></i><div>Close relative found: ${escHtml(name || top.rec[0])} is ${top.score.toFixed(1)}% similar (${dbNames(top.rec).join(', ')}).</div></div>`;
+        if (top.score >= 70) {
+            return `<div class="neighbor-banner close"><i class="fas fa-info-circle"></i><div>
+                <strong class="banner-head">A close relative is already published.</strong>
+                The nearest match, ${escHtml(name || top.rec[0])}, shares <strong>${pct}%</strong> of your sequence (${dbs}). Its reported activity is a useful guide to what to expect.</div></div>`;
         }
-        if (nb.mode === 'sequence') {
-            return `<div class="neighbor-banner far"><i class="fas fa-lightbulb" style="margin-top:2px;"></i><div>No close relative among known peptides (best ${top.score.toFixed(1)}%). This may be a novel sequence; interpret predictions with extra care.</div></div>`;
+        if (top.score >= 45) {
+            return `<div class="neighbor-banner close"><i class="fas fa-info-circle"></i><div>
+                <strong class="banner-head">Only a distant relative is published.</strong>
+                The nearest match shares <strong>${pct}%</strong> of your sequence, so the peptides below are related but not close. Use their data as background rather than as a direct comparison.</div></div>`;
         }
-        return '';
+        return `<div class="neighbor-banner novel"><i class="fas fa-lightbulb"></i><div>
+            <strong class="banner-head">This looks like a new sequence.</strong>
+            Nothing published comes close — the nearest match shares only <strong>${pct}%</strong> of your sequence. That makes it interesting, but the prediction has little published precedent to lean on, so treat it as a starting point for laboratory testing.</div></div>`;
     }
     const FIELD_I = { id:0, seq:1, name:2, activity:3, targets:4, hemo:5, pdb:6, pmid:7, src:8, cyto:9, chem:10, origin:11, family:12, binding:13 };
     const CHEM_LABELS = ['Form', 'N-terminus', 'C-terminus', 'Other modifications', 'Stereochemistry'];
