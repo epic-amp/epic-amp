@@ -54,7 +54,8 @@ def clip(s, n):
     s = re.sub(r'\s+', ' ', s.strip()).strip('; ')
     low = s.lower()
     if low in ('', 'none', 'not found', 'no entry found', 'not included yet', 'not available') \
-            or low.startswith('no hemolysis information'):
+            or re.match(r'^no\s[\w\s-]*(information|data)\s*(found|available|presented)?[.\s]*$', low) \
+            or re.match(r'^no\s[\w\s-]*(found|available)\s*(in the reference\(s\).*)?$', low):
         return ''
     return s if len(s) <= n else s[:n - 1].rstrip() + '…'
 
