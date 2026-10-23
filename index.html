@@ -1364,6 +1364,51 @@ kbd {
 .ctx-chart .ctx-out { font-size: 5px; fill: var(--accent-orange); }
 .ctx-axis-row { display: flex; justify-content: space-between; gap: 8px; font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
 .ctx-note { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.45; }
+.class-facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin-top: 12px; font-size: 11.5px; color: var(--text-muted); }
+.class-facts strong { font-family: var(--font-mono); font-size: 13px; color: var(--text-primary); font-weight: 600; }
+.mic-bar-fill.mic-high { background: linear-gradient(90deg, #2e7d32, #43a047); }
+.mic-bar-fill.mic-moderate { background: linear-gradient(90deg, #ef6c00, #fb8c00); }
+.mic-bar-fill.mic-low { background: linear-gradient(90deg, #c62828, #e53935); }
+.mic-bar-fill.mic-vlow { background: linear-gradient(90deg, #8e24aa, #ab47bc); }
+.mic-word { display: block; font-family: var(--font-sans); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+.mic-word.mic-high { color: var(--accent-green); }
+.mic-word.mic-moderate { color: var(--accent-orange); }
+.mic-word.mic-low { color: var(--accent-red); }
+.mic-word.mic-vlow { color: #8e24aa; }
+.mic-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); }
+.mic-key::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.mic-key.mic-high::before { background: #2e7d32; }
+.mic-key.mic-moderate::before { background: #ef6c00; }
+.mic-key.mic-low::before { background: #c62828; }
+.mic-key.mic-vlow::before { background: #8e24aa; }
+.cross-stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.cross-stat { flex: 1 1 120px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 8px 12px; display: flex; flex-direction: column; }
+.cs-num { font-family: var(--font-mono); font-size: 17px; font-weight: 600; color: var(--ncbi-blue-dark); line-height: 1.15; }
+.cs-cap { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.cross-dbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 12px; }
+.cross-dbs-label { font-weight: 600; color: var(--text-secondary); }
+.db-stat { font-size: 11.5px; padding: 2px 10px; border-radius: 11px; background: var(--bg-panel); color: var(--text-secondary); }
+.db-stat strong { font-family: var(--font-mono); }
+.db-stat.db-DRAMP { background: var(--ncbi-blue-light); color: var(--ncbi-blue-dark); }
+.db-stat.db-dbAMP { background: var(--ncbi-teal-light); color: var(--ncbi-teal); }
+.db-stat.db-UniProt { background: #f3eefa; color: #5b3f8c; }
+.cross-split { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.cross-split .mini-title { margin-bottom: 7px; }
+.match-scroll { overflow-x: auto; }
+.match-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 330px; }
+.match-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 600; padding: 0 8px 5px 0; }
+.match-table td { padding: 6px 8px 6px 0; border-top: 1px solid var(--border); vertical-align: top; }
+.match-table tr.is-query td { background: #f1f8f2; }
+.match-table .db-badges { margin-top: 0; }
+.assay-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.assay-table td { padding: 5px 8px 5px 0; border-top: 1px solid var(--border); vertical-align: top; }
+.assay-table tr:first-child td { border-top: none; }
+.assay-org { color: var(--text-primary); }
+.assay-group { display: block; font-size: 10.5px; color: var(--text-muted); }
+.assay-val { font-family: var(--font-mono); font-size: 11.5px; color: var(--ncbi-blue-dark); white-space: nowrap; }
+.assay-ref { width: 42px; text-align: right; }
+.assay-more { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+@media (max-width: 900px) { .cross-split { grid-template-columns: 1fr; } }
 .nb-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 14px; padding: 8px 11px; margin-bottom: 10px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 12px; color: var(--text-secondary); }
 .nb-filter-label { font-weight: 600; color: var(--text-primary); }
 .nb-filters label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
@@ -2920,6 +2965,7 @@ kbd {
                 }
             }
             const isAMP = ampLabel.toLowerCase().includes('amp') && !ampLabel.toLowerCase().includes('non-amp');
+            const prof = computeProfile(seq, 7, false);
             ampClassOutput.innerHTML = `
                 <div class="class-result-display">
                     <div class="class-label ${isAMP ? 'amp' : 'nonamp'}">${ampLabel}</div>
@@ -2927,6 +2973,12 @@ kbd {
                         <span class="status-badge ${isAMP ? 'green' : 'red'}">
                             <i class="fas fa-${isAMP ? 'check' : 'times'}"></i> ${isAMP ? 'Antimicrobial Peptide' : 'Non-AMP'}
                         </span>
+                    </div>
+                    <div class="class-facts">
+                        <span><strong>${seq.length}</strong> aa</span>
+                        <span><strong>${fmtSigned(prof.charge7, 1)}</strong> charge pH 7</span>
+                        <span><strong>${prof.pI.toFixed(1)}</strong> pI</span>
+                        <span><strong>${prof.muH.toFixed(2)}</strong> <span class="sym">μH</span></span>
                     </div>
                 </div>`;
             const gColor = isAMP ? '#2e7d32' : '#c62828';
@@ -2958,15 +3010,22 @@ kbd {
                 });
             if (micEntries.length > 0 && isAMP) {
                 const maxMIC = Math.max(...micEntries.filter(([,v])=>typeof v==='number').map(([,v])=>v), 1);
+                const micBand = v => v < 4 ? ['high', 'strong'] : v < 16 ? ['moderate', 'moderate'] : v < 64 ? ['low', 'weak'] : ['vlow', 'very weak'];
                 micChartOutput.innerHTML = `<div class="mic-chart-wrap">${micEntries.map(([bact, val]) => {
-                    const pct = typeof val === 'number' ? Math.min((val / maxMIC) * 100, 100) : 0;
-                    const label = typeof val === 'number' ? `${val.toFixed(2)} µM` : String(val);
+                    const num = typeof val === 'number';
+                    const pct = num ? Math.min((val / maxMIC) * 100, 100) : 0;
+                    const [cls, word] = num ? micBand(val) : ['', ''];
                     return `<div class="mic-bar-row">
                         <div class="mic-bar-label"><em>${bact}</em></div>
-                        <div class="mic-bar-track"><div class="mic-bar-fill" style="width:${pct}%"></div></div>
-                        <div class="mic-bar-value">${label}</div>
+                        <div class="mic-bar-track"><div class="mic-bar-fill mic-${cls}" style="width:${pct}%"></div></div>
+                        <div class="mic-bar-value">${num ? val.toFixed(2) + ' µM' : String(val)}${word ? `<span class="mic-word mic-${cls}">${word}</span>` : ''}</div>
                     </div>`;
-                }).join('')}</div>`;
+                }).join('')}</div>
+                <div class="mic-legend">Lower MIC means stronger inhibition ·
+                    <span class="mic-key mic-high">&lt; 4 µM strong</span>
+                    <span class="mic-key mic-moderate">4–16 µM moderate</span>
+                    <span class="mic-key mic-low">16–64 µM weak</span>
+                    <span class="mic-key mic-vlow">&gt; 64 µM very weak</span></div>`;
             } else {
                 micChartOutput.innerHTML = `<div class="mic-empty">${!isAMP ? 'Sequence classified as Non-AMP — MIC prediction not applicable.' : 'No bacteria selected or no MIC predictions returned.'}</div>`;
             }
@@ -3885,6 +3944,63 @@ kbd {
         renderJourney();
         if (activeMainTab === 'structure') buildStructList();
     }
+    function parseAssay(text) {
+        const entries = [];
+        for (const chunk of splitEntries(text)) {
+            const ref = (chunk.match(/\[Ref\.(\d{5,9})\]/) || [])[1] || '';
+            const body = chunk.replace(/\[Ref\.\d{5,9}\]/g, '').trim();
+            const group = (body.match(/^([^:]{0,40}(?:bacteria|Virus|Fungi|Protozoa|Tumor cells|cells)[^:]{0,20}):/i) || [])[1] || '';
+            const rest = group ? body.slice(group.length + 1) : body;
+            for (const part of rest.split(/,(?![^()]*\))/)) {
+                const t = part.trim().replace(/^[;.\s]+|[;.\s]+$/g, '');
+                if (!t) continue;
+                const value = (t.match(/\(([^)]*(?:MIC|IC50|MBC|EC50)[^)]*)\)/i) || [])[1]
+                           || (t.match(/((?:MIC|IC50|MBC|EC50)\s*[=<>~]+\s*[\d.]+\s*[^\s,;)]*)/i) || [])[1] || '';
+                const organism = t.replace(/\([^)]*\)/g, '').trim();
+                if (organism) entries.push({ group: group.trim(), organism, value, ref });
+            }
+        }
+        return entries;
+    }
+    function assayTable(text) {
+        const rows = parseAssay(text);
+        if (!rows.length) return `<p class="detail-text">${linkRefs(text)}</p>`;
+        const shown = rows.slice(0, 6);
+        return `<table class="assay-table"><tbody>
+            ${shown.map(r => `<tr>
+                <td class="assay-org">${escHtml(r.organism)}${r.group ? `<span class="assay-group">${escHtml(r.group)}</span>` : ''}</td>
+                <td class="assay-val">${r.value ? escHtml(r.value) : '<span class="muted">—</span>'}</td>
+                <td class="assay-ref">${r.ref ? `<a class="ref-tag" href="https://pubmed.ncbi.nlm.nih.gov/${r.ref}/" target="_blank" rel="noopener">Ref</a>` : ''}</td>
+            </tr>`).join('')}
+        </tbody></table>
+        ${rows.length > shown.length ? `<div class="assay-more">+ ${rows.length - shown.length} more organisms in the full record</div>` : ''}`;
+    }
+    function dbSummary(hits) {
+        const counts = {};
+        for (const h of hits) for (const db of dbNames(h.rec)) counts[db] = (counts[db] || 0) + 1;
+        const scores = hits.map(h => h.score).sort((a, b) => b - a);
+        const median = scores.length ? scores[Math.floor(scores.length / 2)] : 0;
+        const withMic = hits.filter(h => hitFlags(h.rec).mic).length;
+        const with3d = hits.filter(h => hitFlags(h.rec)['3d']).length;
+        const withTox = hits.filter(h => hitFlags(h.rec).tox).length;
+        return { counts, best: scores[0] || 0, median, withMic, with3d, withTox, n: hits.length };
+    }
+    function crossMatchTable(hits, querySeq) {
+        return `<div class="match-scroll"><table class="match-table">
+            <thead><tr><th>#</th><th>Peptide</th><th>Identity</th><th>Databases</th><th>Evidence</th></tr></thead>
+            <tbody>${hits.slice(0, 5).map((h, i) => {
+                const r = h.rec, f = hitFlags(r);
+                const ev = [f.mic ? '<span class="flag flag-mic">MIC</span>' : '', f['3d'] ? '<span class="flag flag-3d">3D</span>' : '',
+                            f.tox ? '<span class="flag flag-tox">Toxicity</span>' : ''].filter(Boolean).join('');
+                return `<tr${r[1] === querySeq ? ' class="is-query"' : ''}>
+                    <td class="muted">${i + 1}</td>
+                    <td><strong>${escHtml(shortPeptideName(r[2], 46))}</strong></td>
+                    <td><span class="sim-pill${h.score >= 90 ? ' hi' : ''}">${h.score.toFixed(1)}%</span></td>
+                    <td><div class="db-badges">${entryLinks(r)}</div></td>
+                    <td><div class="flags">${ev || '<span class="muted">—</span>'}</div></td>
+                </tr>`;
+            }).join('')}</tbody></table></div>`;
+    }
     async function runCrossCheck(seq) {
         crossCard.style.display = 'block';
         crossBody.innerHTML = '<div class="mic-empty"><i class="fas fa-circle-notch spin"></i> Comparing with known peptides…</div>';
@@ -3897,17 +4013,32 @@ kbd {
             const top = nb.hits[0];
             if (!top) { crossBody.innerHTML = '<div class="mic-empty">No comparison available.</div>'; return; }
             const [, , name, activity, targets] = top.rec;
-            const exact = top.rec[1] === seq;
-            crossBody.innerHTML = neighborBanner(nb) +
-                `<div style="font-size:12.5px;line-height:1.55;">
-                    ${exact ? '' : `<div><strong>Closest peptide:</strong> ${escHtml(name) || 'Unnamed'} · <span class="sim-pill${top.score >= 90 ? ' hi' : ''}">${top.score.toFixed(1)}%</span> <span class="db-badges" style="display:inline-flex;">${entryLinks(top.rec)}</span></div>`}
-                    ${activity ? `<div><strong>Reported activity:</strong> ${escHtml(activity)}</div>` : ''}
-                    ${targets ? `<div class="clamp" title="${escHtml(targets)}"><strong>Reported targets:</strong> ${escHtml(targets)}</div>` : ''}
-                    <div style="margin-top:6px;"><button class="tool-btn" type="button" id="cross-see-all"><i class="fas fa-list"></i> See top 10 neighbors</button></div>
+            const d = dbSummary(nb.hits);
+            const dbChips = ['DRAMP', 'dbAMP', 'UniProt'].filter(k => d.counts[k])
+                .map(k => `<span class="db-stat db-${k}"><strong>${d.counts[k]}</strong> ${k}</span>`).join('');
+            crossBody.innerHTML = neighborBanner(nb) + `
+                <div class="cross-stats">
+                    <div class="cross-stat"><span class="cs-num">${d.best.toFixed(1)}%</span><span class="cs-cap">closest match</span></div>
+                    <div class="cross-stat"><span class="cs-num">${d.median.toFixed(0)}%</span><span class="cs-cap">median of top ${d.n}</span></div>
+                    <div class="cross-stat"><span class="cs-num">${d.withMic}</span><span class="cs-cap">with MIC data</span></div>
+                    <div class="cross-stat"><span class="cs-num">${d.with3d}</span><span class="cs-cap">with 3D structure</span></div>
+                    <div class="cross-stat"><span class="cs-num">${d.withTox}</span><span class="cs-cap">with toxicity data</span></div>
+                </div>
+                <div class="cross-dbs"><span class="cross-dbs-label">Found in</span>${dbChips}
+                    <span class="muted" style="font-size:11.5px;">of the ${d.n} closest peptides</span></div>
+                <div class="cross-split">
+                    <section>
+                        <div class="mini-title">Closest published peptides</div>
+                        ${crossMatchTable(nb.hits, seq)}
+                        <button class="tool-btn" type="button" id="cross-see-all"><i class="fas fa-list"></i> See all ${d.n} with full records</button>
+                    </section>
+                    <section>
+                        <div class="mini-title">Measured activity of the closest peptide</div>
+                        ${activity ? `<div class="act-tags" style="margin-bottom:8px;">${activity.split(/,\s*/).filter(Boolean).map(t => `<span class="act-tag">${escHtml(t)}</span>`).join('')}</div>` : ''}
+                        ${targets ? assayTable(targets) : '<p class="detail-text muted">No assay values recorded for this peptide.</p>'}
+                    </section>
                 </div>`;
-            document.getElementById('cross-see-all')?.addEventListener('click', () => {
-                showMainTab('neighbors');
-            });
+            document.getElementById('cross-see-all')?.addEventListener('click', () => showMainTab('neighbors'));
         } catch (err) {
             crossBody.innerHTML = '<div class="mic-empty">Comparison unavailable (' + escHtml(err.message) + ').</div>';
         }
