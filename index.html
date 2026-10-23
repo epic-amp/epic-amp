@@ -1409,15 +1409,15 @@ kbd {
 .al-key { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 10.5px; margin-left: auto; display: flex; gap: 8px; }
 .detail-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
 .detail-source-note { font-size: 11px; color: var(--text-muted); margin-top: 10px; }
-.structure-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+.structure-layout { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 18px; align-items: start; }
 .mol-panes { display: grid; grid-template-columns: 1fr; gap: 10px; }
 .mol-panes.split { grid-template-columns: 1fr 1fr; }
 .mol-wrap-2 { display: none; }
 .mol-panes.split .mol-wrap-2 { display: block; }
-.mol-panes.split .mol-wrap { height: 430px; }
+.mol-panes.split .mol-wrap { height: clamp(380px, 52vh, 520px); }
 #mol-viewer2 { position: absolute; inset: 0; }
 @media (max-width: 1100px) { .mol-panes.split { grid-template-columns: 1fr; } }
-.mol-wrap { position: relative; height: 470px; border: 1px solid #1f2633; border-radius: var(--radius-md); background: #000; overflow: hidden; }
+.mol-wrap { position: relative; height: clamp(430px, 62vh, 640px); border: 1px solid #1f2633; border-radius: var(--radius-md); background: #000; overflow: hidden; }
 .mol-wrap:fullscreen { height: 100vh; width: 100vw; border: none; border-radius: 0; }
 .mol-wrap.mol-max { position: fixed; inset: 0; z-index: 9999; height: auto; border: none; border-radius: 0; }
 .mol-toolbar { position: absolute; top: 10px; right: 10px; z-index: 6; display: flex; gap: 6px; }
@@ -1448,35 +1448,37 @@ kbd {
 .mol-res.dim { opacity: 0.35; }
 .mol-res.hover { border-color: var(--text-primary); }
 .mol-res.sel { border-color: var(--accent-orange); box-shadow: 0 0 0 1px var(--accent-orange); }
-.struct-side { display: flex; flex-direction: column; gap: 14px; }
-.struct-section { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; }
+.struct-side { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 75px; max-height: calc(100vh - 90px); overflow-y: auto; padding-right: 2px; }
+.struct-section { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; }
 .struct-note { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.45; }
-.struct-list { display: flex; flex-direction: column; gap: 5px; max-height: 260px; overflow-y: auto; }
+.struct-list { display: flex; flex-direction: column; gap: 6px; max-height: 390px; overflow-y: auto; padding-right: 2px; }
 .struct-item {
-    text-align: left; background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px;
-    cursor: pointer; font-family: var(--font-sans); font-size: 12px; color: var(--text-primary); display: flex; flex-direction: column; gap: 2px;
+    text-align: left; background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px;
+    cursor: pointer; font-family: var(--font-sans); font-size: 13px; color: var(--text-primary); display: flex; flex-direction: column; gap: 3px;
 }
 .struct-item:hover { border-color: var(--ncbi-blue-mid); }
 .struct-item.active { border-color: var(--ncbi-blue); box-shadow: 0 0 0 1px var(--ncbi-blue); }
-.struct-item .row1 { display: flex; justify-content: space-between; gap: 6px; font-weight: 600; }
-.struct-item .row2 { font-size: 11px; color: var(--text-muted); }
+.struct-item .row1 { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; line-height: 1.35; }
+.struct-item .row1 > span:first-child { flex: 1; }
+.struct-item .row2 { font-size: 11.5px; color: var(--text-muted); }
 .kind-badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 8px; white-space: nowrap; }
 .kind-badge.exp { background: #e8f5e9; color: var(--accent-green); }
 .kind-badge.pred { background: #fff3e0; color: var(--accent-orange); }
-.struct-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: var(--text-secondary); }
+.struct-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12.5px; color: var(--text-secondary); }
 .struct-controls label { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .struct-controls select { width: 100%; min-width: 0; }
 .struct-controls label.chk { flex-direction: row; align-items: center; gap: 6px; cursor: pointer; }
 .struct-controls select { font-size: 12px; padding: 4px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-white); color: var(--text-primary); font-family: var(--font-sans); }
 .mol-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; font-size: 11px; color: var(--text-secondary); }
 .mol-legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; background: var(--c); }
-.struct-info-row { font-size: 12px; line-height: 1.55; color: var(--text-primary); }
+.struct-info-row { font-size: 12.5px; line-height: 1.6; color: var(--text-primary); }
 .struct-info-row a { color: var(--ncbi-blue); }
 .struct-warn { display: flex; gap: 7px; align-items: flex-start; margin-top: 6px; padding: 7px 9px; border-radius: var(--radius-sm); background: #fff8e1; border: 1px solid #ffe082; color: #6d4c00; font-family: var(--font-sans); font-size: 11.5px; line-height: 1.45; text-transform: none; letter-spacing: 0; font-weight: 400; }
 .struct-warn i { margin-top: 2px; color: var(--accent-orange); }
-@media (max-width: 900px) {
+@media (max-width: 1150px) {
     .structure-layout { grid-template-columns: 1fr; }
-    .mol-wrap { height: 360px; }
+    .struct-side { position: static; max-height: none; overflow: visible; }
+    .mol-wrap { height: 380px; }
 }
 .profile-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 14px; font-size: 12.5px; color: var(--text-secondary); }
 .profile-controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -1494,6 +1496,7 @@ kbd {
 .charge-curve-wrap { margin-top: 12px; background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; }
 .charge-curve-wrap svg { width: 100%; height: auto; display: block; }
 .mini-title { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+.struct-section .mini-title { font-size: 11.5px; color: var(--ncbi-blue-dark); margin-bottom: 8px; }
 .method-note { font-size: 11px; color: var(--text-muted); margin-top: 10px; line-height: 1.5; }
 .wheel-layout { display: grid; grid-template-columns: minmax(0, 480px) 1fr; gap: 18px; align-items: start; }
 .wheel-wrap { position: relative; background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 6px; }
@@ -4014,6 +4017,10 @@ kbd {
         loadStructure(esmItem(seq));
     }
     function esmItem(seq) { return { key: 'esm:' + seq, kind: 'esmfold', id: 'query', seq, name: 'Your sequence', score: 100 }; }
+    function shortPeptideName(name, max) {
+        const base = (name || 'Unnamed').split(/\s*[(;]/)[0].trim() || 'Unnamed';
+        return base.length > max ? base.slice(0, max - 1).trimEnd() + '…' : base;
+    }
     function buildStructList() {
         const seq = profileSeq();
         const nb = lastNeighbors && lastNeighbors.seq === seq ? lastNeighbors : null;
@@ -4028,7 +4035,7 @@ kbd {
         structState.items = items;
         structListEl.innerHTML = items.length ? items.map(it => `
             <button type="button" class="struct-item${structState.meta?.key === it.key ? ' active' : ''}" data-key="${escHtml(it.key)}">
-                <span class="row1"><span>${escHtml((it.name || 'Unnamed').slice(0, 34))}${(it.name || '').length > 34 ? '…' : ''}</span>
+                <span class="row1"><span>${escHtml(shortPeptideName(it.name, 64))}</span>
                     <span class="kind-badge ${it.kind === 'pdb' ? 'exp' : 'pred'}">${it.kind === 'pdb' ? 'Experimental' : 'Predicted'}</span></span>
                 <span class="row2">${it.kind === 'pdb' ? 'PDB ' : 'AlphaFold · UniProt '}${escHtml(it.id)} · peptide ${it.score.toFixed(0)}% similar</span>
             </button>`).join('')
