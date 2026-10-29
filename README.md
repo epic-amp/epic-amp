@@ -18,6 +18,9 @@ The deployed site plus new browser-side peptide analysis tools.
 | Developability | **Developability** step | Haemolysis risk from a model fitted here (AUC 0.744, similarity-aware CV, calibrated), toxicity evidence from similar published peptides, protease cleavage map, selectivity window |
 | Variant design | **Variant Design** step | Single-substitution scan (19 × length) and controlled paired variants, configurable constraints, Pareto ranking over risk/charge/μH/protease sites, trade-off plot |
 | Guided analysis | **Analysis** tab | 6 steps with a progress bar and Back/Next buttons: Sequence → Properties → Helical Wheel → Known Peptides → 3D Structure → Submit & Email |
+| AlphaFold2 / ColabFold hand-off | 3D Structure step | Copies the sequence and opens the official ColabFold notebook; the resulting file is loaded back here. EPIC-AMP never runs AlphaFold2 itself — see `docs/STRUCTURE.md` |
+| Structure file upload | 3D Structure step | Load any .pdb/.cif/.mmcif/.ent model, read locally, with confidence auto-detected from B-factors |
+| Per-residue confidence | 3D Structure step | pLDDT bar chart with AlphaFold bands, plus a short-peptide caveat under 30 residues |
 | 3D structure | Step 5 | Interactive 3Dmol.js viewer: ESMFold prediction of the user's sequence, experimental PDB and AlphaFold structures of similar known peptides. Hover/click residues, styles, colouring (type, pLDDT confidence, rainbow, hydrophobicity), surface, spin, PNG/PDB download |
 | Exports | Sequence bar at the top of each analysis tab | CSV / JSON / FASTA with profile, prediction and neighbors |
 | PDF report | Section 1 | Adds a physicochemical profile table and the top 5 known-peptide neighbors |
@@ -33,6 +36,7 @@ scripts/build_peptides.py ← rebuilds data/peptides.json
 scripts/fit_haemolysis.py ← fits + validates the haemolysis model into that file
 docs/VALIDATION.md        ← leakage, calibration, applicability domain, limits
 docs/EXTERNAL_MODELS.md   ← HemoPI2 / ToxinPred3 assessment and why they are not integrated
+docs/STRUCTURE.md         ← structure module, ColabFold assessment, costs, privacy, limits
 THIRD_PARTY_NOTICES.md    ← licences for every library, dataset and service
 vercel.json, *.png, *.jpg  ← unchanged, copied from the live site
 ```

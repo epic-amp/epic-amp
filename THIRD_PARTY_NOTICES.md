@@ -46,6 +46,19 @@ action. Each call sends only the peptide sequence being analysed.
 | AlphaFold Protein Structure Database (EMBL-EBI) | Predicted structures | CC BY 4.0. Varadi M, *et al.* *Nucleic Acids Research* 2024; 52(D1):D368–D375. doi:10.1093/nar/gkad1011 |
 | ESM Metagenomic Atlas (`api.esmatlas.com`) | ESMFold structure prediction of the visitor's sequence | Public endpoint operated by Meta. **No terms of use are published at the endpoint**; the ESM code itself is MIT. Treated as a best-effort third-party service, and the interface tells the visitor their sequence is sent there. |
 | PubMed, DRAMP, dbAMP, UniProt websites | Outbound links only | No data sent |
+| Google Colab (ColabFold notebook) | Opened in a new tab when the visitor chooses to run AlphaFold2 | The visitor runs it under their own Google account. EPIC-AMP sends nothing; it only opens the link. ColabFold is MIT-licensed; its public MSA server is rate-limited and its wiki asks that large-scale prediction not be sent to it |
+
+## Structure prediction referenced by the interface
+
+| Component | Licence | Attribution |
+|---|---|---|
+| ColabFold | MIT, "Copyright (c) 2021 Sergey Ovchinnikov" | Mirdita M, Schütze K, Moriwaki Y, Heo L, Ovchinnikov S, Steinegger M. ColabFold: making protein folding accessible to all. *Nature Methods* 2022; 19:679–682. doi:10.1038/s41592-022-01488-1 |
+| AlphaFold2 | Code Apache-2.0; **model parameters CC BY 4.0** (stated in the AlphaFold README) | Jumper J, *et al.* Highly accurate protein structure prediction with AlphaFold. *Nature* 2021; 596:583–589. doi:10.1038/s41586-021-03819-2 |
+| ESMFold / ESM | MIT (facebookresearch/esm) | Lin Z, *et al.* Evolutionary-scale prediction of atomic-level protein structure with a language model. *Science* 2023; 379:1123–1130. doi:10.1126/science.ade2574 |
+
+EPIC-AMP does **not** bundle, redistribute or execute AlphaFold2 or ColabFold.
+It copies the sequence and opens the official notebook so the user can run it
+themselves, then reads back the file they produce. See `docs/STRUCTURE.md`.
 
 ## Models
 
