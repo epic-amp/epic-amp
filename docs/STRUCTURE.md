@@ -7,14 +7,13 @@
 | **ESMFold** (unchanged) | `POST https://api.esmatlas.com/foldSequence/v1/pdb/` with the query sequence | pLDDT in the B-factor column, 0–1 scale | Meta's public endpoint |
 | **RCSB PDB** | `files.rcsb.org/download/<ID>.pdb`, falling back to `.cif` | None (experimental) | Browser fetch |
 | **AlphaFold DB** | `alphafold.ebi.ac.uk/api/prediction/<UniProt>` for peptides matched to a UniProt entry | pLDDT, 0–100 scale | Browser fetch |
-| **AlphaFold2 / ColabFold** *(new)* | You run the official notebook, then load the file here | pLDDT read from the B-factor column | Google Colab, by you |
-| **Any other model** *(new)* | Load a `.pdb`, `.cif`, `.mmcif` or `.ent` file | Auto-detected if present | Your machine only |
+| **Any model you produce elsewhere** *(new)* | Load a `.pdb`, `.cif`, `.mmcif` or `.ent` file — AlphaFold2, ColabFold, Boltz, RoseTTAFold or your own | Auto-detected from the B-factor column if present | Your machine only |
 
 All five can be superposed against each other, exported as PDB or PNG, viewed
 side by side, and coloured by confidence, residue type, secondary structure,
 hydrophobicity or rainbow.
 
-## Why AlphaFold2 is not run by this site
+## Why AlphaFold2 is not run by this site, and why the in-app hand-off was removed
 
 This was investigated before any code was written. Findings, with sources:
 
@@ -49,20 +48,23 @@ terms of the CC BY 4.0 license."* Both permit reuse with attribution.
    to send your protein sequences to a third-party server."* For unpublished
    peptides that is the user's decision, not ours to make silently.
 
-**The implemented solution.** EPIC-AMP copies the sequence and opens the
-official ColabFold notebook, where the user runs AlphaFold2 themselves on free
-Colab GPUs under their own Google account and their own judgement about sending
-the sequence out. The resulting file is then loaded back here for visualisation
-and comparison. This adds AlphaFold2 as a real option with no licence
-assumption, no key exposure, no load on anyone's free MSA server, and no
-unannounced transfer of sequence data.
+**What was implemented, then removed.** A hand-off was briefly added that
+copied the sequence and opened the official ColabFold notebook. It was removed
+at the project owner's request: sending users to a separate Google service made
+the tool feel like a pointer to somebody else's software rather than a working
+instrument, and it put the user's unpublished sequence on a third-party MSA
+server by default.
+
+**What remains.** The file loader. If you run AlphaFold2, ColabFold, Boltz or
+anything else yourself, load the resulting file here to view it, read its
+confidence, and superpose it on the ESMFold model or on experimental
+structures. EPIC-AMP makes no claim about models it did not produce.
 
 ## Costs
 
 | Path | Cost |
 |---|---|
 | ESMFold, RCSB, AlphaFold DB | Free, no account |
-| ColabFold hand-off | Free Colab tier; a short peptide takes a few minutes |
 | File upload | Free, entirely local |
 | NVIDIA NIM (not implemented) | API key required, pricing not published on the page checked |
 

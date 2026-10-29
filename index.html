@@ -1936,7 +1936,7 @@ kbd {
 <div class="tab-panel" id="panel-structure">
     <div class="page-intro">
         <h1><i class="fas fa-cube" style="margin-right:7px;color:var(--ncbi-blue);"></i>3D Structure</h1>
-        <p>The best available structure of a similar known peptide opens automatically — experimental (PDB) where one exists, otherwise a predicted AlphaFold model. You can also predict <strong>your own sequence</strong> with ESMFold and superpose the two. Rotate, zoom, hover and click residues to explore.</p>
+        <p>The best available structure of a similar known peptide opens automatically — experimental (PDB) where one exists, otherwise a predicted AlphaFold model. You can also predict <strong>your own sequence</strong> with ESMFold, load a model from another tool, and superpose them. Rotate, zoom, hover and click residues to explore.</p>
     </div>
     <div class="seq-context"></div>
     <div class="card tool-body">
@@ -1986,15 +1986,9 @@ kbd {
                         <button class="tool-btn primary" type="button" id="esm-predict" style="width:100%;justify-content:center;"><i class="fas fa-magic"></i> Show my sequence (ESMFold)</button>
                     </div>
                     <div class="struct-section">
-                        <div class="mini-title">AlphaFold2 via ColabFold</div>
-                        <p class="struct-note" style="margin-top:0;">ColabFold runs AlphaFold2 on free Google Colab GPUs. It cannot be run from this page, so copy your sequence and paste it into the notebook, then bring the result back here.</p>
-                        <div class="tool-btn-row" style="margin-top:8px;">
-                            <button class="tool-btn" type="button" id="cf-copy"><i class="fas fa-copy"></i> Copy sequence</button>
-                            <a class="tool-btn" id="cf-open" href="https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/AlphaFold2.ipynb" target="_blank" rel="noopener"><i class="fas fa-up-right-from-square"></i> Open ColabFold</a>
-                        </div>
-                        <div class="mini-title" style="margin-top:12px;">Load a model you already have</div>
+                        <div class="mini-title">Load a model you already have</div>
                         <input type="file" id="struct-upload" accept=".pdb,.cif,.mmcif,.ent" title="Upload a PDB or mmCIF file">
-                        <div class="struct-note" id="upload-note">Any PDB or mmCIF file — AlphaFold2, ColabFold, Boltz, or your own. The file is read in your browser and never uploaded.</div>
+                        <div class="struct-note" id="upload-note">Any PDB or mmCIF file from a modelling tool you use. The file is read in your browser and never uploaded.</div>
                     </div>
                     <div class="struct-section">
                         <div class="mini-title">Structures of similar known peptides</div>
@@ -2442,21 +2436,11 @@ kbd {
                     <tr><td>Protease cleavage sites</td><td>Published specificity rules, no model</td><td>Deterministic</td></tr>
                     <tr><td>Variant ranking</td><td>Pareto dominance over calculated properties and the haemolysis model</td><td>Transparent; no training involved</td></tr>
                     <tr><td>3D structures</td><td>RCSB PDB (experimental), AlphaFold DB and ESMFold (predicted), plus any model you upload</td><td>Predicted models carry their own pLDDT confidence, shown per residue</td></tr>
-                    <tr><td>AlphaFold2 via ColabFold</td><td>Run by you in Google Colab, then loaded here from the file</td><td>Not run by this site; see the note below</td></tr>
+                    <tr><td>Models you upload</td><td>Produced by whatever tool you choose, read locally in the browser</td><td>EPIC-AMP does not generate or verify them; confidence is read only if the file carries it</td></tr>
                 </tbody>
             </table>
             <p class="prose" style="font-size:12px;color:var(--text-muted);">Full validation, including the similarity-leakage analysis and calibration table, is in <code>docs/VALIDATION.md</code>. Licences for every library, dataset and service are in <code>THIRD_PARTY_NOTICES.md</code>. Tools assessed but deliberately not integrated, with reasons, are in <code>docs/EXTERNAL_MODELS.md</code>.</p>
             <div class="section-h3">3D Structure Sources</div>
-            <div class="cite-box">
-                <div class="cite-label"><i class="fas fa-cube"></i> ColabFold / AlphaFold2 (run by you, optional)</div>
-                <p>Mirdita M, Schütze K, Moriwaki Y, Heo L, Ovchinnikov S, Steinegger M. ColabFold: making protein folding accessible to all. <em>Nature Methods</em>. 2022; 19: 679–682. doi:10.1038/s41592-022-01488-1. AlphaFold2: Jumper J, <em>et al.</em> Highly accurate protein structure prediction with AlphaFold. <em>Nature</em>. 2021; 596: 583–589. doi:10.1038/s41586-021-03819-2.</p>
-                <div class="cite-links">
-                    <a href="https://github.com/sokrypton/ColabFold" target="_blank" rel="noopener"><i class="fas fa-globe"></i> ColabFold (MIT)</a>
-                    <a href="https://doi.org/10.1038/s41592-022-01488-1" target="_blank" rel="noopener"><i class="fas fa-file-alt"></i> Article (DOI)</a>
-                    <a href="https://github.com/google-deepmind/alphafold" target="_blank" rel="noopener"><i class="fas fa-scroll"></i> AlphaFold2 code: Apache-2.0, parameters: CC BY 4.0</a>
-                </div>
-            </div>
-            <p class="prose" style="font-size:12px;color:var(--text-muted);">EPIC-AMP does not run AlphaFold2. It copies your sequence so you can run the official ColabFold notebook yourself, then loads the file you bring back. ColabFold's public MSA server is rate-limited and its documentation asks that large-scale prediction not be sent to it; running it yourself also means your sequence goes to that third-party server, which may matter for unpublished work.</p>
 
             <p class="prose">The <strong>3D Structure</strong> step loads structures directly from these services when you request them:</p>
             <div class="cite-box">
@@ -3985,7 +3969,6 @@ kbd {
     function pdbLinks(pdb) {
         return pdbIds(pdb).map(x => `<a href="https://www.rcsb.org/structure/${x}" target="_blank" rel="noopener">${x}</a>`).join(' ');
     }
-    // Reference tags such as "[Ref.33750821]" in the source text become PubMed links
     function linkRefs(text) {
         return escHtml(text).replace(/\[Ref\.(\d{5,9})\]/g,
             (m, id) => `<a class="ref-tag" href="https://pubmed.ncbi.nlm.nih.gov/${id}/" target="_blank" rel="noopener">Ref. ${id}</a>`);
@@ -4002,7 +3985,6 @@ kbd {
                                : `<p class="detail-text">${linkRefs(text)}</p>`}
         </div>`;
     }
-    // Needleman–Wunsch alignment of the query against the matched peptide
     function alignPair(a, b) {
         const GAP = -2, n = a.length, m = b.length;
         const M = Array.from({ length: n + 1 }, () => new Int32Array(m + 1));
@@ -4648,7 +4630,6 @@ kbd {
         const cen = A => A.reduce((s, v) => [s[0] + v[0] / n, s[1] + v[1] / n, s[2] + v[2] / n], [0, 0, 0]);
         const cp = cen(P), cq = cen(Q);
         const p = P.map(v => v.map((x, i) => x - cp[i])), q = Q.map(v => v.map((x, i) => x - cq[i]));
-        // 4x4 quaternion matrix (Horn's method) — avoids SVD and handles reflections correctly
         let Sxx=0,Sxy=0,Sxz=0,Syx=0,Syy=0,Syz=0,Szx=0,Szy=0,Szz=0;
         for (let i = 0; i < n; i++) {
             const [px,py,pz] = p[i], [qx,qy,qz] = q[i];
@@ -4662,7 +4643,6 @@ kbd {
             [Szx-Sxz,     Sxy+Syx,     -Sxx+Syy-Szz,  Syz+Szy],
             [Sxy-Syx,     Szx+Sxz,      Syz+Szy,     -Sxx-Syy+Szz],
         ];
-        // largest eigenvector by power iteration on a shifted matrix
         let v = [1, 0, 0, 0];
         const shift = 1e3;
         for (let it = 0; it < 500; it++) {
@@ -5008,7 +4988,6 @@ kbd {
         return { seq, charge: p.charge7, gravy: p.gravy, muH: p.muH, pI: p.pI,
                  risk: h.probability * 100, inDomain: h.inDomain, prot, length: seq.length };
     }
-    // Pareto front on (low risk, high charge, high amphipathicity, few protease sites)
     function paretoFront(items) {
         const better = (a, b) => a.risk <= b.risk && a.charge >= b.charge && a.muH >= b.muH && a.prot <= b.prot
             && (a.risk < b.risk || a.charge > b.charge || a.muH > b.muH || a.prot < b.prot);
@@ -5046,8 +5025,6 @@ kbd {
         }
         let variants = out;
         if (document.getElementById('design-mode').value === 'double') {
-            // combine the ten best-scoring singles at distinct positions, as the brief
-            // asks for controlled multi-residue variants rather than a full double scan
             const top = out.filter(passesConstraints).sort((a, b) => (a.risk - b.risk) - (a.charge - b.charge) * 5).slice(0, 10);
             for (let i = 0; i < top.length; i++) {
                 for (let j = i + 1; j < top.length; j++) {
@@ -5142,8 +5119,6 @@ kbd {
         });
     }
     function detectConfidence(text, fmt) {
-        // AlphaFold/ColabFold write pLDDT into the B-factor column; experimental
-        // files carry real B-factors, so only treat 0-100 (or 0-1) spreads as confidence
         const bs = [];
         for (const line of text.split('\n')) {
             if (line.startsWith('ENDMDL')) break;
@@ -5209,11 +5184,6 @@ kbd {
             const f = e.target.files[0];
             if (f) handleStructureUpload(f);
             e.target.value = '';
-        });
-        document.getElementById('cf-copy').addEventListener('click', () => {
-            const seq = profileSeq();
-            if (!seq) return;
-            navigator.clipboard?.writeText(seq).then(() => showToast('Sequence copied — paste it into the ColabFold notebook', 'success', 3200));
         });
         document.getElementById('mol-split').addEventListener('click', () => setSplit(!document.getElementById('mol-panes').classList.contains('split')));
         document.getElementById('esm-predict').addEventListener('click', () => {
