@@ -11,12 +11,10 @@ The deployed site plus new browser-side peptide analysis tools.
 | Known-peptide record view | **Known Peptides** tab | Click any row for the full source record: activity tags, assay text with linked PubMed refs, haemolysis, cytotoxicity, chemistry/modifications, Needleman–Wunsch alignment against the query |
 | Filters | **Known Peptides** tab | MIC data · 3D structure · toxicity · chemistry · database |
 | AMP context percentiles | **Properties** tab | Charge, μH, GRAVY, hydrophobic %, length placed against the distribution of all 28,258 known peptides (precomputed at build time) |
-| Similar known peptides | **Known Peptides** tab | Top 10 of 28,258 unique peptides merged from DRAMP, dbAMP 3.0 and UniProtKB/Swiss-Prot, by edit distance or physicochemical descriptors. Runs in a Web Worker. Links to each database entry, PubMed and RCSB PDB |
+| Similar known peptides | **Known Peptides** tab | Top 10 of 28,258 unique peptides merged from DRAMP, dbAMP 3.0 and UniProtKB/Swiss-Prot, by sequence edit distance. Runs in a Web Worker. Links to each database entry, PubMed and RCSB PDB |
 | Literature cross-check | Results Dashboard | After a prediction, shows the closest known peptide and flags exact matches and novel sequences |
-| Side-by-side view | 3D Structure step | Known structure and your ESMFold model shown in two synced-style viewers |
 | Structure superposition | 3D Structure step | Sequence-guided alignment + Kabsch (Horn quaternion) fit of Cα atoms against your ESMFold model; reports backbone RMSD and coverage |
-| Variant design | **Variant Design** step | Single-substitution scan (19 × length) and controlled paired variants, configurable constraints, Pareto ranking over charge/μH/GRAVY/protease sites, trade-off plot |
-| Guided analysis | **Analysis** tab | 6 steps with a progress bar and Back/Next buttons: Sequence → Properties → Helical Wheel → Known Peptides → 3D Structure → Variant Design → Analyze |
+| Guided analysis | **Analysis** tab | 6 steps with a progress bar and Back/Next buttons: Sequence → Properties → Helical Wheel → Known Peptides → 3D Structure → Analyze |
 | Structure file upload | 3D Structure step | Load any .pdb/.cif/.mmcif/.ent model from another tool, read locally, confidence auto-detected from B-factors, superposable on the ESMFold model |
 | Per-residue confidence | 3D Structure step | pLDDT bar chart with AlphaFold bands, plus a short-peptide caveat under 30 residues |
 | 3D structure | Step 5 | Interactive 3Dmol.js viewer: ESMFold prediction of the user's sequence, experimental PDB and AlphaFold structures of similar known peptides. Hover/click residues, styles, colouring (type, pLDDT confidence, rainbow, hydrophobicity), surface, spin, PNG/PDB download |

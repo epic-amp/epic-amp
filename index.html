@@ -758,10 +758,6 @@ footer {
     border-top: 3px solid var(--ncbi-teal);
 }
 footer a { color: rgba(255,255,255,0.85); }
-.modal-overlay.active {
-    visibility: visible; opacity: 1;
-    transition: opacity 0.25s;
-}
 @media (max-width: 768px) {
     .main-wrap { padding: 16px; }
     .header-inner { height: 52px; padding: 0 16px; }
@@ -1315,26 +1311,6 @@ kbd {
 .mic-key.mic-moderate::before { background: #ef6c00; }
 .mic-key.mic-low::before { background: #c62828; }
 .mic-key.mic-vlow::before { background: #8e24aa; }
-.model-card .chem-table { font-size: 11.5px; width: auto; margin: 8px 12px 10px; }
-.model-card .chem-table th { width: 120px; }
-.design-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; padding: 10px 12px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 10px; font-size: 12px; color: var(--text-secondary); }
-.design-controls label { display: flex; flex-direction: column; gap: 3px; }
-.design-controls label.chk { flex-direction: row; align-items: center; gap: 6px; cursor: pointer; }
-.design-controls input[type="number"] { width: 78px; font-family: var(--font-mono); font-size: 12px; padding: 5px 7px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-white); color: var(--text-primary); }
-.design-controls select { font-size: 12px; padding: 5px 7px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-white); color: var(--text-primary); font-family: var(--font-sans); }
-.pareto-wrap { background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 12px; }
-.pareto-wrap svg { width: 100%; height: 300px; display: block; }
-.pareto-dot { cursor: pointer; }
-.pareto-dot:hover circle { stroke: var(--text-primary); stroke-width: 1.5; }
-.var-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.var-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 600; padding: 0 8px 5px 0; }
-.var-table td { padding: 6px 8px 6px 0; border-top: 1px solid var(--border); vertical-align: middle; }
-.var-table tr.front td { background: #f1f8f2; }
-.var-mut { font-family: var(--font-mono); font-weight: 600; color: var(--ncbi-blue-dark); }
-.var-delta { font-family: var(--font-mono); font-size: 11.5px; }
-.var-delta.up { color: var(--accent-green); }
-.var-delta.down { color: var(--accent-red); }
-.front-badge { font-size: 9.5px; font-weight: 700; background: #e8f5e9; color: var(--accent-green); padding: 1px 6px; border-radius: 8px; }
 .plddt-wrap { margin-top: 12px; background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; }
 .plddt-wrap svg { width: 100%; height: 86px; display: block; }
 .plddt-legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 10.5px; color: var(--text-secondary); margin-top: 4px; }
@@ -1414,13 +1390,6 @@ kbd {
 .al-key { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 10.5px; margin-left: auto; display: flex; gap: 8px; }
 .detail-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
 .structure-layout { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 18px; align-items: start; }
-.mol-panes { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.mol-panes.split { grid-template-columns: 1fr 1fr; }
-.mol-wrap-2 { display: none; }
-.mol-panes.split .mol-wrap-2 { display: block; }
-.mol-panes.split .mol-wrap { height: clamp(380px, 52vh, 520px); }
-#mol-viewer2 { position: absolute; inset: 0; }
-@media (max-width: 1100px) { .mol-panes.split { grid-template-columns: 1fr; } }
 .mol-wrap { position: relative; height: clamp(430px, 62vh, 640px); border: 1px solid #1f2633; border-radius: var(--radius-md); background: #000; overflow: hidden; }
 .mol-wrap:fullscreen { height: 100vh; width: 100vw; border: none; border-radius: 0; }
 .mol-wrap.mol-max { position: fixed; inset: 0; z-index: 9999; height: auto; border: none; border-radius: 0; }
@@ -1431,8 +1400,6 @@ kbd {
 }
 .mol-tool:hover { background: rgba(40,52,74,0.95); border-color: rgba(255,255,255,0.45); }
 .mol-tool.on { background: var(--ncbi-blue); border-color: var(--ncbi-blue-mid); }
-.mol-panes.split .mol-title { font-size: 11px; max-width: calc(100% - 24px); }
-.mol-panes.split .mol-toolbar { top: 38px; }
 .mol-title { position: absolute; top: 12px; left: 12px; z-index: 6; font-size: 12px; color: #dfe5ee; background: rgba(20,26,38,0.7); padding: 4px 10px; border-radius: 12px; max-width: calc(100% - 190px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mol-title:empty { display: none; }
 #mol-viewer { position: absolute; inset: 0; }
@@ -1550,7 +1517,6 @@ kbd {
 .sim-pill { font-family: var(--font-mono); font-weight: 600; font-size: 11.5px; padding: 2px 7px; border-radius: 10px; background: var(--ncbi-blue-light); color: var(--ncbi-blue-dark); white-space: nowrap; }
 .sim-pill.hi { background: #e8f5e9; color: var(--accent-green); }
 .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.export-row .tool-btn { padding: 4px 9px; font-size: 11.5px; }
 #dramp-crosscheck { display: none; margin-bottom: 16px; }
 .cite-box {
     background: var(--bg-panel); border: 1px solid var(--border); border-left: 3px solid var(--ncbi-teal);
@@ -1802,12 +1768,6 @@ kbd {
         </div>
         <div class="card-body">
                 <div class="profile-controls">
-                    <label>Similarity
-                        <select id="nb-mode">
-                            <option value="sequence">Sequence (edit distance)</option>
-                            <option value="descriptor">Physicochemical descriptors</option>
-                        </select>
-                    </label>
                     <button class="tool-btn primary" type="button" id="nb-search"><i class="fas fa-search"></i> Search</button>
                 </div>
                 <div class="nb-filters" id="nb-filters">
@@ -1848,7 +1808,6 @@ kbd {
         <div class="card-body">
             <div class="structure-layout">
                 <div>
-                    <div class="mol-panes" id="mol-panes">
                     <div class="mol-wrap">
                         <div id="mol-viewer"></div>
                         <div class="mol-title" id="mol-title"></div>
@@ -1856,20 +1815,13 @@ kbd {
                             <button type="button" class="mol-tool" id="mol-tb-surface" title="Surface"><i class="fas fa-cloud"></i></button>
                             <button type="button" class="mol-tool" id="mol-tb-spin" title="Spin"><i class="fas fa-sync-alt"></i></button>
                             <button type="button" class="mol-tool" id="mol-tb-reset" title="Reset view"><i class="fas fa-crosshairs"></i></button>
-                                <button type="button" class="mol-tool" id="mol-split" title="Show my peptide side by side"><i class="fas fa-columns"></i></button>
-                            <button type="button" class="mol-tool" id="mol-fs" title="Full screen"><i class="fas fa-expand"></i></button>
+                                <button type="button" class="mol-tool" id="mol-fs" title="Full screen"><i class="fas fa-expand"></i></button>
                         </div>
                         <div class="mol-overlay" id="mol-overlay">
                             <i class="fas fa-cube" style="font-size:28px;color:var(--border-strong);"></i>
                             <div>Choose a structure on the right, or predict your own sequence.</div>
                         </div>
                         <div class="mol-hint"><i class="fas fa-mouse-pointer"></i> Drag to rotate · scroll to zoom · right-drag to move · click a residue to select</div>
-                    </div>
-                    <div class="mol-wrap mol-wrap-2" id="mol-wrap2">
-                        <div id="mol-viewer2"></div>
-                        <div class="mol-title" id="mol-title2">Your sequence</div>
-                        <div class="mol-overlay" id="mol-overlay2"></div>
-                    </div>
                     </div>
                     <div class="plddt-wrap" id="plddt-wrap" style="display:none;">
                         <div class="mini-title" style="display:flex;justify-content:space-between;gap:8px;"><span>Per-residue confidence (pLDDT)</span><span id="plddt-mean" style="text-transform:none;font-weight:500;"></span></div>
@@ -1940,39 +1892,6 @@ kbd {
         </div>
     </div>
     <div class="story-nav" data-story="structure"></div>
-</div>
-<div class="tab-panel" id="panel-design">
-    <div class="page-intro">
-        <h1><i class="fas fa-wand-magic-sparkles" style="margin-right:7px;color:var(--ncbi-blue);"></i>Variant Design</h1>
-        <p>Scan every single-residue substitution of your peptide, recalculate its physicochemical properties exactly, and rank the variants by Pareto optimality over charge, amphipathicity, hydrophobicity and protease susceptibility. Classifier and MIC predictions run only on the variants you choose.</p>
-    </div>
-    <div class="seq-context"></div>
-    <div class="card tool-body">
-        <div class="card-header">
-            <div class="card-header-icon"><i class="fas fa-dna"></i></div>
-            <div class="card-header-title">Mutation Scan</div>
-            <div class="card-header-sub" id="design-count"></div>
-        </div>
-        <div class="card-body">
-            <div class="design-controls">
-                <label>Scan
-                    <select id="design-mode">
-                        <option value="single">Single substitutions (19 × length)</option>
-                        <option value="double">Best singles, then paired (controlled)</option>
-                    </select>
-                </label>
-                <label>Keep charge ≥ <input type="number" id="design-mincharge" step="0.5" value="2"></label>
-                <label>GRAVY ≤ <input type="number" id="design-maxgravy" step="0.1" placeholder="any"></label>
-                <label>Max protease sites <input type="number" id="design-maxprot" step="1" placeholder="any"></label>
-                <label class="chk"><input type="checkbox" id="design-keeplen" checked> Keep length unchanged</label>
-                <button class="tool-btn primary" type="button" id="design-run"><i class="fas fa-play"></i> Run scan</button>
-            </div>
-            <div class="neighbor-status" id="design-status">Choose your constraints, then run the scan. Everything here is computed in the page; no sequence leaves the browser until you ask for a classifier prediction.</div>
-            <div id="design-plot"></div>
-            <div id="design-results"></div>
-        </div>
-    </div>
-    <div class="story-nav" data-story="design"></div>
 </div>
 <div class="tab-panel" id="panel-submit">
     <div class="page-intro">
@@ -2608,7 +2527,6 @@ kbd {
         { id: 'wheel',      label: 'Helical Wheel' },
         { id: 'neighbors',  label: 'Known Peptides' },
         { id: 'structure',  label: '3D Structure' },
-        { id: 'design',     label: 'Variant Design' },
         { id: 'submit',     label: 'Analyze' },
     ];
     const storyIndex = id => STORY.findIndex(s => s.id === id);
@@ -2665,7 +2583,6 @@ kbd {
         }));
         setupProfile();
         setupStructure();
-        setupDesign();
         document.addEventListener('keydown', e => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();
@@ -3247,7 +3164,7 @@ kbd {
     const wheelPalGrid  = document.getElementById('wheel-palette-grid');
     const wheelStats    = document.getElementById('wheel-stats');
     const wheelUndoBtn  = document.getElementById('wheel-undo');
-    const nbMode        = document.getElementById('nb-mode');
+    const nbMode        = { value: 'sequence' };
     const nbSearchBtn   = document.getElementById('nb-search');
     const nbStatus      = document.getElementById('nb-status');
     const nbResults     = document.getElementById('nb-results');
@@ -3273,8 +3190,7 @@ kbd {
         closeWheelPalette();
         if (name === 'neighbors') maybeAutoSearch();
         if (name === 'structure') onStructureTab();
-        else if (name === 'design') document.getElementById('design-count').innerHTML = document.getElementById('design-count').innerHTML || '';
-        else if (structState.viewer) { structState.viewer.spin(false); pane2.viewer?.spin(false); }
+        else structState.viewer?.spin(false);
     }
     function journeySub(id) {
         const seq = profileSeq();
@@ -3284,7 +3200,6 @@ kbd {
             case 'wheel':      return lastProfile ? 'μH ' + lastProfile.muH.toFixed(2) : 'Amphipathicity';
             case 'neighbors':  return lastNeighbors && lastNeighbors.seq === seq && lastNeighbors.hits[0] ? 'Best match ' + lastNeighbors.hits[0].score.toFixed(0) + '%' : 'DRAMP · dbAMP · UniProt';
             case 'structure':  return structState.meta ? structState.meta.kindShort : 'PDB · AlphaFold · ESMFold';
-            case 'design':     return designState.variants.length ? designState.front.size + ' optimal variants' : 'Mutation scan & ranking';
             case 'submit':     return lastPrediction ? lastPrediction.label + ' · ' + (lastPrediction.confidence * 100).toFixed(0) + '%' : 'AMP, MIC & report';
         }
         return '';
@@ -3374,7 +3289,6 @@ kbd {
                 showMainTab('structure');
             }
         });
-        nbMode.addEventListener('change', () => searchNeighbors(profileSeq(), nbMode.value));
         document.getElementById('mic-all').addEventListener('click', e => { e.preventDefault(); micCheckboxes.forEach(cb => { if (!cb.disabled) cb.checked = true; }); });
         document.getElementById('mic-none').addEventListener('click', e => { e.preventDefault(); micCheckboxes.forEach(cb => { cb.checked = false; }); });
         document.addEventListener('click', e => {
@@ -4321,7 +4235,6 @@ kbd {
         v.render();
         if (molSpin.checked) v.spin('y', 0.6);
         molOverlay.classList.add('hidden');
-        if (document.getElementById('mol-panes').classList.contains('split')) loadSecondPane();
         const shortName = it.kind === 'upload' ? it.name : it.kind === 'esmfold' ? 'Your sequence'
             : ((it.name || 'Unnamed').split(/[(;]/)[0].trim() || 'Unnamed').slice(0, 38);
         document.getElementById('mol-title').textContent = shortName + ' · ' + structState.meta.kindShort;
@@ -4455,7 +4368,6 @@ kbd {
     function refreshMolSize() {
         requestAnimationFrame(() => {
             if (structState.viewer) { structState.viewer.resize(); structState.viewer.render(); }
-            if (pane2.viewer) { pane2.viewer.resize(); pane2.viewer.render(); }
         });
     }
     function setFsIcon(on) {
@@ -4600,220 +4512,6 @@ kbd {
             box.innerHTML = `<div class="struct-note" style="color:var(--accent-orange);">Could not superpose: ${escHtml(err.message)}</div>`;
         }
     }
-    const pane2 = { viewer: null, model: null, key: null };
-    function ensureViewer2() {
-        if (pane2.viewer) return pane2.viewer;
-        const el = document.getElementById('mol-viewer2');
-        pane2.viewer = guardViewer($3Dmol.createViewer(el, { backgroundColor: 'black', antialias: true }), el);
-        return pane2.viewer;
-    }
-    function paneOverlay(html) {
-        const el = document.getElementById('mol-overlay2');
-        el.innerHTML = html;
-        el.classList.toggle('hidden', !html);
-    }
-    function styleSecond() {
-        const v = pane2.viewer, m = pane2.model;
-        if (!m) return;
-        const cas = m.selectedAtoms({ atom: 'CA' });
-        m.setColorByFunction({}, a => {
-            const aa = AA3[a.resn];
-            if (!aa) return '#9aa3b5';
-            const mode = molColor.value;
-            if (mode === 'confidence') return plddtColor(a.b <= 1 ? a.b * 100 : a.b);
-            if (mode === 'hydro') return hydroColor(aa);
-            if (mode === 'ss') return a.ss === 'h' ? '#ff3ca0' : a.ss === 's' ? '#ffd23f' : '#c8d0dc';
-            if (mode === 'rainbow') {
-                const i = cas.findIndex(c => c.resi === a.resi && c.chain === a.chain);
-                return hslHex(240 - 240 * (cas.length > 1 ? Math.max(0, i) / (cas.length - 1) : 0), 0.72, 0.5);
-            }
-            return wheelColor(aa);
-        });
-        const st = molStyle.value;
-        v.setStyle({}, st === 'cartoon' ? { cartoon: {} } : st === 'cartoon+sticks' ? { cartoon: {}, stick: { radius: 0.14 } }
-            : st === 'sticks' ? { stick: { radius: 0.2 } } : st === 'spheres' ? { sphere: { scale: 0.85 } } : { line: { linewidth: 2 } });
-        v.render();
-    }
-    async function loadSecondPane() {
-        const seq = profileSeq();
-        if (!seq || !CANON_RE.test(seq)) return;
-        if (pane2.key === seq) { styleSecond(); return; }
-        paneOverlay('<i class="fas fa-circle-notch spin" style="font-size:22px;color:var(--ncbi-blue);"></i><div>Predicting your sequence with ESMFold…</div>');
-        try {
-            let res = structState.cache.get('esm:' + seq);
-            if (!res) { res = await fetchStructure(esmItem(seq)); structState.cache.set('esm:' + seq, res); }
-            if (profileSeq() !== seq) return;
-            const v = ensureViewer2();
-            v.clear();
-            pane2.model = v.addModel(firstModel(res.text), 'pdb');
-            pane2.key = seq;
-            const cas = pane2.model.selectedAtoms({ atom: 'CA' }).filter(a => AA3[a.resn]);
-            const mean = cas.length ? cas.reduce((t, a) => t + (a.b <= 1 ? a.b * 100 : a.b), 0) / cas.length : null;
-            document.getElementById('mol-title2').textContent = 'Your sequence · ESMFold' + (mean ? ' · confidence ' + mean.toFixed(0) : '');
-            styleSecond();
-            v.zoomTo(); v.render();
-            paneOverlay('');
-        } catch (err) {
-            paneOverlay('<i class="fas fa-exclamation-triangle" style="font-size:20px;color:var(--accent-orange);"></i><div>' + escHtml(err.message) + '</div>');
-        }
-    }
-    function setSplit(on) {
-        document.getElementById('mol-panes').classList.toggle('split', on);
-        const btn = document.getElementById('mol-split');
-        btn.classList.toggle('on', on);
-        btn.title = on ? 'Hide side-by-side view' : 'Show my peptide side by side';
-        refreshMolSize();
-        if (on) { ensureViewer2(); loadSecondPane(); }
-    }
-    const PROTEASES = [
-        { key: 'trypsin', name: 'Trypsin', site: (seq, i) => 'KR'.includes(seq[i]) && seq[i + 1] !== 'P' },
-        { key: 'chymo', name: 'Chymotrypsin', site: (seq, i) => 'FYWLM'.includes(seq[i]) && seq[i + 1] !== 'P' },
-        { key: 'pepsin', name: 'Pepsin', site: (seq, i) => 'FLWY'.includes(seq[i]) && seq[i + 1] !== 'P' },
-    ];
-    function proteaseSites(seq) {
-        const out = {};
-        for (const pr of PROTEASES) {
-            out[pr.key] = [];
-            for (let i = 0; i < seq.length - 1; i++) if (pr.site(seq, i)) out[pr.key].push(i);
-        }
-        return out;
-    }
-    const AA20 = 'ACDEFGHIKLMNPQRSTVWY';
-    let designState = { base: null, variants: [], model: null };
-    function variantMetrics(seq) {
-        const p = computeProfile(seq, 7, false);
-        const sites = proteaseSites(seq);
-        const prot = PROTEASES.reduce((t, pr) => t + sites[pr.key].length, 0);
-        return { seq, charge: p.charge7, gravy: p.gravy, muH: p.muH, pI: p.pI,
-                 hydrophobic: p.hydrophobicPct, prot, length: seq.length };
-    }
-    function paretoFront(items) {
-        const better = (a, b) => a.charge >= b.charge && a.muH >= b.muH && a.prot <= b.prot && a.gravy <= b.gravy
-            && (a.charge > b.charge || a.muH > b.muH || a.prot < b.prot || a.gravy < b.gravy);
-        return items.filter(a => !items.some(b => better(b, a)));
-    }
-    function passesConstraints(v) {
-        const minCharge = parseFloat(document.getElementById('design-mincharge').value);
-        const maxGravy = parseFloat(document.getElementById('design-maxgravy').value);
-        const maxProt = parseFloat(document.getElementById('design-maxprot').value);
-        if (!isNaN(minCharge) && v.charge < minCharge) return false;
-        if (!isNaN(maxGravy) && v.gravy > maxGravy) return false;
-        if (!isNaN(maxProt) && v.prot > maxProt) return false;
-        return true;
-    }
-    async function runMutationScan() {
-        const seq = profileSeq();
-        if (seq.length < 5 || !CANON_RE.test(seq)) return;
-        const status = document.getElementById('design-status');
-        status.innerHTML = '<i class="fas fa-circle-notch spin"></i> Scanning substitutions…';
-        const base = variantMetrics(seq);
-        base.label = 'original';
-        const out = [];
-        for (let i = 0; i < seq.length; i++) {
-            for (const aa of AA20) {
-                if (aa === seq[i]) continue;
-                const mutated = seq.slice(0, i) + aa + seq.slice(i + 1);
-                const v = variantMetrics(mutated);
-                v.label = `${seq[i]}${i + 1}${aa}`;
-                v.muts = [{ pos: i, from: seq[i], to: aa }];
-                out.push(v);
-            }
-        }
-        let variants = out;
-        if (document.getElementById('design-mode').value === 'double') {
-            const top = out.filter(passesConstraints).sort((a, b) => (b.charge - a.charge) + (b.muH - a.muH) * 5).slice(0, 10);
-            for (let i = 0; i < top.length; i++) {
-                for (let j = i + 1; j < top.length; j++) {
-                    if (top[i].muts[0].pos === top[j].muts[0].pos) continue;
-                    let m = seq;
-                    for (const mu of [top[i].muts[0], top[j].muts[0]]) m = m.slice(0, mu.pos) + mu.to + m.slice(mu.pos + 1);
-                    const v = variantMetrics(m);
-                    v.label = top[i].label + ' + ' + top[j].label;
-                    v.muts = [top[i].muts[0], top[j].muts[0]];
-                    variants.push(v);
-                }
-            }
-        }
-        const kept = variants.filter(passesConstraints);
-        const front = new Set(paretoFront(kept).map(v => v.seq));
-        kept.sort((a, b) => (front.has(b.seq) - front.has(a.seq)) || (b.charge - a.charge) || (b.muH - a.muH));
-        designState = { base, variants: kept, front };
-        status.innerHTML = `<strong>${variants.length.toLocaleString()}</strong> variants generated, <strong>${kept.length.toLocaleString()}</strong> meet your constraints, <strong>${front.size}</strong> are Pareto-optimal (no other variant is better on every objective at once).`;
-        document.getElementById('design-count').innerHTML = `<span class="kind-badge pred" style="font-size:11.5px;">${kept.length} candidates</span>`;
-        renderParetoPlot(base, kept, front);
-        renderVariantTable(base, kept.slice(0, 25), front);
-    }
-    function renderParetoPlot(base, variants, front) {
-        const W = 760, H = 300, L = 48, R = 14, T = 14, B = 38;
-        const all = [base, ...variants];
-        const xs = all.map(v => v.muH), ys = all.map(v => v.charge);
-        const x0 = Math.min(...xs) - 2, x1 = Math.max(...xs) + 2;
-        const y0 = Math.min(...ys) - 0.5, y1 = Math.max(...ys) + 0.5;
-        const sx = v => L + (v - x0) / Math.max(x1 - x0, 1e-6) * (W - L - R);
-        const sy = v => H - B - (v - y0) / Math.max(y1 - y0, 1e-6) * (H - T - B);
-        const dots = variants.map(v => `<g class="pareto-dot" data-seq="${v.seq}"><title>${escHtml(v.label)} — charge ${fmtSigned(v.charge, 1)}, μH ${v.muH.toFixed(2)}, GRAVY ${fmtSigned(v.gravy, 2)}, ${v.prot} protease sites</title>
-            <circle cx="${sx(v.muH).toFixed(1)}" cy="${sy(v.charge).toFixed(1)}" r="${front.has(v.seq) ? 4.5 : 3}"
-                    fill="${front.has(v.seq) ? 'var(--accent-green)' : '#b8c6dd'}" fill-opacity="${front.has(v.seq) ? 0.95 : 0.6}"/></g>`).join('');
-        const grid = [0, 0.25, 0.5, 0.75, 1].map(f => {
-            const xv = x0 + f * (x1 - x0), yv = y0 + f * (y1 - y0);
-            return `<line x1="${sx(xv)}" x2="${sx(xv)}" y1="${T}" y2="${H - B}" stroke="#eef2f8"/>
-                    <text x="${sx(xv)}" y="${H - B + 14}" text-anchor="middle" font-size="10" fill="#8a94a8">${xv.toFixed(2)}</text>
-                    <line x1="${L}" x2="${W - R}" y1="${sy(yv)}" y2="${sy(yv)}" stroke="#eef2f8"/>
-                    <text x="${L - 6}" y="${sy(yv) + 3}" text-anchor="end" font-size="10" fill="#8a94a8">${fmtSigned(yv, 1)}</text>`;
-        }).join('');
-        document.getElementById('design-plot').innerHTML = `<div class="pareto-wrap">
-            <div class="mini-title">Trade-off map — each dot is one variant</div>
-            <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Hydrophobic moment against net charge for every variant">
-                ${grid}${dots}
-                <g><title>Your original sequence</title>
-                    <circle cx="${sx(base.muH).toFixed(1)}" cy="${sy(base.charge).toFixed(1)}" r="6" fill="none" stroke="var(--ncbi-blue)" stroke-width="2.5"/>
-                    <text x="${sx(base.muH) + 10}" y="${sy(base.charge) - 8}" font-size="11" fill="var(--ncbi-blue)">original</text></g>
-                <text x="${(W + L) / 2}" y="${H - 4}" text-anchor="middle" font-size="11" fill="#4a5778">Hydrophobic moment μH (higher is more amphipathic)</text>
-                <text x="12" y="${(H - B + T) / 2}" font-size="11" fill="#4a5778" transform="rotate(-90 12 ${(H - B + T) / 2})" text-anchor="middle">Net charge at pH 7</text>
-            </svg>
-            <div class="prot-legend" style="margin-top:4px;"><span style="--c:var(--accent-green)">Pareto-optimal</span><span style="--c:#b8c6dd">dominated by another variant</span><span style="--c:var(--ncbi-blue)">your sequence</span></div>
-        </div>`;
-    }
-    function renderVariantTable(base, rows, front) {
-        const delta = (v, b, invert) => {
-            const d = v - b;
-            const cls = Math.abs(d) < 1e-9 ? '' : (invert ? d < 0 : d > 0) ? 'up' : 'down';
-            return `<span class="var-delta ${cls}">${d > 0 ? '+' : ''}${d.toFixed(Math.abs(d) < 1 ? 2 : 1)}</span>`;
-        };
-        document.getElementById('design-results').innerHTML = `<div class="table-scroll"><table class="var-table">
-            <thead><tr><th>Variant</th><th>Sequence</th><th>Charge</th><th><span class="sym">μH</span></th><th>GRAVY</th><th>Protease sites</th><th></th></tr></thead>
-            <tbody>
-                <tr><td class="var-mut">original</td><td class="seq-cell">${escHtml(base.seq)}</td>
-                    <td>${fmtSigned(base.charge, 1)}</td><td>${base.muH.toFixed(2)}</td><td>${fmtSigned(base.gravy, 2)}</td><td>${base.prot}</td><td></td></tr>
-                ${rows.map(v => `<tr class="${front.has(v.seq) ? 'front' : ''}">
-                    <td class="var-mut">${escHtml(v.label)} ${front.has(v.seq) ? '<span class="front-badge">optimal</span>' : ''}</td>
-                    <td class="seq-cell">${escHtml(v.seq)}</td>
-                    <td>${fmtSigned(v.charge, 1)} ${delta(v.charge, base.charge)}</td>
-                    <td>${v.muH.toFixed(2)} ${delta(v.muH, base.muH)}</td>
-                    <td>${fmtSigned(v.gravy, 2)} ${delta(v.gravy, base.gravy, true)}</td>
-                    <td>${v.prot} ${delta(v.prot, base.prot, true)}</td>
-                    <td><button class="tool-btn" type="button" data-usevar="${escHtml(v.seq)}"><i class="fas fa-arrow-right"></i> Use</button></td>
-                </tr>`).join('')}
-            </tbody></table></div>
-            <p class="struct-note">Ranked by Pareto dominance over four objectives: higher net charge, higher amphipathicity, lower hydrophobicity, fewer protease sites. A variant is marked optimal when no other variant beats it on every objective at once. Every value here is calculated exactly from the sequence, not predicted. Antimicrobial activity and MIC are not re-predicted — send a variant to the Sequence step with Use, then run the classifier.</p>`;
-    }
-    function setupDesign() {
-        document.getElementById('design-run').addEventListener('click', runMutationScan);
-        document.getElementById('design-results').addEventListener('click', e => {
-            const b = e.target.closest('[data-usevar]');
-            if (!b) return;
-            sequenceInput.value = b.dataset.usevar;
-            onSeqInput();
-            showMainTab('prediction');
-            showToast('Variant loaded — run the classifier to test it', 'info', 3000);
-        });
-        document.getElementById('design-plot').addEventListener('click', e => {
-            const g = e.target.closest('.pareto-dot');
-            if (!g) return;
-            const v = designState.variants.find(x => x.seq === g.dataset.seq);
-            if (v) renderVariantTable(designState.base, [v, ...designState.variants.filter(x => x !== v).slice(0, 24)], designState.front);
-        });
-    }
     function detectConfidence(text, fmt) {
         const bs = [];
         for (const line of text.split('\n')) {
@@ -4881,7 +4579,6 @@ kbd {
             if (f) handleStructureUpload(f);
             e.target.value = '';
         });
-        document.getElementById('mol-split').addEventListener('click', () => setSplit(!document.getElementById('mol-panes').classList.contains('split')));
         document.getElementById('esm-predict').addEventListener('click', () => {
             const seq = profileSeq();
             if (seq.length < 5 || !CANON_RE.test(seq)) return;
@@ -4893,8 +4590,8 @@ kbd {
             const it = b && structState.items.find(i => i.key === b.dataset.key);
             if (it) loadStructure(it);
         });
-        molStyle.addEventListener('change', () => { applyMolStyle(); styleSecond(); });
-        molColor.addEventListener('change', () => { structState.colorTouched = true; applyMolStyle(); styleSecond(); });
+        molStyle.addEventListener('change', applyMolStyle);
+        molColor.addEventListener('change', () => { structState.colorTouched = true; applyMolStyle(); });
         molSurface.addEventListener('change', () => { applyMolStyle(); syncMolTools(); });
         molSpin.addEventListener('change', () => { structState.viewer?.spin(molSpin.checked ? 'y' : false, 0.6); syncMolTools(); });
         document.getElementById('mol-tb-surface').addEventListener('click', () => { molSurface.checked = !molSurface.checked; molSurface.dispatchEvent(new Event('change')); });
@@ -4928,7 +4625,6 @@ kbd {
         window.addEventListener('resize', () => {
             if (activeMainTab !== 'structure') return;
             if (structState.viewer) { structState.viewer.resize(); structState.viewer.render(); }
-            if (pane2.viewer) { pane2.viewer.resize(); pane2.viewer.render(); }
         });
         renderMolLegend();
     }
