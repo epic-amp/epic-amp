@@ -16,7 +16,7 @@ The deployed site plus new browser-side peptide analysis tools.
 | Side-by-side view | 3D Structure step | Known structure and your ESMFold model shown in two synced-style viewers |
 | Structure superposition | 3D Structure step | Sequence-guided alignment + Kabsch (Horn quaternion) fit of Cα atoms against your ESMFold model; reports backbone RMSD and coverage |
 | Variant design | **Variant Design** step | Single-substitution scan (19 × length) and controlled paired variants, configurable constraints, Pareto ranking over charge/μH/GRAVY/protease sites, trade-off plot |
-| Guided analysis | **Analysis** tab | 6 steps with a progress bar and Back/Next buttons: Sequence → Properties → Helical Wheel → Known Peptides → 3D Structure → Variant Design → Submit & Email |
+| Guided analysis | **Analysis** tab | 6 steps with a progress bar and Back/Next buttons: Sequence → Properties → Helical Wheel → Known Peptides → 3D Structure → Variant Design → Analyze |
 | Structure file upload | 3D Structure step | Load any .pdb/.cif/.mmcif/.ent model from another tool, read locally, confidence auto-detected from B-factors, superposable on the ESMFold model |
 | Per-residue confidence | 3D Structure step | pLDDT bar chart with AlphaFold bands, plus a short-peptide caveat under 30 residues |
 | 3D structure | Step 5 | Interactive 3Dmol.js viewer: ESMFold prediction of the user's sequence, experimental PDB and AlphaFold structures of similar known peptides. Hover/click residues, styles, colouring (type, pLDDT confidence, rainbow, hydrophobicity), surface, spin, PNG/PDB download |

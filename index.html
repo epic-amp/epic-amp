@@ -1976,14 +1976,14 @@ kbd {
 </div>
 <div class="tab-panel" id="panel-submit">
     <div class="page-intro">
-        <h1><i class="fas fa-paper-plane" style="margin-right:7px;color:var(--ncbi-blue);"></i>Submit Analysis</h1>
-        <p>Choose the bacteria for MIC prediction, enter your email to receive the PDF report, and submit. The classifier decides whether the peptide is antimicrobial and, if so, predicts its MIC against each selected organism.</p>
+        <h1><i class="fas fa-vial-circle-check" style="margin-right:7px;color:var(--ncbi-blue);"></i>Analyze</h1>
+        <p>Choose the bacteria for MIC prediction, enter your email to receive the PDF report, then run the analysis. The classifier decides whether the peptide is antimicrobial and, if so, predicts its MIC against each selected organism.</p>
     </div>
     <div class="seq-context"></div>
     <div class="card settings-card">
         <div class="card-header">
             <div class="card-header-icon"><i class="fas fa-sliders-h"></i></div>
-            <div class="card-header-title">Prediction Settings</div>
+            <div class="card-header-title">Analysis Settings</div>
         </div>
         <div class="card-body">
             <div class="settings-grid">
@@ -2022,13 +2022,13 @@ kbd {
                     <div class="settings-title" style="margin-top:16px;"><span class="settings-num">3</span> Run the analysis</div>
                     <div class="btn-row" style="margin-top:0;">
                         <button class="btn btn-primary btn-submit" id="predict-btn" disabled>
-                            <i class="fas fa-play"></i> Submit Analysis
+                            <i class="fas fa-play"></i> Run Analysis
                         </button>
                         <button class="btn btn-secondary" id="clear-btn"><i class="fas fa-times"></i> Clear</button>
                     </div>
                     <div class="submit-meta">
                         <span class="processing-info"><i class="fas fa-clock"></i> <span id="processing-time-info">Est. processing time: ~30 seconds</span></span>
-                        <span class="kbd-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to submit</span>
+                        <span class="kbd-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to run</span>
                     </div>
                 </section>
             </div>
@@ -2051,8 +2051,8 @@ kbd {
                     <span class="step-num">2</span>
                     <i class="fas fa-circle-notch step-icon spin"></i>
                 </div>
-                <div class="step-label">Analyse</div>
-                <div class="step-sublabel" id="step-2-sub">Submit to model</div>
+                <div class="step-label">Analyze</div>
+                <div class="step-sublabel" id="step-2-sub">Send to model</div>
             </div>
             <div class="stepper-step" id="step-3" data-step="3">
                 <div class="step-bubble">
@@ -2402,12 +2402,12 @@ kbd {
                 <li class="step-item">
                     <div class="step-circle">6</div>
                     <div class="step-content">
-                        <h4>Submit &amp; Email</h4>
-                        <p>Tick the bacteria for MIC prediction, enter your email and click <strong>Submit Analysis</strong>, or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> from any step. The Results Dashboard shows the classification, confidence, MIC values and the literature cross-check. The PDF report is ready to download and is also emailed to you.</p>
+                        <h4>Analyze</h4>
+                        <p>Tick the bacteria for MIC prediction, enter your email and click <strong>Run Analysis</strong>, or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> from any step. The Results Dashboard shows the classification, confidence, MIC values and the literature cross-check. The PDF report is ready to download and is also emailed to you.</p>
                     </div>
                 </li>
             </ul>
-            <p class="prose" style="margin-top:10px;font-size:12.5px;color:var(--text-muted);">You can jump between steps at any time using the progress bar. Steps 2–5 are optional. Use <em>skip to Submit</em> to go straight to prediction.</p>
+            <p class="prose" style="margin-top:10px;font-size:12.5px;color:var(--text-muted);">You can jump between steps at any time using the progress bar. Steps 2–6 are optional. Use <em>skip to Analyze</em> to go straight to prediction.</p>
             <div class="section-h3" style="margin-top:20px;">Troubleshooting</div>
             <table class="metrics-table">
                 <thead><tr><th>Issue</th><th>Likely Cause</th><th>Solution</th></tr></thead>
@@ -2609,7 +2609,7 @@ kbd {
         { id: 'neighbors',  label: 'Known Peptides' },
         { id: 'structure',  label: '3D Structure' },
         { id: 'design',     label: 'Variant Design' },
-        { id: 'submit',     label: 'Submit & Email' },
+        { id: 'submit',     label: 'Analyze' },
     ];
     const storyIndex = id => STORY.findIndex(s => s.id === id);
     let currentStory = 'prediction';
@@ -2673,7 +2673,7 @@ kbd {
                     clearTimeout(debounceTimer);
                     debounceTimer = setTimeout(runPrediction, 300);
                     showMainTab('submit');
-                    showToast('Submitting via Ctrl+Enter…', 'info', 1800);
+                    showToast('Running analysis via Ctrl+Enter…', 'info', 1800);
                 }
             }
             if (e.key === 'Escape' && exampleDropdown) {
@@ -2835,7 +2835,7 @@ kbd {
         resetProfile();
         resetDashboard();
         if (countUpIntervalId) { clearInterval(countUpIntervalId); countUpIntervalId = null; }
-        if (predictBtn) { predictBtn.textContent = 'Submit Analysis'; predictBtn.innerHTML = '<i class="fas fa-play"></i> Submit Analysis'; }
+        if (predictBtn) { predictBtn.textContent = 'Run Analysis'; predictBtn.innerHTML = '<i class="fas fa-play"></i> Run Analysis'; }
         updateBtnState();
         setStep(1, 'active', 'Enter a valid sequence to begin.');
         if (step1Sub) step1Sub.textContent = 'Enter sequence';
@@ -3159,7 +3159,7 @@ kbd {
         } finally {
             clearInterval(countUpIntervalId); countUpIntervalId = null;
             processingInfo.textContent = 'Est. processing time: ~30 seconds';
-            predictBtn.innerHTML = '<i class="fas fa-play"></i> Submit Analysis';
+            predictBtn.innerHTML = '<i class="fas fa-play"></i> Run Analysis';
             updateBtnState();
         }
     }
@@ -3307,7 +3307,7 @@ kbd {
             const i = storyIndex(el.dataset.story), prev = STORY[i - 1], next = STORY[i + 1];
             const blocked = !seqOk && i === 0;
             const hint = blocked ? 'Enter a valid sequence (10–100 standard residues) to continue.'
-                : next && next.id !== 'submit' ? `Step ${i + 1} of ${STORY.length} · <a href="#" data-goto="submit" style="color:var(--ncbi-blue);">skip to Submit</a>`
+                : next && next.id !== 'submit' ? `Step ${i + 1} of ${STORY.length} · <a href="#" data-goto="submit" style="color:var(--ncbi-blue);">skip to Analyze</a>`
                 : `Step ${i + 1} of ${STORY.length}`;
             el.innerHTML = (prev ? `<button class="btn btn-secondary" type="button" data-goto="${prev.id}"><i class="fas fa-arrow-left"></i> ${prev.label}</button>` : '<span></span>') +
                 `<span class="story-nav-hint">${hint}</span>` +
@@ -3927,7 +3927,7 @@ kbd {
             ${links ? `<div class="detail-block"><div class="detail-label"><i class="fas fa-link"></i> Structures &amp; references</div><p class="detail-text">${links}</p></div>` : ''}
             <div class="detail-actions">
                 ${pdbIds(rec[FIELD_I.pdb]).length ? `<button class="tool-btn" type="button" data-view3d="${escHtml(pdbIds(rec[FIELD_I.pdb])[0])}"><i class="fas fa-cube"></i> View 3D structure</button>` : ''}
-                <button class="tool-btn" type="button" data-detail-use="${escHtml(seq)}"><i class="fas fa-exchange-alt"></i> Analyse this sequence</button>
+                <button class="tool-btn" type="button" data-detail-use="${escHtml(seq)}"><i class="fas fa-exchange-alt"></i> Analyze this sequence</button>
                 <button class="tool-btn" type="button" data-detail-copy="${escHtml(seq)}"><i class="fas fa-copy"></i> Copy sequence</button>
             </div>`;
         panel.classList.add('open');
