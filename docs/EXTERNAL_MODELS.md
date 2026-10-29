@@ -130,8 +130,18 @@ not to ship one.
 
 ---
 
-## What was built instead
+## Outcome
 
-The haemolysis feature in EPIC-AMP is **our own model**, fitted only on data we
-already redistribute legally, with its validation published in the interface and
-reproducible from `scripts/fit_haemolysis.py`. See `docs/VALIDATION.md`.
+No haemolysis or cytotoxicity prediction ships in EPIC-AMP.
+
+A logistic haemolysis model was fitted here on 499 published peptides with
+measured HC50 values and validated with similarity-aware cross-validation
+(AUC 0.744, 95% CI 0.701–0.788, Platt-calibrated). It was removed at the
+project owner's decision: an AUC in the mid-0.7s ranks candidates but is not
+strong enough to put a safety number in front of a user, and a weak prediction
+beside well-validated ones devalues the whole tool. The model, its fitting
+script and its validation write-up remain in the repository history.
+
+Measured haemolysis and cytotoxicity values from the literature are still shown
+in the Known Peptides records, because those are published measurements rather
+than predictions.

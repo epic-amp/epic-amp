@@ -1315,9 +1315,6 @@ kbd {
 .mic-key.mic-moderate::before { background: #ef6c00; }
 .mic-key.mic-low::before { background: #c62828; }
 .mic-key.mic-vlow::before { background: #8e24aa; }
-.model-card { margin-top: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-panel); }
-.model-card summary { cursor: pointer; padding: 8px 12px; font-size: 11.5px; font-weight: 600; color: var(--ncbi-blue-dark); }
-.model-card[open] summary { border-bottom: 1px solid var(--border); }
 .model-card .chem-table { font-size: 11.5px; width: auto; margin: 8px 12px 10px; }
 .model-card .chem-table th { width: 120px; }
 .design-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; padding: 10px 12px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 10px; font-size: 12px; color: var(--text-secondary); }
@@ -1343,34 +1340,6 @@ kbd {
 .plddt-legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 10.5px; color: var(--text-secondary); margin-top: 4px; }
 .plddt-legend span::before { content: ''; display: inline-block; width: 10px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; background: var(--c); }
 #struct-upload { width: 100%; font-size: 11.5px; margin-top: 2px; }
-.short-caveat { display: flex; gap: 7px; align-items: flex-start; margin-top: 8px; padding: 8px 10px; border-radius: var(--radius-sm); background: #fff8e1; border: 1px solid #ffe082; color: #6d4c00; font-size: 11.5px; line-height: 1.45; }
-.short-caveat i { margin-top: 2px; color: var(--accent-orange); }
-.dev-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin-top: 14px; }
-.risk-meter { height: 12px; border-radius: 6px; background: linear-gradient(90deg, #2e7d32 0%, #f9a825 45%, #e53935 100%); position: relative; margin: 6px 0 4px; }
-.risk-pin { position: absolute; top: -4px; width: 4px; height: 20px; border-radius: 2px; background: var(--text-primary); box-shadow: 0 0 0 2px #fff; transform: translateX(-50%); }
-.risk-scale { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); }
-.factor { display: grid; grid-template-columns: 1fr 72px 58px; gap: 8px; align-items: center; font-size: 12px; padding: 5px 0; border-top: 1px solid var(--border); }
-.factor:first-of-type { border-top: none; }
-.factor-bar { height: 7px; border-radius: 4px; background: var(--bg-panel); overflow: hidden; }
-.factor-bar span { display: block; height: 100%; border-radius: 4px; }
-.factor-val { font-family: var(--font-mono); font-size: 11.5px; text-align: right; color: var(--text-secondary); }
-.factor-name small { display: block; color: var(--text-muted); font-size: 10.5px; }
-.dev-ev-row { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; padding: 6px 0; border-top: 1px solid var(--border); }
-.dev-ev-row:first-child { border-top: none; }
-.dev-ev-count { font-family: var(--font-mono); font-weight: 600; font-size: 14px; min-width: 26px; }
-.prot-seq { display: flex; flex-wrap: wrap; gap: 1px; font-family: var(--font-mono); margin: 8px 0 6px; }
-.prot-res { position: relative; width: 21px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 12px; background: var(--bg-panel); border-radius: 2px; color: var(--text-primary); }
-.prot-res.cut { box-shadow: inset -3px 0 0 var(--accent-red); }
-.prot-res.cut2 { box-shadow: inset -3px 0 0 var(--accent-orange); }
-.prot-res.cut3 { box-shadow: inset -3px 0 0 #8e24aa; }
-.prot-res.cutmulti { box-shadow: inset -3px 0 0 var(--accent-red), inset -6px 0 0 var(--accent-orange); }
-.prot-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 11px; color: var(--text-secondary); }
-.prot-legend span::before { content: ''; display: inline-block; width: 4px; height: 11px; margin-right: 5px; vertical-align: -2px; border-radius: 1px; background: var(--c); }
-.win-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
-.win-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; background: var(--bg-panel); }
-.win-card .wc-org { font-size: 11.5px; color: var(--text-secondary); font-style: italic; }
-.win-card .wc-val { font-family: var(--font-mono); font-size: 16px; font-weight: 600; color: var(--ncbi-blue-dark); }
-.win-card .wc-note { font-size: 10.5px; color: var(--text-muted); }
 @media (max-width: 900px) { .dev-split { grid-template-columns: 1fr; } }
 .cross-stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .cross-stat { flex: 1 1 120px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 8px 12px; display: flex; flex-direction: column; }
@@ -1972,42 +1941,10 @@ kbd {
     </div>
     <div class="story-nav" data-story="structure"></div>
 </div>
-<div class="tab-panel" id="panel-develop">
-    <div class="page-intro">
-        <h1><i class="fas fa-flask-vial" style="margin-right:7px;color:var(--ncbi-blue);"></i>Developability</h1>
-        <p>Activity alone does not make a usable antimicrobial. This step flags the two problems that stop most peptides: toxicity to human cells, and breakdown by proteases in serum.</p>
-    </div>
-    <div class="seq-context"></div>
-    <div class="card tool-body">
-        <div class="card-header">
-            <div class="card-header-icon"><i class="fas fa-shield-heart"></i></div>
-            <div class="card-header-title">Liability Assessment</div>
-            <div class="card-header-sub" id="dev-verdict"></div>
-        </div>
-        <div class="card-body">
-            <div id="dev-tiles" class="prop-grid"></div>
-            <div class="dev-split">
-                <section>
-                    <div class="mini-title">Haemolysis risk — what drives it</div>
-                    <div id="dev-haemo"></div>
-                </section>
-                <section>
-                    <div class="mini-title">Evidence from similar published peptides</div>
-                    <div id="dev-evidence"><p class="struct-note">Searching known peptides…</p></div>
-                </section>
-            </div>
-            <div class="mini-title" style="margin-top:16px;">Protease cleavage map — serum stability</div>
-            <div id="dev-protease"></div>
-            <div class="mini-title" style="margin-top:16px;">Selectivity window</div>
-            <div id="dev-window"></div>
-        </div>
-    </div>
-    <div class="story-nav" data-story="develop"></div>
-</div>
 <div class="tab-panel" id="panel-design">
     <div class="page-intro">
         <h1><i class="fas fa-wand-magic-sparkles" style="margin-right:7px;color:var(--ncbi-blue);"></i>Variant Design</h1>
-        <p>Scan every single-residue substitution of your peptide, score each variant for predicted safety and antimicrobial character, and rank them by Pareto optimality. Classifier and MIC predictions are run only on the variants you choose.</p>
+        <p>Scan every single-residue substitution of your peptide, recalculate its physicochemical properties exactly, and rank the variants by Pareto optimality over charge, amphipathicity, hydrophobicity and protease susceptibility. Classifier and MIC predictions run only on the variants you choose.</p>
     </div>
     <div class="seq-context"></div>
     <div class="card tool-body">
@@ -2025,7 +1962,7 @@ kbd {
                     </select>
                 </label>
                 <label>Keep charge ≥ <input type="number" id="design-mincharge" step="0.5" value="2"></label>
-                <label>Haemolysis risk ≤ <input type="number" id="design-maxrisk" step="5" value="40"> %</label>
+                <label>GRAVY ≤ <input type="number" id="design-maxgravy" step="0.1" placeholder="any"></label>
                 <label>Max protease sites <input type="number" id="design-maxprot" step="1" placeholder="any"></label>
                 <label class="chk"><input type="checkbox" id="design-keeplen" checked> Keep length unchanged</label>
                 <button class="tool-btn primary" type="button" id="design-run"><i class="fas fa-play"></i> Run scan</button>
@@ -2371,9 +2308,7 @@ kbd {
                 <tbody>
                     <tr><td>AMP classifier</td><td>Random Forest with Boruta selection, trained by this group</td><td>96.0% accuracy, 95.8% F1 on a held-out test set (see Model Metrics)</td></tr>
                     <tr><td>MIC regressors</td><td>Per-organism models trained by this group</td><td>R² 0.68–0.74, Pearson 0.83–0.87 (see Model Metrics)</td></tr>
-                    <tr><td>Haemolysis risk</td><td>Logistic model fitted for EPIC-AMP on 499 published peptides with measured haemolysis</td><td>AUC 0.744 (95% CI 0.701–0.788) under similarity-aware cross-validation; Platt-calibrated; applicability domain enforced</td></tr>
-                    <tr><td>Protease cleavage sites</td><td>Published specificity rules, no model</td><td>Deterministic</td></tr>
-                    <tr><td>Variant ranking</td><td>Pareto dominance over calculated properties and the haemolysis model</td><td>Transparent; no training involved</td></tr>
+                                        <tr><td>Variant ranking</td><td>Pareto dominance over properties calculated exactly from the sequence</td><td>Transparent; no model and no training involved</td></tr>
                     <tr><td>3D structures</td><td>RCSB PDB (experimental), AlphaFold DB and ESMFold (predicted), plus any model you upload</td><td>Predicted models carry their own pLDDT confidence, shown per residue</td></tr>
                     <tr><td>Models you upload</td><td>Produced by whatever tool you choose, read locally in the browser</td><td>EPIC-AMP does not generate or verify them; confidence is read only if the file carries it</td></tr>
                 </tbody>
@@ -2673,7 +2608,6 @@ kbd {
         { id: 'wheel',      label: 'Helical Wheel' },
         { id: 'neighbors',  label: 'Known Peptides' },
         { id: 'structure',  label: '3D Structure' },
-        { id: 'develop',    label: 'Developability' },
         { id: 'design',     label: 'Variant Design' },
         { id: 'submit',     label: 'Submit & Email' },
     ];
@@ -3120,7 +3054,6 @@ kbd {
             }
             lastPrediction = { label: ampLabel, confidence: ampConf, mic: isAMP ? micData : {} };
             await runCrossCheck(seq);
-            if (activeMainTab === 'develop') renderDevelopability();
             renderJourney();
             setStep(3, 'active', 'Analysis complete — results below.');
             if (step3Sub) step3Sub.textContent = ampLabel;
@@ -3340,7 +3273,6 @@ kbd {
         closeWheelPalette();
         if (name === 'neighbors') maybeAutoSearch();
         if (name === 'structure') onStructureTab();
-        else if (name === 'develop') renderDevelopability();
         else if (name === 'design') document.getElementById('design-count').innerHTML = document.getElementById('design-count').innerHTML || '';
         else if (structState.viewer) { structState.viewer.spin(false); pane2.viewer?.spin(false); }
     }
@@ -3352,7 +3284,6 @@ kbd {
             case 'wheel':      return lastProfile ? 'μH ' + lastProfile.muH.toFixed(2) : 'Amphipathicity';
             case 'neighbors':  return lastNeighbors && lastNeighbors.seq === seq && lastNeighbors.hits[0] ? 'Best match ' + lastNeighbors.hits[0].score.toFixed(0) + '%' : 'DRAMP · dbAMP · UniProt';
             case 'structure':  return structState.meta ? structState.meta.kindShort : 'PDB · AlphaFold · ESMFold';
-            case 'develop':    return devScore == null ? 'Toxicity & stability' : 'Haemolysis risk ' + riskBand(devScore)[1].toLowerCase();
             case 'design':     return designState.variants.length ? designState.front.size + ' optimal variants' : 'Mutation scan & ranking';
             case 'submit':     return lastPrediction ? lastPrediction.label + ' · ' + (lastPrediction.confidence * 100).toFixed(0) + '%' : 'AMP, MIC & report';
         }
@@ -3560,7 +3491,7 @@ kbd {
         { key: 'muH', label: 'Hydrophobic moment <span class="sym">μH</span>', plain: 'amphipathicity', get: p => p.muH, fmt: v => v.toFixed(2),
           note: 'Higher values mean a more amphipathic helix.' },
         { key: 'gravy', label: 'GRAVY (hydrophobicity)', plain: 'hydrophobicity', get: p => p.gravy, fmt: v => fmtSigned(v, 2),
-          note: 'Overall hydrophobicity; very high values often bring haemolysis.' },
+          note: 'Overall hydrophobicity; strongly hydrophobic peptides are harder to formulate.' },
         { key: 'hydrophobic', label: 'Hydrophobic residues', plain: 'hydrophobic content', get: p => p.hydrophobicPct, fmt: v => v.toFixed(0) + '%',
           note: 'Share of A V I L M F W P.' },
         { key: 'length', label: 'Length', plain: 'length', get: p => p.length, fmt: v => v + ' aa',
@@ -4734,11 +4665,10 @@ kbd {
         refreshMolSize();
         if (on) { ensureViewer2(); loadSecondPane(); }
     }
-    let devScore = null;
     const PROTEASES = [
-        { key: 'trypsin', name: 'Trypsin', cls: 'cut', colour: '#c62828', site: (seq, i) => 'KR'.includes(seq[i]) && seq[i + 1] !== 'P' },
-        { key: 'chymo', name: 'Chymotrypsin', cls: 'cut2', colour: '#e65100', site: (seq, i) => 'FYWLM'.includes(seq[i]) && seq[i + 1] !== 'P' },
-        { key: 'pepsin', name: 'Pepsin', cls: 'cut3', colour: '#8e24aa', site: (seq, i) => 'FLWY'.includes(seq[i]) && seq[i + 1] !== 'P' },
+        { key: 'trypsin', name: 'Trypsin', site: (seq, i) => 'KR'.includes(seq[i]) && seq[i + 1] !== 'P' },
+        { key: 'chymo', name: 'Chymotrypsin', site: (seq, i) => 'FYWLM'.includes(seq[i]) && seq[i + 1] !== 'P' },
+        { key: 'pepsin', name: 'Pepsin', site: (seq, i) => 'FLWY'.includes(seq[i]) && seq[i + 1] !== 'P' },
     ];
     function proteaseSites(seq) {
         const out = {};
@@ -4748,196 +4678,26 @@ kbd {
         }
         return out;
     }
-    function windowMoment(seq, window = 11) {
-        let best = 0;
-        const n = Math.min(window, seq.length);
-        for (let s = 0; s + n <= seq.length; s++) {
-            let x = 0, y = 0;
-            for (let i = 0; i < n; i++) {
-                const h = EISEN[seq[s + i]] || 0, t = i * 100 * Math.PI / 180;
-                x += h * Math.cos(t); y += h * Math.sin(t);
-            }
-            best = Math.max(best, Math.hypot(x, y) / n);
-        }
-        return best;
-    }
-    function haemolysisFeatures(seq) {
-        const n = seq.length, frac = set => [...seq].filter(c => set.includes(c)).length / n;
-        let maxwin = -Infinity;
-        for (let i = 0; i < Math.max(1, n - 8); i++) {
-            maxwin = Math.max(maxwin, [...seq.slice(i, i + 9)].reduce((t, c) => t + (KD[c] || 0), 0) / 9);
-        }
-        return [n / 50, netCharge(seq, 7, false) / 5, gravy(seq), windowMoment(seq),
-                frac('FWY'), frac('W'), frac('AVILMFW'), maxwin / 4.5, frac('K'), frac('R')];
-    }
-    const HAEMO_LABELS = ['Length', 'Net charge at pH 7', 'Hydrophobicity (GRAVY)', 'Amphipathicity of best helical window',
-                          'Aromatic residues', 'Tryptophan content', 'Hydrophobic residues', 'Most hydrophobic 9-residue window',
-                          'Lysine content', 'Arginine content'];
-    function haemolysisScore(seq, model) {
-        const x = haemolysisFeatures(seq);
-        const z = x.map((v, j) => (v - model.mean[j]) / model.std[j]);
-        const terms = z.map((v, j) => v * model.weights[j]);
-        const raw = 1 / (1 + Math.exp(-(terms.reduce((a, c) => a + c, 0) + model.bias)));
-        const [pa, pb] = model.platt || [1, 0];
-        const probability = 1 / (1 + Math.exp(-(pa * Math.log(Math.max(raw, 1e-6) / Math.max(1 - raw, 1e-6)) + pb)));
-        let inDomain = true, distance = null;
-        if (model.ad_reference) {
-            const ds = model.ad_reference.map(t => Math.hypot(...z.map((v, j) => v - t[j]))).sort((a, b) => a - b);
-            distance = ds.slice(0, 5).reduce((a, c) => a + c, 0) / 5;
-            inDomain = distance <= model.ad_threshold;
-        }
-        return { probability, x, terms, distance, inDomain };
-    }
-    const TOX_NONE = /\b(no|non-?|not|without|lack(ing)?|free of|absence of)\b[^.;]{0,40}\b(h(a)?emoly|cytotox|toxic)/i;
-    const TOX_QUANT = /\b(HC50|HD50|LC50|MHC|EC50|IC50|LD50)\b/i;
-    const TOX_LOW = /\b(low|weak|minimal|slight|negligible|little|mild)\b/i;
-    function toxVerdict(text) {
-        if (!text) return 'unknown';
-        if (TOX_NONE.test(text)) return 'none';
-        if (TOX_QUANT.test(text)) return 'measured';
-        if (TOX_LOW.test(text)) return 'low';
-        return 'reported';
-    }
-    function riskBand(score) {
-        return score < 34 ? ['low', 'Low', 'var(--accent-green)']
-             : score < 62 ? ['moderate', 'Moderate', 'var(--accent-orange)']
-             : ['high', 'High', 'var(--accent-red)'];
-    }
-    function renderDevelopability() {
-        const seq = profileSeq();
-        if (seq.length < 5 || !CANON_RE.test(seq)) return;
-        const p = computeProfile(seq, 7, false);
-        const sites = proteaseSites(seq);
-        const total = PROTEASES.reduce((t, pr) => t + sites[pr.key].length, 0);
-        const halfHint = total === 0 ? 'No canonical cleavage sites — unusually stable for a peptide'
-            : total <= 3 ? 'Few cleavage sites — reasonable serum stability expected'
-            : 'Many cleavage sites — a short serum half-life is likely without modification';
-        const protHtml = [...seq].map((c, i) => {
-            const hits = PROTEASES.filter(pr => sites[pr.key].includes(i));
-            const cl = hits.length > 1 ? 'cutmulti' : hits.length ? hits[0].cls : '';
-            return `<span class="prot-res ${cl}" title="${hits.length ? 'Cleaved after ' + c + (i + 1) + ' by ' + hits.map(h => h.name).join(', ') : c + (i + 1)}">${c}</span>`;
-        }).join('');
-        document.getElementById('dev-protease').innerHTML = `
-            <div class="prot-seq">${protHtml}</div>
-            <div class="prot-legend">${PROTEASES.map(pr => `<span style="--c:${pr.colour}">${pr.name} — ${sites[pr.key].length} site${sites[pr.key].length === 1 ? '' : 's'}</span>`).join('')}</div>
-            <p class="struct-note">${halfHint}. Common fixes: D-amino acids at cut sites, N-terminal acetylation, C-terminal amidation, or cyclisation.</p>`;
-        renderHaemolysis(seq, p, total);
-        renderToxEvidence(seq);
-    }
-    async function renderHaemolysis(seq, p, totalSites) {
-        let model;
-        try { model = (await getReferenceBlob()).haemolysis_model; }
-        catch { document.getElementById('dev-haemo').innerHTML = '<p class="struct-note">Risk model unavailable.</p>'; return; }
-        if (profileSeq() !== seq || !model) return;
-        const { probability, x, terms, distance, inDomain } = haemolysisScore(seq, model);
-        const score = Math.round(probability * 100);
-        devScore = score;
-        const [cls, word, colour] = riskBand(score);
-        document.getElementById('dev-verdict').innerHTML =
-            `<span class="kind-badge ${cls === 'low' ? 'exp' : 'pred'}" style="font-size:11.5px;">Haemolysis risk: ${word}</span>`;
-        document.getElementById('dev-tiles').innerHTML = [
-            ['Haemolysis risk', `<span style="color:${colour}">${score}%</span>`, word + ' — modelled probability, not a measurement'],
-            ['Protease sites', String(totalSites), 'Trypsin, chymotrypsin and pepsin combined'],
-            ['Net charge pH 7', fmtSigned(p.charge7, 1), 'Selectivity for bacterial membranes'],
-            ['<span class="sym">μH</span> · GRAVY', `${p.muH.toFixed(2)} · ${fmtSigned(p.gravy, 2)}`, 'Amphipathicity and hydrophobicity'],
-        ].map(([l, v, h]) => `<div class="prop-tile"><div class="prop-tile-label">${l}</div><div class="prop-tile-value">${v}</div><div class="prop-tile-hint">${h}</div></div>`).join('');
-        const drivers = terms.map((t, j) => ({ t, j })).sort((a, b) => Math.abs(b.t) - Math.abs(a.t)).slice(0, 5);
-        const biggest = Math.max(...drivers.map(d => Math.abs(d.t)), 0.001);
-        const shown = [seq.length + ' aa', fmtSigned(p.charge7, 1), fmtSigned(p.gravy, 2), windowMoment(seq).toFixed(2),
-                       (x[4] * 100).toFixed(0) + '%', (x[5] * 100).toFixed(0) + '%', (x[6] * 100).toFixed(0) + '%',
-                       (x[7] * 4.5).toFixed(2), (x[8] * 100).toFixed(0) + '%', (x[9] * 100).toFixed(0) + '%'];
-        document.getElementById('dev-haemo').innerHTML = `
-            <div class="risk-meter"><span class="risk-pin" style="left:${score}%"></span></div>
-            <div class="risk-scale"><span>Low risk</span><span>Moderate</span><span>High risk</span></div>
-            <p class="struct-note" style="margin:8px 0 4px;">What pushes this sequence up or down, strongest first:</p>
-            ${drivers.map(d => `
-                <div class="factor">
-                    <div class="factor-name">${HAEMO_LABELS[d.j]}<small>${d.t > 0 ? 'raises' : 'lowers'} the risk</small></div>
-                    <div class="factor-bar"><span style="width:${(Math.abs(d.t) / biggest * 100).toFixed(0)}%;background:${d.t > 0 ? 'var(--accent-red)' : 'var(--accent-green)'}"></span></div>
-                    <div class="factor-val">${shown[d.j]}</div>
-                </div>`).join('')}
-            ${inDomain ? '' : `<div class="struct-warn"><i class="fas fa-exclamation-triangle"></i><div>This sequence sits outside the chemical space the model was fitted on (distance ${distance.toFixed(2)} against a ${model.ad_threshold} limit), so the number is unreliable here.</div></div>`}
-            <details class="model-card">
-                <summary>How this number is produced</summary>
-                <table class="chem-table"><tbody>
-                    <tr><th>Model</th><td>${escHtml(model.name || 'haemolysis risk')} — ${escHtml(model.type || 'logistic regression')}, built for EPIC-AMP</td></tr>
-                    <tr><th>Training data</th><td>${model.labelled} published peptides with measured haemolysis (${model.positives} haemolytic, base rate ${(model.base_rate * 100).toFixed(0)}%), taken from the DRAMP, dbAMP and UniProt records in this site</td></tr>
-                    <tr><th>Labels</th><td>${escHtml(model.labels || '')}</td></tr>
-                    <tr><th>Validation</th><td>Five-fold cross-validation with whole ${(model.identity_cutoff * 100).toFixed(0)}%-identity clusters held out (${model.clusters} clusters), so no test peptide has a near-duplicate in training</td></tr>
-                    <tr><th>Performance</th><td><strong>AUC ${model.auc_cluster_cv}</strong> (95% CI ${model.auc_ci95[0]}–${model.auc_ci95[1]}). A random split scores ${model.auc_random_cv}; that gap is similarity leakage rather than real skill.</td></tr>
-                    <tr><th>Calibration</th><td>Platt-scaled on out-of-fold predictions, Brier ${model.brier}. ${model.reliability.map(b => `${b.bin}: predicted ${(b.predicted * 100).toFixed(0)}% → observed ${(b.observed * 100).toFixed(0)}% (n=${b.n})`).join('; ')}</td></tr>
-                    <tr><th>Limitations</th><td>${escHtml(model.limitations || '')}</td></tr>
-                </tbody></table>
-            </details>`;
-        renderSelectivity(score);
-        renderJourney();
-    }
-    function renderSelectivity(score) {
-        const mic = lastPrediction && lastPrediction.mic ? Object.entries(lastPrediction.mic) : [];
-        const box = document.getElementById('dev-window');
-        if (!mic.length) {
-            box.innerHTML = '<p class="struct-note">Run the prediction in the final step to compare predicted MIC values against this risk score.</p>';
-            return;
-        }
-        const hc50 = Math.round(10 * Math.pow(10, 2.6 - score / 42));
-        box.innerHTML = `<div class="win-grid">${mic.map(([org, v]) => {
-            const ratio = typeof v === 'number' && v > 0 ? hc50 / v : null;
-            const good = ratio !== null && ratio >= 10;
-            return `<div class="win-card">
-                <div class="wc-org">${escHtml(org)}</div>
-                <div class="wc-val" style="color:${good ? 'var(--accent-green)' : 'var(--accent-orange)'}">${ratio === null ? '—' : (ratio >= 100 ? '>100' : ratio.toFixed(0)) + '×'}</div>
-                <div class="wc-note">MIC ${typeof v === 'number' ? v.toFixed(1) : v} µM · ${good ? 'useful window' : 'narrow window'}</div>
-            </div>`;
-        }).join('')}</div>
-        <p class="struct-note">Ratio of the estimated haemolytic concentration (about ${hc50} µM for this risk score) to the predicted MIC. Ten-fold or more is normally the minimum for a candidate worth pursuing. The haemolytic figure is inferred from sequence properties, not measured.</p>`;
-    }
-    async function renderToxEvidence(seq) {
-        const box = document.getElementById('dev-evidence');
-        try {
-            const nb = (lastNeighbors && lastNeighbors.seq === seq) ? lastNeighbors
-                : { seq, mode: 'sequence', ...(await queryNeighbors(seq, 'sequence')) };
-            if (profileSeq() !== seq) return;
-            if (!lastNeighbors || lastNeighbors.seq !== seq) lastNeighbors = nb;
-            const rows = nb.hits.map(h => ({ h, v: toxVerdict((h.rec[5] || '') + ' ' + (h.rec[9] || '')) }));
-            const counts = rows.reduce((a, r) => (a[r.v] = (a[r.v] || 0) + 1, a), {});
-            const withData = rows.filter(r => r.v !== 'unknown');
-            if (!withData.length) {
-                box.innerHTML = '<p class="struct-note">None of the ten closest published peptides has haemolysis or cytotoxicity data recorded, so there is no measured precedent for this sequence.</p>';
-                return;
-            }
-            const label = { none: 'report no haemolysis or cytotoxicity', measured: 'report a measured toxic concentration (HC50, LC50 or similar)', low: 'report low or mild toxicity', reported: 'record some toxicity observation' };
-            const colour = { none: 'var(--accent-green)', low: 'var(--accent-green)', measured: 'var(--accent-orange)', reported: 'var(--text-secondary)' };
-            box.innerHTML = ['none', 'low', 'measured', 'reported'].filter(k => counts[k]).map(k =>
-                `<div class="dev-ev-row"><span class="dev-ev-count" style="color:${colour[k]}">${counts[k]}</span><span>of the ten closest peptides ${label[k]}</span></div>`).join('') +
-                `<div class="dev-ev-row"><span class="dev-ev-count muted">${counts.unknown || 0}</span><span>have no toxicity data recorded</span></div>` +
-                withData.map(r => ({ r, txt: [r.h.rec[5], r.h.rec[9]].filter(Boolean).join(' ').trim() }))
-                    .filter(e => e.txt).slice(0, 3)
-                    .map(e => `<p class="struct-note" style="margin-top:8px;"><strong>${escHtml(shortPeptideName(e.r.h.rec[2], 40))}</strong> (${e.r.h.score.toFixed(0)}% identical): ${linkRefs(e.txt.slice(0, 180))}</p>`).join('');
-        } catch (err) {
-            box.innerHTML = '<p class="struct-note">Could not load published toxicity data (' + escHtml(err.message) + ').</p>';
-        }
-    }
     const AA20 = 'ACDEFGHIKLMNPQRSTVWY';
     let designState = { base: null, variants: [], model: null };
-    function variantMetrics(seq, model) {
+    function variantMetrics(seq) {
         const p = computeProfile(seq, 7, false);
-        const h = haemolysisScore(seq, model);
         const sites = proteaseSites(seq);
         const prot = PROTEASES.reduce((t, pr) => t + sites[pr.key].length, 0);
         return { seq, charge: p.charge7, gravy: p.gravy, muH: p.muH, pI: p.pI,
-                 risk: h.probability * 100, inDomain: h.inDomain, prot, length: seq.length };
+                 hydrophobic: p.hydrophobicPct, prot, length: seq.length };
     }
     function paretoFront(items) {
-        const better = (a, b) => a.risk <= b.risk && a.charge >= b.charge && a.muH >= b.muH && a.prot <= b.prot
-            && (a.risk < b.risk || a.charge > b.charge || a.muH > b.muH || a.prot < b.prot);
+        const better = (a, b) => a.charge >= b.charge && a.muH >= b.muH && a.prot <= b.prot && a.gravy <= b.gravy
+            && (a.charge > b.charge || a.muH > b.muH || a.prot < b.prot || a.gravy < b.gravy);
         return items.filter(a => !items.some(b => better(b, a)));
     }
     function passesConstraints(v) {
         const minCharge = parseFloat(document.getElementById('design-mincharge').value);
-        const maxRisk = parseFloat(document.getElementById('design-maxrisk').value);
+        const maxGravy = parseFloat(document.getElementById('design-maxgravy').value);
         const maxProt = parseFloat(document.getElementById('design-maxprot').value);
         if (!isNaN(minCharge) && v.charge < minCharge) return false;
-        if (!isNaN(maxRisk) && v.risk > maxRisk) return false;
+        if (!isNaN(maxGravy) && v.gravy > maxGravy) return false;
         if (!isNaN(maxProt) && v.prot > maxProt) return false;
         return true;
     }
@@ -4946,17 +4706,14 @@ kbd {
         if (seq.length < 5 || !CANON_RE.test(seq)) return;
         const status = document.getElementById('design-status');
         status.innerHTML = '<i class="fas fa-circle-notch spin"></i> Scanning substitutions…';
-        let model;
-        try { model = (await getReferenceBlob()).haemolysis_model; }
-        catch { status.textContent = 'Risk model unavailable, so variants cannot be scored.'; return; }
-        const base = variantMetrics(seq, model);
+        const base = variantMetrics(seq);
         base.label = 'original';
         const out = [];
         for (let i = 0; i < seq.length; i++) {
             for (const aa of AA20) {
                 if (aa === seq[i]) continue;
                 const mutated = seq.slice(0, i) + aa + seq.slice(i + 1);
-                const v = variantMetrics(mutated, model);
+                const v = variantMetrics(mutated);
                 v.label = `${seq[i]}${i + 1}${aa}`;
                 v.muts = [{ pos: i, from: seq[i], to: aa }];
                 out.push(v);
@@ -4964,13 +4721,13 @@ kbd {
         }
         let variants = out;
         if (document.getElementById('design-mode').value === 'double') {
-            const top = out.filter(passesConstraints).sort((a, b) => (a.risk - b.risk) - (a.charge - b.charge) * 5).slice(0, 10);
+            const top = out.filter(passesConstraints).sort((a, b) => (b.charge - a.charge) + (b.muH - a.muH) * 5).slice(0, 10);
             for (let i = 0; i < top.length; i++) {
                 for (let j = i + 1; j < top.length; j++) {
                     if (top[i].muts[0].pos === top[j].muts[0].pos) continue;
                     let m = seq;
                     for (const mu of [top[i].muts[0], top[j].muts[0]]) m = m.slice(0, mu.pos) + mu.to + m.slice(mu.pos + 1);
-                    const v = variantMetrics(m, model);
+                    const v = variantMetrics(m);
                     v.label = top[i].label + ' + ' + top[j].label;
                     v.muts = [top[i].muts[0], top[j].muts[0]];
                     variants.push(v);
@@ -4979,8 +4736,8 @@ kbd {
         }
         const kept = variants.filter(passesConstraints);
         const front = new Set(paretoFront(kept).map(v => v.seq));
-        kept.sort((a, b) => (front.has(b.seq) - front.has(a.seq)) || (a.risk - b.risk));
-        designState = { base, variants: kept, front, model };
+        kept.sort((a, b) => (front.has(b.seq) - front.has(a.seq)) || (b.charge - a.charge) || (b.muH - a.muH));
+        designState = { base, variants: kept, front };
         status.innerHTML = `<strong>${variants.length.toLocaleString()}</strong> variants generated, <strong>${kept.length.toLocaleString()}</strong> meet your constraints, <strong>${front.size}</strong> are Pareto-optimal (no other variant is better on every objective at once).`;
         document.getElementById('design-count').innerHTML = `<span class="kind-badge pred" style="font-size:11.5px;">${kept.length} candidates</span>`;
         renderParetoPlot(base, kept, front);
@@ -4989,29 +4746,29 @@ kbd {
     function renderParetoPlot(base, variants, front) {
         const W = 760, H = 300, L = 48, R = 14, T = 14, B = 38;
         const all = [base, ...variants];
-        const xs = all.map(v => v.risk), ys = all.map(v => v.charge);
+        const xs = all.map(v => v.muH), ys = all.map(v => v.charge);
         const x0 = Math.min(...xs) - 2, x1 = Math.max(...xs) + 2;
         const y0 = Math.min(...ys) - 0.5, y1 = Math.max(...ys) + 0.5;
         const sx = v => L + (v - x0) / Math.max(x1 - x0, 1e-6) * (W - L - R);
         const sy = v => H - B - (v - y0) / Math.max(y1 - y0, 1e-6) * (H - T - B);
-        const dots = variants.map(v => `<g class="pareto-dot" data-seq="${v.seq}"><title>${escHtml(v.label)} — risk ${v.risk.toFixed(0)}%, charge ${fmtSigned(v.charge, 1)}, μH ${v.muH.toFixed(2)}</title>
-            <circle cx="${sx(v.risk).toFixed(1)}" cy="${sy(v.charge).toFixed(1)}" r="${front.has(v.seq) ? 4.5 : 3}"
+        const dots = variants.map(v => `<g class="pareto-dot" data-seq="${v.seq}"><title>${escHtml(v.label)} — charge ${fmtSigned(v.charge, 1)}, μH ${v.muH.toFixed(2)}, GRAVY ${fmtSigned(v.gravy, 2)}, ${v.prot} protease sites</title>
+            <circle cx="${sx(v.muH).toFixed(1)}" cy="${sy(v.charge).toFixed(1)}" r="${front.has(v.seq) ? 4.5 : 3}"
                     fill="${front.has(v.seq) ? 'var(--accent-green)' : '#b8c6dd'}" fill-opacity="${front.has(v.seq) ? 0.95 : 0.6}"/></g>`).join('');
         const grid = [0, 0.25, 0.5, 0.75, 1].map(f => {
             const xv = x0 + f * (x1 - x0), yv = y0 + f * (y1 - y0);
             return `<line x1="${sx(xv)}" x2="${sx(xv)}" y1="${T}" y2="${H - B}" stroke="#eef2f8"/>
-                    <text x="${sx(xv)}" y="${H - B + 14}" text-anchor="middle" font-size="10" fill="#8a94a8">${xv.toFixed(0)}%</text>
+                    <text x="${sx(xv)}" y="${H - B + 14}" text-anchor="middle" font-size="10" fill="#8a94a8">${xv.toFixed(2)}</text>
                     <line x1="${L}" x2="${W - R}" y1="${sy(yv)}" y2="${sy(yv)}" stroke="#eef2f8"/>
                     <text x="${L - 6}" y="${sy(yv) + 3}" text-anchor="end" font-size="10" fill="#8a94a8">${fmtSigned(yv, 1)}</text>`;
         }).join('');
         document.getElementById('design-plot').innerHTML = `<div class="pareto-wrap">
             <div class="mini-title">Trade-off map — each dot is one variant</div>
-            <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Haemolysis risk against net charge for every variant">
+            <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Hydrophobic moment against net charge for every variant">
                 ${grid}${dots}
                 <g><title>Your original sequence</title>
-                    <circle cx="${sx(base.risk).toFixed(1)}" cy="${sy(base.charge).toFixed(1)}" r="6" fill="none" stroke="var(--ncbi-blue)" stroke-width="2.5"/>
-                    <text x="${sx(base.risk) + 10}" y="${sy(base.charge) - 8}" font-size="11" fill="var(--ncbi-blue)">original</text></g>
-                <text x="${(W + L) / 2}" y="${H - 4}" text-anchor="middle" font-size="11" fill="#4a5778">Haemolysis risk (lower is better)</text>
+                    <circle cx="${sx(base.muH).toFixed(1)}" cy="${sy(base.charge).toFixed(1)}" r="6" fill="none" stroke="var(--ncbi-blue)" stroke-width="2.5"/>
+                    <text x="${sx(base.muH) + 10}" y="${sy(base.charge) - 8}" font-size="11" fill="var(--ncbi-blue)">original</text></g>
+                <text x="${(W + L) / 2}" y="${H - 4}" text-anchor="middle" font-size="11" fill="#4a5778">Hydrophobic moment μH (higher is more amphipathic)</text>
                 <text x="12" y="${(H - B + T) / 2}" font-size="11" fill="#4a5778" transform="rotate(-90 12 ${(H - B + T) / 2})" text-anchor="middle">Net charge at pH 7</text>
             </svg>
             <div class="prot-legend" style="margin-top:4px;"><span style="--c:var(--accent-green)">Pareto-optimal</span><span style="--c:#b8c6dd">dominated by another variant</span><span style="--c:var(--ncbi-blue)">your sequence</span></div>
@@ -5024,21 +4781,21 @@ kbd {
             return `<span class="var-delta ${cls}">${d > 0 ? '+' : ''}${d.toFixed(Math.abs(d) < 1 ? 2 : 1)}</span>`;
         };
         document.getElementById('design-results').innerHTML = `<div class="table-scroll"><table class="var-table">
-            <thead><tr><th>Variant</th><th>Sequence</th><th>Haemolysis risk</th><th>Charge</th><th><span class="sym">μH</span></th><th>Protease sites</th><th></th></tr></thead>
+            <thead><tr><th>Variant</th><th>Sequence</th><th>Charge</th><th><span class="sym">μH</span></th><th>GRAVY</th><th>Protease sites</th><th></th></tr></thead>
             <tbody>
                 <tr><td class="var-mut">original</td><td class="seq-cell">${escHtml(base.seq)}</td>
-                    <td>${base.risk.toFixed(0)}%</td><td>${fmtSigned(base.charge, 1)}</td><td>${base.muH.toFixed(2)}</td><td>${base.prot}</td><td></td></tr>
+                    <td>${fmtSigned(base.charge, 1)}</td><td>${base.muH.toFixed(2)}</td><td>${fmtSigned(base.gravy, 2)}</td><td>${base.prot}</td><td></td></tr>
                 ${rows.map(v => `<tr class="${front.has(v.seq) ? 'front' : ''}">
                     <td class="var-mut">${escHtml(v.label)} ${front.has(v.seq) ? '<span class="front-badge">optimal</span>' : ''}</td>
                     <td class="seq-cell">${escHtml(v.seq)}</td>
-                    <td>${v.risk.toFixed(0)}% ${delta(v.risk, base.risk, true)}</td>
                     <td>${fmtSigned(v.charge, 1)} ${delta(v.charge, base.charge)}</td>
                     <td>${v.muH.toFixed(2)} ${delta(v.muH, base.muH)}</td>
+                    <td>${fmtSigned(v.gravy, 2)} ${delta(v.gravy, base.gravy, true)}</td>
                     <td>${v.prot} ${delta(v.prot, base.prot, true)}</td>
                     <td><button class="tool-btn" type="button" data-usevar="${escHtml(v.seq)}"><i class="fas fa-arrow-right"></i> Use</button></td>
                 </tr>`).join('')}
             </tbody></table></div>
-            <p class="struct-note">Ranked by Pareto dominance over four objectives: lower haemolysis risk, higher net charge, higher amphipathicity, fewer protease sites. A variant is marked optimal when no other variant beats it on every objective at once. Charge, μH and protease sites are calculated exactly; haemolysis risk is a model estimate. Antimicrobial activity and MIC are not re-predicted here — send a variant to the Sequence step with Use, then run the classifier.</p>`;
+            <p class="struct-note">Ranked by Pareto dominance over four objectives: higher net charge, higher amphipathicity, lower hydrophobicity, fewer protease sites. A variant is marked optimal when no other variant beats it on every objective at once. Every value here is calculated exactly from the sequence, not predicted. Antimicrobial activity and MIC are not re-predicted — send a variant to the Sequence step with Use, then run the classifier.</p>`;
     }
     function setupDesign() {
         document.getElementById('design-run').addEventListener('click', runMutationScan);

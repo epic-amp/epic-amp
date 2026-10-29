@@ -63,7 +63,6 @@ structure file the user produced elsewhere. See `docs/STRUCTURE.md`.
 | Model | Origin | Licence |
 |---|---|---|
 | AMP classifier and per-organism MIC regressors | Developed by the EPIC-AMP authors, hosted on Hugging Face | Authors' own |
-| Haemolysis risk (`meta.haemolysis_model`) | **New in this repository.** Fitted by `scripts/fit_haemolysis.py` on haemolysis values extracted from the DRAMP/dbAMP/UniProt records above | Model coefficients are a derived work of CC BY 4.0 and academic-use data; the same attribution and non-commercial limits apply |
 
 ## Models evaluated but deliberately not integrated
 
