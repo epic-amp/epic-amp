@@ -758,6 +758,7 @@ footer {
     border-top: 3px solid var(--ncbi-teal);
 }
 footer a { color: rgba(255,255,255,0.85); }
+.use-badge { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 10px; padding: 4px 13px; border-radius: 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.92); font-size: 11.5px; font-weight: 500; }
 @media (max-width: 768px) {
     .main-wrap { padding: 16px; }
     .header-inner { height: 52px; padding: 0 16px; }
@@ -2157,7 +2158,7 @@ kbd {
                 <li><strong>Regression capability</strong> assessed by MSE, R², Pearson correlation, and Kendall's tau.</li>
             </ul>
             <div class="section-h3">Intended Use</div>
-            <p class="prose">This tool is intended for research and educational purposes. It provides computational predictions to guide experimental work but does not replace laboratory validation. Predictions should be interpreted in the context of the reported model metrics.</p>
+            <p class="prose">EPIC-AMP is provided for <strong>academic research and education only. It is not licensed for commercial use.</strong> This applies to the tool and to the peptide data behind it: the dbAMP records included in our merged dataset are themselves licensed for academic use free of charge, so neither the data nor results derived from it may be used commercially. If you need a commercial licence, contact us and the source databases directly. The tool provides computational predictions to guide experimental work and does not replace laboratory validation; interpret predictions in the context of the reported model metrics.</p>
             <div class="section-h3">Our Team</div>
             <div class="team-grid">
                 <div class="team-card">
@@ -2346,6 +2347,7 @@ kbd {
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <footer>
+    <p class="use-badge"><i class="fas fa-graduation-cap"></i> For academic research and education only — not licensed for commercial use</p>
     <p style="margin-bottom:4px;">© 2025 Bioinformatics and Computational Biology Unit (BCBU) — Zewail City</p>
     <address style="font-style:normal;color:rgba(255,255,255,0.55);font-size:11px;">Ahmed Zewail Street, October Gardens, Giza, Egypt</address>
     <p style="margin-top:6px;font-size:11px;"><a href="mailto:epicamp.sup@gmail.com" style="color:rgba(160,200,255,0.85);text-decoration:none;">epicamp.sup@gmail.com</a></p>
@@ -4726,7 +4728,7 @@ kbd {
             pdf.setDrawColor(210, 218, 232); pdf.setLineWidth(0.3);
             pdf.line(0, H - 14, W, H - 14);
             pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(160, 168, 185);
-            pdf.text('EPIC-AMP  |  Zewail City of Science and Technology  |  BCBU', 10, H - 8);
+            pdf.text('EPIC-AMP  |  Zewail City of Science and Technology  |  BCBU  |  Academic use only, not for commercial use', 10, H - 8);
             pdf.setTextColor(26, 111, 196);
             pdf.text('epicamp.sup@gmail.com', 10, H - 3);
             pdf.setTextColor(160, 168, 185);
@@ -4929,7 +4931,7 @@ kbd {
         pdf.setDrawColor(210, 218, 232); pdf.setLineWidth(0.3);
         pdf.line(0, H - 14, W, H - 14);
         pdf.setFont('helvetica','normal'); pdf.setFontSize(7); pdf.setTextColor(160, 168, 185);
-        pdf.text('EPIC-AMP  |  Zewail City of Science and Technology  |  BCBU', 10, H - 8);
+        pdf.text('EPIC-AMP  |  Zewail City of Science and Technology  |  BCBU  |  Academic use only, not for commercial use', 10, H - 8);
         pdf.setTextColor(26, 111, 196);
         pdf.text('epicamp.sup@gmail.com', 10, H - 3);
         pdf.setTextColor(160, 168, 185);
