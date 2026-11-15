@@ -2227,12 +2227,11 @@ kbd {
                 <tbody>
                     <tr><td>AMP classifier</td><td>Random Forest with Boruta selection, trained by this group</td><td>96.0% accuracy, 95.8% F1 on a held-out test set (see Model Metrics)</td></tr>
                     <tr><td>MIC regressors</td><td>Per-organism models trained by this group</td><td>R² 0.68–0.74, Pearson 0.83–0.87 (see Model Metrics)</td></tr>
-                                        <tr><td>Variant ranking</td><td>Pareto dominance over properties calculated exactly from the sequence</td><td>Transparent; no model and no training involved</td></tr>
                     <tr><td>3D structures</td><td>RCSB PDB (experimental), AlphaFold DB and ESMFold (predicted), plus any model you upload</td><td>Predicted models carry their own pLDDT confidence, shown per residue</td></tr>
                     <tr><td>Models you upload</td><td>Produced by whatever tool you choose, read locally in the browser</td><td>EPIC-AMP does not generate or verify them; confidence is read only if the file carries it</td></tr>
                 </tbody>
             </table>
-            <p class="prose" style="font-size:12px;color:var(--text-muted);">Full validation, including the similarity-leakage analysis and calibration table, is in <code>docs/VALIDATION.md</code>. Licences for every library, dataset and service are in <code>THIRD_PARTY_NOTICES.md</code>. Tools assessed but deliberately not integrated, with reasons, are in <code>docs/EXTERNAL_MODELS.md</code>.</p>
+            <p class="prose" style="font-size:12px;color:var(--text-muted);">The licences for every library, dataset and service we use, and our assessment of the external tools we chose not to integrate, are published with the source code: <a href="https://github.com/epic-amp/epic-amp/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener" style="color:var(--ncbi-blue);">licences and attribution</a> · <a href="https://github.com/epic-amp/epic-amp/blob/main/docs/EXTERNAL_MODELS.md" target="_blank" rel="noopener" style="color:var(--ncbi-blue);">external model assessment</a> · <a href="https://github.com/epic-amp/epic-amp/blob/main/docs/STRUCTURE.md" target="_blank" rel="noopener" style="color:var(--ncbi-blue);">structure module notes</a>.</p>
             <div class="section-h3">3D Structure Sources</div>
 
             <p class="prose">The <strong>3D Structure</strong> step loads structures directly from these services when you request them:</p>
@@ -2326,7 +2325,7 @@ kbd {
                     </div>
                 </li>
             </ul>
-            <p class="prose" style="margin-top:10px;font-size:12.5px;color:var(--text-muted);">You can jump between steps at any time using the progress bar. Steps 2–6 are optional. Use <em>skip to Analyze</em> to go straight to prediction.</p>
+            <p class="prose" style="margin-top:10px;font-size:12.5px;color:var(--text-muted);">You can jump between steps at any time using the progress bar. Steps 2–5 are optional. Use <em>skip to Analyze</em> to go straight to prediction.</p>
             <div class="section-h3" style="margin-top:20px;">Troubleshooting</div>
             <table class="metrics-table">
                 <thead><tr><th>Issue</th><th>Likely Cause</th><th>Solution</th></tr></thead>

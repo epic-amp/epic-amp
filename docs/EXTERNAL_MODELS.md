@@ -119,8 +119,8 @@ shipped as a number.
    µg/ml using the peptide mass.
 3. Model **one cell line at a time** (likely only HEK293 and HeLa will have
    enough records). Report n per model and refuse to ship any with n < 300.
-4. Split by sequence-identity clusters, exactly as `scripts/fit_haemolysis.py`
-   already does, so near-duplicates cannot leak across folds.
+4. Split by sequence-identity clusters, holding whole clusters out, so
+   near-duplicate analogues cannot leak between training and test.
 5. Report cluster-aware AUC with a bootstrap CI, calibrate on out-of-fold
    predictions, and ship an applicability-domain threshold.
 6. Publish the training script in this repo so the numbers are reproducible.
