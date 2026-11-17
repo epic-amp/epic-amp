@@ -21,7 +21,6 @@ The deployed site plus new browser-side peptide analysis tools.
 | Exports | Sequence bar at the top of each analysis tab | CSV / JSON / FASTA with profile, prediction and neighbors |
 | PDF report | Section 1 | Adds a physicochemical profile table and the top 5 known-peptide neighbors |
 | Optional follow-up email | **Analysis** tab | An unticked opt-in box books one feedback email ~48 h later. Brevo's `scheduledAt` does the waiting, so there is no cron job; the UUID it is booked under is the unsubscribe token. See `docs/PRIVACY_AND_FEEDBACK.md` |
-| Privacy notice | About tab | What is collected, why, where it goes and for how long. Linked from the consent box and the footer |
 
 Citations and licenses for all three databases are in About → Data Sources, in the PDF report and in CSV/JSON exports. Keep those credits.
 

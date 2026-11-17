@@ -465,13 +465,7 @@ body {
 .consent-row label { font-size: 12px; line-height: 1.55; color: var(--text-secondary); cursor: pointer; }
 .consent-row label b { color: var(--text-primary); font-weight: 600; }
 .consent-note { font-size: 11px; line-height: 1.55; color: var(--text-muted); margin-top: 6px; padding-left: 24px; }
-.consent-note a, .privacy-table a { color: var(--ncbi-blue); }
-.privacy-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 10px 0 4px; }
-.privacy-table th, .privacy-table td {
-    border: 1px solid var(--border); padding: 7px 9px; text-align: left; vertical-align: top; line-height: 1.5;
-}
-.privacy-table th { background: var(--bg-panel); color: var(--ncbi-blue-dark); font-weight: 600; }
-.privacy-table td:first-child { font-weight: 600; color: var(--text-primary); }
+.consent-note a { color: var(--ncbi-blue); }
 .error-msg {
     display: none;
     background: #fff3f3;
@@ -1968,9 +1962,9 @@ kbd {
                     <div class="consent-box">
                         <div class="consent-row">
                             <input type="checkbox" id="feedback-consent">
-                            <label for="feedback-consent"><b>Optional.</b> Email me once, about two days from now, to ask whether these results were useful. One email, nothing else, and it carries a cancel link you can use at any time.</label>
+                            <label for="feedback-consent"><b>Optional.</b> Email me once in two days to ask if this was useful. One email, with a cancel link inside.</label>
                         </div>
-                        <div class="consent-note">Leave this unticked and we will send only the report you asked for. <a href="#" data-goto="about" data-scroll-to="privacy-notice">What we store, and for how long</a>.</div>
+                        <div class="consent-note">Leave it unticked and we send only your report.</div>
                     </div>
                     <div class="settings-title" style="margin-top:16px;"><span class="settings-num">3</span> Run the analysis</div>
                     <div class="btn-row" style="margin-top:0;">
@@ -2303,37 +2297,6 @@ kbd {
                     <a href="https://doi.org/10.1093/bioinformatics/btu829" target="_blank" rel="noopener"><i class="fas fa-file-alt"></i> Article (DOI)</a>
                 </div>
             </div>
-            <div class="section-h3" id="privacy-notice">Privacy and Your Data</div>
-            <p class="prose">EPIC-AMP is run by the Bioinformatics and Computational Biology Unit (BCBU) at Zewail City of Science and Technology, Giza, Egypt, which is responsible for the data described below. This site sets no cookies, runs no analytics and no trackers, and stores nothing in your browser. We never sell or share your details, and we never send marketing.</p>
-            <table class="privacy-table">
-                <tr><th>What</th><th>Why we need it</th><th>Where it goes</th><th>How long it is kept</th></tr>
-                <tr>
-                    <td>Your peptide sequence</td>
-                    <td>To run the classifier and the MIC models</td>
-                    <td>Our prediction service on Hugging Face. If you open the 3D Structure step it also goes to Meta's public ESMFold endpoint, which builds the model.</td>
-                    <td>We do not store it</td>
-                </tr>
-                <tr>
-                    <td>Your email address</td>
-                    <td>Only to send you the PDF report you asked for</td>
-                    <td>Brevo, the service that delivers the message</td>
-                    <td>Held by Brevo for delivery; we keep no separate copy</td>
-                </tr>
-                <tr>
-                    <td>Analysis log: the address you entered, the predicted label and confidence, and the first 50 residues</td>
-                    <td>So we can see that the tool is working and how much it is being used</td>
-                    <td>A private Google Sheet only our team can open</td>
-                    <td>12 months</td>
-                </tr>
-                <tr>
-                    <td>Your consent to the follow-up email, if you tick that box</td>
-                    <td>To show that you agreed to it, and to make a cancellation stick</td>
-                    <td>A private Google Sheet. Your address is kept only as a salted hash, never in readable form.</td>
-                    <td>24 months. A cancellation is kept as a hash for as long as the tool runs, so that we cannot email you again by accident.</td>
-                </tr>
-            </table>
-            <p class="prose">We send you the report because you asked for it. The follow-up email is different: we send it <strong>only</strong> if you tick the optional box, it is one single message asking whether the results were useful, and it carries a cancel link that works both before and after it is sent. Addresses in the analysis log are never used for it &mdash; only addresses where that box was ticked. Cancelling costs you one click and needs no account, no password and no reply.</p>
-            <p class="prose">To see what we hold about you, to have it corrected or deleted, or to withdraw your consent, write to <a href="mailto:epicamp.sup@gmail.com" style="color:var(--ncbi-blue);">epicamp.sup@gmail.com</a>. If you are in the European Union, the EEA or the United Kingdom you may also complain to your national data protection authority. Our processors are Hugging Face, Brevo and Google; some of them operate outside Egypt and the EU.</p>
             <div class="section-h3">Contact</div>
             <p class="prose">For questions, collaboration inquiries, or feedback: <a href="mailto:epicamp.sup@gmail.com" style="color:var(--ncbi-blue);">epicamp.sup@gmail.com</a></p>
         </div>
@@ -2413,8 +2376,7 @@ kbd {
     <p class="use-badge"><i class="fas fa-graduation-cap"></i> For academic research and education only — not licensed for commercial use</p>
     <p style="margin-bottom:4px;">© 2025 Bioinformatics and Computational Biology Unit (BCBU) — Zewail City</p>
     <address style="font-style:normal;color:rgba(255,255,255,0.55);font-size:11px;">Ahmed Zewail Street, October Gardens, Giza, Egypt</address>
-    <p style="margin-top:6px;font-size:11px;"><a href="mailto:epicamp.sup@gmail.com" style="color:rgba(160,200,255,0.85);text-decoration:none;">epicamp.sup@gmail.com</a>
-        &nbsp;·&nbsp; <a href="#" data-goto="about" data-scroll-to="privacy-notice" style="color:rgba(160,200,255,0.85);text-decoration:none;">Privacy and your data</a></p>
+    <p style="margin-top:6px;font-size:11px;"><a href="mailto:epicamp.sup@gmail.com" style="color:rgba(160,200,255,0.85);text-decoration:none;">epicamp.sup@gmail.com</a></p>
 </footer>
 <script type="module">
     import { Client } from "https://esm.sh/@gradio/client";
@@ -3413,15 +3375,7 @@ kbd {
             const exp = e.target.closest('[data-export]');
             if (exp) return exportProfile(exp.dataset.export);
             const go = e.target.closest('[data-goto]');
-            if (go) {
-                e.preventDefault();
-                showMainTab(go.dataset.goto);
-                if (go.dataset.scrollTo) {
-                    const target = document.getElementById(go.dataset.scrollTo);
-                    if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-                }
-                return;
-            }
+            if (go) { e.preventDefault(); showMainTab(go.dataset.goto); return; }
             if (e.target.closest('[data-load-example]')) {
                 sequenceInput.value = 'GIGKFLHSAKKFGKAFVGEIMNS';
                 onSeqInput();

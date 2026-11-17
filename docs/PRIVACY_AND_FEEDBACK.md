@@ -74,11 +74,18 @@ and `created_at` (server time, authoritative).
 |---|---|---|---|---|
 | Peptide sequence | Performing the service asked for | Hugging Face; Meta's ESMFold if the 3D step is opened | Not stored by us | n/a |
 | Email address, to send the report | Performing the service asked for | Brevo | Not kept by us after delivery | Brevo |
-| Analysis log: address, label, confidence, first 50 residues | — see §6.4 | Google Sheets | **12 months** | `scripts/analysis_log_retention.gs` — **not installed yet** |
+| Analysis log: address, label, confidence, first 50 residues | — see §6.4 | Google Sheets | 12 months *intended* | `scripts/analysis_log_retention.gs` — **not installed yet** |
 | Follow-up consent | Consent (Art. 6(1)(a)) | Google Sheets, hashed | 24 months; cancellations kept as a bare hash | `purgeExpired()` daily trigger in `consent_ledger.gs` |
 
 No cookies, no analytics, no trackers, no `localStorage` — verified by grep, not
-assumed. The privacy notice in the app says so, so keep it true.
+assumed.
+
+**None of this is disclosed to visitors.** A privacy notice setting out this
+table was added to the About tab and then removed at the project owner's
+request on 2026-11-17. The consent checkbox still states the purpose, the
+frequency and that it can be cancelled, which is what makes that consent
+informed, and the follow-up email itself repeats why it was sent. Everything
+else in this table is now undisclosed. See §6.4.
 
 ## 5. Deploying it
 
@@ -149,10 +156,17 @@ produce a list of addresses that consented. **Confirm counsel is content with
 proof-on-presentation rather than a retained address list** — the alternative is
 storing researchers' addresses in Google Drive for 24 months, which is worse.
 
-**6.4 The analysis log is the real exposure, and it predates this work.** Until
-today the app sent every entered address, with the label, confidence and the
-first 50 residues, to a Google Sheet with **no notice of any kind** — there was
-no privacy notice in the app at all. The notice added today describes it, but:
+**6.4 The analysis log is the real exposure, and there is no notice.** The app
+sends every entered address, with the label, confidence and the first 50
+residues, to a Google Sheet. There is **no notice of any kind** in the app: one
+was written and then removed at the owner's request, so this is the position as
+it stands.
+
+- GDPR Art. 13 and Art. 14 require this information to be given to the person
+  at the point of collection, not held in a repository file. **A reviewer will
+  look for it first.** Restoring it is one revert; a three-line version naming
+  what is stored, for how long, and who to write to would also do.
+- The remaining points stand regardless of the notice:
 
 - Rows collected before today were collected without that transparency. Whether
   to purge them is a decision for counsel; it is one menu action.
@@ -162,7 +176,8 @@ no privacy notice in the app at all. The notice added today describes it, but:
 - **Recommended, and deliberately not done without being asked:** stop logging
   the plaintext address. A salted hash answers "how many distinct users" just as
   well and removes the liability entirely. One line in `index.html`.
-- The 12-month retention in the notice is **not true until step 5D is done.**
+- Nothing enforces 12 months, or any other period, until step 5D is done. The
+  log currently grows without limit.
 
 **6.5 Transfers.** Brevo is in the EU (France). Google and Hugging Face process
 outside the EU and Egypt. Standard contractual clauses and processor terms need
@@ -193,11 +208,12 @@ Verified by running it:
   variants of the same address, a different address, mark, unsubscribe,
   permanent suppression, an expired pending row not blocking, lock contention,
   no plaintext address in the sheet, and the purge keeping cancellations.
-- Front end — 24 cases in a real browser: the box is unchecked by default, the
-  wording, the privacy notice and its contents, both privacy links, Clear
-  unticking it, no scheduling call when it is not ticked, the scheduling path
-  running when it is, honest failure when the mailer is unreachable, the report
-  still downloading, and four states of the unsubscribe page.
+- Front end — in a real browser: the box is unchecked by default, its wording
+  carries the purpose and the cancellation, Clear unticks it, no scheduling call
+  happens when it is not ticked, the scheduling path runs when it is, failure is
+  reported honestly when the mailer is unreachable, the report still downloads,
+  and the unsubscribe page handles all four of its states. The privacy-notice
+  assertions were dropped when the notice was removed.
 
 **Not verified, because it cannot be from here:** nothing is deployed. The Apps
 Script was tested against stubs, not Google's runtime; the Space was tested
