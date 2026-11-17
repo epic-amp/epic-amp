@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tell the EPIC-AMP team how the platform worked for you. Ten questions, about three minutes.">
+<title>Feedback Survey — EPIC-AMP</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --blue:#0056a6; --blue-dark:#003f7d; --blue-mid:#1a6fc4; --blue-light:#e8f0fb;
+    --green:#2e7d32; --red:#c62828; --orange:#e65100; --amber:#f59e0b;
+    --bg:#f7f9fc; --white:#fff; --panel:#f0f4fa;
+    --border:#d0daea; --border-strong:#b0bdd4;
+    --text:#1a2540; --text-2:#4a5778; --muted:#8a94a8;
+    --r-sm:6px; --r-md:10px; --r-lg:16px;
+    --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+    --shadow:0 4px 18px rgba(0,63,125,.10); --shadow-lg:0 14px 40px rgba(0,63,125,.16);
+    --ease:cubic-bezier(.22,.9,.3,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+    font-family:var(--sans);font-size:15px;line-height:1.6;color:var(--text);
+    background:var(--bg);min-height:100vh;display:flex;flex-direction:column;
+    overflow-x:hidden;
+}
+/* ---------- decorative header ---------- */
+.topbar{
+    position:relative;background:var(--blue-dark);color:#fff;overflow:hidden;
+    padding:18px 20px 20px;flex:0 0 auto;
+}
+.helix{position:absolute;inset:0;width:100%;height:100%;opacity:.26;pointer-events:none}
+.topbar-in{position:relative;max-width:760px;margin:0 auto;display:flex;align-items:center;gap:13px}
+.topbar-in img{width:38px;height:38px;border-radius:8px;background:#fff;object-fit:contain;flex:0 0 auto}
+.brand h1{font-size:16px;font-weight:600;letter-spacing:.2px;line-height:1.3}
+.brand p{font-size:12.5px;color:#a0c8ff;margin-top:1px}
+.topbar a.home{
+    margin-left:auto;font-size:12.5px;color:#a0c8ff;text-decoration:none;
+    border:1px solid rgba(255,255,255,.26);padding:6px 12px;border-radius:20px;white-space:nowrap;
+    transition:background .18s,color .18s;
+}
+.topbar a.home:hover{background:rgba(255,255,255,.12);color:#fff}
+/* ---------- progress ---------- */
+.prog-wrap{position:sticky;top:0;z-index:20;background:var(--white);border-bottom:1px solid var(--border)}
+.prog-in{max-width:760px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+.prog-track{flex:1;height:6px;border-radius:99px;background:var(--panel);overflow:hidden}
+.prog-fill{
+    height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--blue-mid),var(--blue));
+    transition:width .5s var(--ease);
+}
+.prog-label{font-size:12px;font-weight:600;color:var(--blue);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:760px;margin:0 auto;padding:0 20px 9px}
+.dot{
+    width:22px;height:5px;border-radius:99px;background:var(--border);border:none;padding:0;
+    cursor:pointer;transition:background .25s,transform .25s var(--ease);
+}
+.dot:hover{transform:scaleY(1.9)}
+.dot.done{background:var(--blue-mid)}
+.dot.now{background:var(--blue);transform:scaleY(1.9)}
+.dot:disabled{cursor:default}
+.dot:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+/* ---------- stage ---------- */
+main{flex:1 0 auto;display:flex;align-items:flex-start;justify-content:center;padding:26px 20px 40px}
+.stage{width:100%;max-width:700px}
+.card{
+    background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+    box-shadow:var(--shadow);padding:26px 26px 22px;
+}
+.intro-badge{
+    display:inline-flex;align-items:center;gap:7px;background:var(--blue-light);color:var(--blue-dark);
+    font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;margin-bottom:14px;
+}
+h2.q{font-size:21px;line-height:1.35;font-weight:600;letter-spacing:-.2px}
+h2.q[tabindex]:focus{outline:none}
+@media(min-width:600px){h2.q{font-size:23px}}
+.qnum{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:30px;height:30px;padding:0 8px;border-radius:9px;
+    background:var(--blue);color:#fff;font-family:var(--mono);font-size:13px;font-weight:500;
+    margin-bottom:13px;
+}
+.hint{font-size:13px;color:var(--muted);margin-top:7px}
+.opts{margin-top:19px;display:flex;flex-direction:column;gap:9px}
+/* single choice */
+.opt{
+    display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-md);
+    padding:13px 15px;font:inherit;color:var(--text);cursor:pointer;
+    transition:border-color .16s,background .16s,transform .16s var(--ease),box-shadow .16s;
+}
+.opt:hover{border-color:var(--blue-mid);background:var(--blue-light);transform:translateX(3px)}
+.opt:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.opt .key{
+    flex:0 0 auto;width:25px;height:25px;border-radius:7px;background:var(--panel);
+    color:var(--text-2);font-family:var(--mono);font-size:12px;font-weight:500;
+    display:flex;align-items:center;justify-content:center;transition:background .16s,color .16s;
+}
+.opt .txt{flex:1}
+.opt .tick{flex:0 0 auto;width:20px;height:20px;opacity:0;transform:scale(.5);transition:opacity .2s,transform .22s var(--ease)}
+.opt[aria-checked="true"]{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 3px rgba(0,86,166,.12)}
+.opt[aria-checked="true"] .key{background:var(--blue);color:#fff}
+.opt[aria-checked="true"] .tick{opacity:1;transform:scale(1)}
+/* scale */
+.scale{margin-top:20px}
+.scale-row{display:flex;gap:7px}
+.seg{
+    flex:1;border:1.5px solid var(--border);background:var(--white);border-radius:var(--r-md);
+    padding:15px 4px 11px;cursor:pointer;font:inherit;color:var(--text-2);
+    display:flex;flex-direction:column;align-items:center;gap:7px;
+    transition:border-color .16s,transform .18s var(--ease),box-shadow .16s,color .16s;
+}
+.seg:hover{transform:translateY(-3px);border-color:var(--blue-mid)}
+.seg:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.seg .pip{width:100%;height:7px;border-radius:99px;background:var(--border);transition:background .2s,height .2s}
+.seg .n{font-family:var(--mono);font-size:15px;font-weight:500}
+.seg[aria-checked="true"]{border-color:var(--blue);color:var(--text);box-shadow:0 0 0 3px rgba(0,86,166,.12);transform:translateY(-3px)}
+.seg[aria-checked="true"] .pip{height:9px}
+.scale-ends{display:flex;justify-content:space-between;margin-top:11px;font-size:12px;color:var(--muted);gap:10px}
+.scale-live{
+    margin-top:13px;text-align:center;font-size:14px;font-weight:600;color:var(--blue-dark);
+    min-height:22px;transition:opacity .2s;
+}
+@media(max-width:520px){
+    .scale-row{flex-direction:column;gap:8px}
+    .seg{flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 14px}
+    .seg .pip{width:7px;height:26px}
+    .seg .lbl{text-align:left}
+    .scale-ends{display:none}
+}
+/* multi-select chips */
+.chips{margin-top:19px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{
+    display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--border);
+    background:var(--white);border-radius:99px;padding:10px 16px 10px 13px;
+    font:inherit;font-size:14px;color:var(--text);cursor:pointer;
+    transition:border-color .16s,background .16s,transform .16s var(--ease),box-shadow .16s;
+}
+.chip:hover{border-color:var(--blue-mid);background:var(--blue-light);transform:translateY(-2px)}
+.chip:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.chip .box{
+    width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border-strong);
+    flex:0 0 auto;display:flex;align-items:center;justify-content:center;transition:background .16s,border-color .16s;
+}
+.chip .box svg{width:12px;height:12px;opacity:0;transform:scale(.4);transition:opacity .18s,transform .2s var(--ease)}
+.chip[aria-checked="true"]{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 3px rgba(0,86,166,.1)}
+.chip[aria-checked="true"] .box{background:var(--blue);border-color:var(--blue)}
+.chip[aria-checked="true"] .box svg{opacity:1;transform:scale(1)}
+.chip-count{margin-top:13px;font-size:12.5px;color:var(--muted)}
+/* text */
+.field{margin-top:19px}
+label.fl{display:block;font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:7px}
+textarea,input[type="email"]{
+    width:100%;font-family:var(--sans);font-size:15px;color:var(--text);
+    background:#fcfdff;border:1.5px solid var(--border);border-radius:var(--r-md);
+    padding:13px 14px;transition:border-color .16s,box-shadow .16s;resize:vertical;
+}
+textarea:focus,input[type="email"]:focus{
+    outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,86,166,.12);background:#fff;
+}
+textarea::placeholder,input::placeholder{color:#b6bfd0}
+.counter{margin-top:6px;font-size:11.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.counter.warn{color:var(--orange)}
+/* reveal */
+.reveal{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s var(--ease),opacity .3s,margin-top .3s}
+.reveal.open{max-height:620px;opacity:1;margin-top:17px}
+.reveal-in{border-left:3px solid var(--blue-mid);background:var(--panel);border-radius:0 var(--r-md) var(--r-md) 0;padding:15px 16px}
+/* consent */
+.consent{display:flex;align-items:flex-start;gap:10px;margin-top:14px}
+.consent input{margin-top:3px;width:16px;height:16px;accent-color:var(--blue);flex:0 0 auto;cursor:pointer}
+.consent label{font-size:12.5px;line-height:1.55;color:var(--text-2);cursor:pointer}
+/* nav */
+.nav{display:flex;align-items:center;gap:11px;margin-top:24px;padding-top:19px;border-top:1px solid var(--border)}
+.btn{
+    font:inherit;font-size:14.5px;font-weight:500;border-radius:var(--r-md);padding:11px 22px;
+    cursor:pointer;border:1.5px solid transparent;display:inline-flex;align-items:center;gap:8px;
+    text-decoration:none;
+    transition:background .16s,transform .14s var(--ease),box-shadow .16s,border-color .16s;
+}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(0,86,166,.22)}
+.btn-primary:hover:not(:disabled){background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,86,166,.28)}
+.btn-primary:disabled{background:#c3cfe2;border-color:#c3cfe2;box-shadow:none;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--text-2);border-color:var(--border)}
+.btn-ghost:hover{background:var(--panel);color:var(--text)}
+.nav .spacer{flex:1}
+.kbd-tip{font-size:11.5px;color:var(--muted);display:none}
+@media(min-width:720px){.kbd-tip{display:block}}
+kbd{
+    font-family:var(--mono);font-size:10.5px;background:var(--panel);border:1px solid var(--border);
+    border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--text-2);
+}
+/* messages */
+.err{
+    display:none;margin-top:15px;background:#fdeded;border:1px solid #f5c2c2;border-left:3px solid var(--red);
+    color:#8e1f1f;border-radius:var(--r-sm);padding:10px 13px;font-size:13px;
+}
+.err.show{display:block}
+/* transitions between questions */
+.swap{animation:in .34s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.swap.back{animation:inb .34s var(--ease)}
+@keyframes inb{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+/* done - scoped to the card, because a bare .done also matches .dot.done */
+.card.done{text-align:center;padding:42px 26px}
+.card.done .ring{width:72px;height:72px;margin:0 auto 20px}
+.card.done h2{font-size:23px;font-weight:600;margin-bottom:11px}
+.card.done p{color:var(--text-2);max-width:460px;margin:0 auto 9px}
+.card.done .btn{margin-top:22px}
+/* footer */
+footer{
+    flex:0 0 auto;text-align:center;font-size:11.5px;color:var(--muted);
+    padding:20px;border-top:1px solid var(--border);background:var(--white);line-height:1.7;
+}
+footer a{color:var(--blue-mid)}
+/* honeypot: off-canvas rather than display:none, which some bots skip */
+.hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+@media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+        transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+    <svg class="helix" viewBox="0 0 800 110" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 55 Q50 5 100 55 T200 55 T300 55 T400 55 T500 55 T600 55 T700 55 T800 55"
+              fill="none" stroke="#a0c8ff" stroke-width="1.5"/>
+        <path d="M0 55 Q50 105 100 55 T200 55 T300 55 T400 55 T500 55 T600 55 T700 55 T800 55"
+              fill="none" stroke="#a0c8ff" stroke-width="1.5"/>
+        <g fill="#a0c8ff">
+            <circle cx="50" cy="30" r="2.4"/><circle cx="50" cy="80" r="2.4"/>
+            <circle cx="150" cy="30" r="2.4"/><circle cx="150" cy="80" r="2.4"/>
+            <circle cx="250" cy="30" r="2.4"/><circle cx="250" cy="80" r="2.4"/>
+            <circle cx="350" cy="30" r="2.4"/><circle cx="350" cy="80" r="2.4"/>
+            <circle cx="450" cy="30" r="2.4"/><circle cx="450" cy="80" r="2.4"/>
+            <circle cx="550" cy="30" r="2.4"/><circle cx="550" cy="80" r="2.4"/>
+            <circle cx="650" cy="30" r="2.4"/><circle cx="650" cy="80" r="2.4"/>
+            <circle cx="750" cy="30" r="2.4"/><circle cx="750" cy="80" r="2.4"/>
+        </g>
+    </svg>
+    <div class="topbar-in">
+        <img src="logo.png" alt="" onerror="this.style.display='none'">
+        <div class="brand">
+            <h1>EPIC-AMP Feedback Survey</h1>
+            <p>Bioinformatics &amp; Computational Biology Unit &middot; Zewail City</p>
+        </div>
+        <a class="home" href="/">Back to the tool</a>
+    </div>
+</header>
+
+<div class="prog-wrap" id="prog-wrap" hidden>
+    <div class="prog-in">
+        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+        <div class="prog-label" id="prog-label">1 / 10</div>
+    </div>
+    <div class="dots" id="dots"></div>
+</div>
+
+<main><div class="stage" id="stage"></div></main>
+
+<footer>
+    Zewail City of Science, Technology and Innovation &middot; BCBU &middot; Giza, Egypt<br>
+    Questions? <a href="mailto:epicamp.sup@gmail.com">epicamp.sup@gmail.com</a>
+</footer>
+
+<script>
+(function () {
+'use strict';
+
+/* ------------------------------------------------------------------ config */
+/* Paste the Apps Script /exec URL here. While it is empty the survey does not
+   open at all, so an answer can never be collected with nowhere to put it. */
+var SURVEY_ENDPOINT = '';
+var CONSENT_VERSION = '2026-11-17';
+var SUPPORT_EMAIL   = 'epicamp.sup@gmail.com';
+
+/* ---------------------------------------------------------------- questions */
+/* These option strings must stay identical to CHOICES/FEATURES in
+   scripts/survey_backend.gs. The server rejects anything it does not know. */
+var Q = [
+  { id:'q1_background', type:'choice',
+    title:'What best describes your background?',
+    options:['Undergraduate student','Master’s student','PhD student',
+             'Researcher / Professor','Bioinformatician','Other'] },
+
+  { id:'q2_ease', type:'scale',
+    title:'How easy was it to navigate and use EPIC-AMP?',
+    options:['Very difficult','Difficult','Neutral','Easy','Very easy'] },
+
+  { id:'q3_features', type:'multi',
+    title:'Which features have you used?',
+    hint:'Select all that apply — at least one.',
+    options:['AMP classification','MIC prediction','Physicochemical properties analysis',
+             'Helical wheel visualization','Peptide mutation','Known peptide comparison',
+             '3D structure visualization','SHAP / LIME interpretability','PDF report generation'] },
+
+  { id:'q4_usefulness', type:'scale',
+    title:'How useful did you find the platform’s features?',
+    options:['Not useful','Slightly useful','Moderately useful','Very useful','Extremely useful'] },
+
+  { id:'q5_clarity', type:'scale',
+    title:'How would you rate the clarity and interpretability of the prediction results?',
+    options:['Very poor','Poor','Acceptable','Good','Excellent'] },
+
+  { id:'q6_issues', type:'choice',
+    title:'Have you encountered any technical issues?',
+    options:['No','Yes'],
+    reveal:{ when:'Yes', id:'q6_detail', kind:'long', required:true, max:1000,
+             label:'Please describe what happened.',
+             placeholder:'What were you doing, what did you expect, and what happened instead?' } },
+
+  { id:'q7_workflow', type:'scale',
+    title:'Would you consider using EPIC-AMP in your research workflow?',
+    options:['Definitely','Probably','Not sure','Probably not','No'] },
+
+  { id:'q8_most_valuable', type:'short', required:true, max:500,
+    title:'What is the most valuable feature of EPIC-AMP?',
+    placeholder:'A sentence is plenty.' },
+
+  { id:'q9_suggestions', type:'long', required:false, max:2000,
+    title:'What improvements or additional features would you suggest?',
+    hint:'Optional, but this is the answer that shapes what we build next.',
+    placeholder:'Anything that got in your way, or anything missing…' },
+
+  { id:'q10_followup', type:'choice',
+    title:'Would you be interested in a brief follow-up discussion about your experience?',
+    options:['Yes','No'],
+    reveal:{ when:'Yes', id:'followup_email', kind:'email', required:true,
+             label:'Your preferred contact email',
+             placeholder:'you@institution.edu', consent:true } }
+];
+
+/* -------------------------------------------------------------------- state */
+var answers = {};
+var step = -1;                 /* -1 = intro, Q.length = submitting/done */
+var token = null;
+var going = 1;
+var submitted = false;
+
+var stage    = document.getElementById('stage');
+var progWrap = document.getElementById('prog-wrap');
+var progFill = document.getElementById('prog-fill');
+var progLbl  = document.getElementById('prog-label');
+var dotsEl   = document.getElementById('dots');
+
+var ICON_TICK = '<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="#0056a6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 7"/></svg>';
+var ICON_BOX  = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 7"/></svg>';
+var PIPS = ['var(--red)','var(--orange)','var(--amber)','#7cb342','var(--green)'];
+
+function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+}
+
+/* --------------------------------------------------------------- rendering */
+function render() {
+    var html, cls = going < 0 ? 'swap back' : 'swap';
+    if (step === -1)            html = introHtml();
+    else if (step < Q.length)   html = questionHtml(Q[step], step);
+    else                        html = ''; /* set by submit flow */
+    if (html) {
+        stage.innerHTML = '<div class="' + cls + '">' + html + '</div>';
+        wire();
+    }
+    progWrap.hidden = (step < 0 || step >= Q.length);
+    if (!progWrap.hidden) {
+        var pct = ((step + 1) / Q.length) * 100;
+        progFill.style.width = pct + '%';
+        progLbl.textContent = (step + 1) + ' / ' + Q.length;
+        paintDots();
+    }
+    var h = stage.querySelector('h2');
+    if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function paintDots() {
+    if (!dotsEl.children.length) {
+        for (var i = 0; i < Q.length; i++) {
+            var b = document.createElement('button');
+            b.type = 'button'; b.className = 'dot';
+            b.setAttribute('data-go', String(i));
+            b.setAttribute('aria-label', 'Question ' + (i + 1));
+            dotsEl.appendChild(b);
+        }
+    }
+    for (var j = 0; j < Q.length; j++) {
+        var d = dotsEl.children[j];
+        d.className = 'dot' + (j === step ? ' now' : (answered(j) ? ' done' : ''));
+        d.disabled = !(j <= step || answered(j));
+    }
+}
+
+function introHtml() {
+    return '<div class="card">' +
+      '<span class="intro-badge">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 7v5l3.5 2"/><circle cx="12" cy="12" r="9"/></svg>' +
+        'Ten questions &middot; about three minutes</span>' +
+      '<h2 class="q">Thank you for using EPIC-AMP.</h2>' +
+      '<p style="margin-top:12px;color:var(--text-2)">We would like to know how the platform worked for you, so we can improve its predictions and make it more useful for antimicrobial peptide research.</p>' +
+      '<p style="margin-top:12px;color:var(--text-2)">Your answers are anonymous. We do not record your IP address, and we ask for an email address only at the very end, only if you offer one.</p>' +
+      '<div class="nav"><span class="spacer"></span>' +
+        '<span class="kbd-tip" style="margin-right:6px">Press <kbd>Enter</kbd> to begin</span>' +
+        '<button class="btn btn-primary" data-act="next">Start the survey' +
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg></button>' +
+      '</div></div>';
+}
+
+function questionHtml(q, i) {
+    var body = '';
+    if (q.type === 'choice') {
+        body = '<div class="opts" role="radiogroup" aria-labelledby="qt">' + q.options.map(function (o, k) {
+            var on = answers[q.id] === o;
+            return '<button type="button" class="opt" role="radio" aria-checked="' + on + '" data-pick="' + esc(o) + '">' +
+                   '<span class="key">' + (k + 1) + '</span><span class="txt">' + esc(o) + '</span>' + ICON_TICK + '</button>';
+        }).join('') + '</div>';
+    } else if (q.type === 'scale') {
+        var cur = answers[q.id];
+        body = '<div class="scale"><div class="scale-row" role="radiogroup" aria-labelledby="qt">' +
+            q.options.map(function (o, k) {
+                var on = cur === o;
+                return '<button type="button" class="seg" role="radio" aria-checked="' + on + '" data-pick="' + esc(o) + '" title="' + esc(o) + '">' +
+                       '<span class="pip" style="background:' + (on ? PIPS[k] : 'var(--border)') + '"></span>' +
+                       '<span class="n">' + (k + 1) + '</span>' +
+                       '<span class="lbl" style="font-size:11.5px">' + esc(o) + '</span></button>';
+            }).join('') +
+            '</div><div class="scale-ends"><span>' + esc(q.options[0]) + '</span><span>' + esc(q.options[q.options.length - 1]) + '</span></div>' +
+            '<div class="scale-live" id="scale-live">' + (cur ? esc(cur) : '') + '</div></div>';
+    } else if (q.type === 'multi') {
+        var sel = answers[q.id] || [];
+        body = '<div class="chips" role="group" aria-labelledby="qt">' + q.options.map(function (o) {
+            var on = sel.indexOf(o) !== -1;
+            return '<button type="button" class="chip" role="checkbox" aria-checked="' + on + '" data-toggle="' + esc(o) + '">' +
+                   '<span class="box">' + ICON_BOX + '</span>' + esc(o) + '</button>';
+        }).join('') + '</div><div class="chip-count" id="chip-count"></div>';
+    } else {
+        var val = answers[q.id] || '';
+        var rows = q.type === 'long' ? 6 : 3;
+        body = '<div class="field">' +
+            '<textarea id="ta" rows="' + rows + '" maxlength="' + q.max + '" placeholder="' + esc(q.placeholder || '') + '" ' +
+            'aria-labelledby="qt">' + esc(val) + '</textarea>' +
+            '<div class="counter" id="counter"></div></div>';
+    }
+
+    var rev = '';
+    if (q.reveal) {
+        var r = q.reveal, open = answers[q.id] === r.when;
+        var inner;
+        if (r.kind === 'email') {
+            inner = '<label class="fl" for="rv">' + esc(r.label) + '</label>' +
+                '<input type="email" id="rv" autocomplete="email" placeholder="' + esc(r.placeholder) + '" value="' + esc(answers[r.id] || '') + '">' +
+                '<div class="consent"><input type="checkbox" id="rv-consent"' + (answers.contact_consent ? ' checked' : '') + '>' +
+                '<label for="rv-consent">I agree to EPIC-AMP storing this address for the sole purpose of contacting me about this feedback. It is not added to any mailing list, and you can ask us to delete it at any time by writing to ' + esc(SUPPORT_EMAIL) + '.</label></div>';
+        } else {
+            inner = '<label class="fl" for="rv">' + esc(r.label) + '</label>' +
+                '<textarea id="rv" rows="4" maxlength="' + r.max + '" placeholder="' + esc(r.placeholder) + '">' + esc(answers[r.id] || '') + '</textarea>' +
+                '<div class="counter" id="rv-counter"></div>';
+        }
+        rev = '<div class="reveal' + (open ? ' open' : '') + '" id="reveal"><div class="reveal-in">' + inner + '</div></div>';
+    }
+
+    var last = i === Q.length - 1;
+    return '<div class="card">' +
+        '<div class="qnum">' + (i + 1) + ' / ' + Q.length + '</div>' +
+        '<h2 class="q" id="qt">' + esc(q.title) + '</h2>' +
+        (q.hint ? '<p class="hint">' + esc(q.hint) + '</p>' : '') +
+        body + rev +
+        '<div class="err" id="err" role="alert"></div>' +
+        '<div class="nav">' +
+          '<button class="btn btn-ghost" data-act="back">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M12 19l-7-7 7-7"/></svg>Back</button>' +
+          '<span class="spacer"></span>' +
+          '<span class="kbd-tip" style="margin-right:6px">' + (q.type === 'choice' || q.type === 'scale' ? 'Press <kbd>1</kbd>&ndash;<kbd>' + q.options.length + '</kbd> to choose, ' : '') + '<kbd>Enter</kbd> to continue</span>' +
+          '<button class="btn btn-primary" data-act="' + (last ? 'submit' : 'next') + '">' + (last ? 'Submit' : 'Next') +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg></button>' +
+        '</div></div>';
+}
+
+/* ------------------------------------------------------------------ wiring */
+function wire() {
+    var q = Q[step];
+    stage.querySelectorAll('[data-pick]').forEach(function (el) {
+        el.addEventListener('click', function () { pick(el.getAttribute('data-pick')); });
+    });
+    stage.querySelectorAll('[data-toggle]').forEach(function (el) {
+        el.addEventListener('click', function () { toggle(el.getAttribute('data-toggle')); });
+    });
+    var ta = document.getElementById('ta');
+    if (ta && q) {
+        answers[q.id] = ta.value;
+        var count = function () {
+            var c = document.getElementById('counter');
+            var left = q.max - ta.value.length;
+            c.textContent = ta.value.length + ' / ' + q.max;
+            c.className = 'counter' + (left < 40 ? ' warn' : '');
+            answers[q.id] = ta.value;
+        };
+        ta.addEventListener('input', count); count();
+    }
+    var rv = document.getElementById('rv');
+    if (rv && q && q.reveal) {
+        rv.addEventListener('input', function () {
+            answers[q.reveal.id] = rv.value;
+            var c = document.getElementById('rv-counter');
+            if (c) c.textContent = rv.value.length + ' / ' + q.reveal.max;
+        });
+        if (document.getElementById('rv-counter')) {
+            document.getElementById('rv-counter').textContent = rv.value.length + ' / ' + q.reveal.max;
+        }
+    }
+    var cb = document.getElementById('rv-consent');
+    if (cb) cb.addEventListener('change', function () {
+        answers.contact_consent = cb.checked;
+        answers.consent_at = cb.checked ? new Date().toISOString() : '';
+    });
+    if (q && q.type === 'multi') updateChipCount();
+}
+
+function updateChipCount() {
+    var el = document.getElementById('chip-count');
+    if (!el) return;
+    var n = (answers[Q[step].id] || []).length;
+    el.textContent = n === 0 ? 'Nothing selected yet.' : n + (n === 1 ? ' feature selected' : ' features selected');
+}
+
+function pick(value) {
+    var q = Q[step];
+    answers[q.id] = value;
+    stage.querySelectorAll('[data-pick]').forEach(function (el, k) {
+        var on = el.getAttribute('data-pick') === value;
+        el.setAttribute('aria-checked', String(on));
+        var pip = el.querySelector('.pip');
+        if (pip) pip.style.background = on ? PIPS[k] : 'var(--border)';
+    });
+    var live = document.getElementById('scale-live');
+    if (live) live.textContent = value;
+    hideErr();
+    if (q.reveal) {
+        var rvw = document.getElementById('reveal');
+        if (rvw) {
+            var open = value === q.reveal.when;
+            rvw.classList.toggle('open', open);
+            if (open) { var f = document.getElementById('rv'); if (f) setTimeout(function () { f.focus(); }, 260); }
+        }
+        return;                       /* let them fill the revealed field */
+    }
+    setTimeout(function () { if (step < Q.length - 1) go(1); }, 190);
+}
+
+function toggle(value) {
+    var q = Q[step];
+    var list = answers[q.id] || [];
+    var at = list.indexOf(value);
+    if (at === -1) list.push(value); else list.splice(at, 1);
+    answers[q.id] = list;
+    stage.querySelectorAll('[data-toggle]').forEach(function (el) {
+        el.setAttribute('aria-checked', String(list.indexOf(el.getAttribute('data-toggle')) !== -1));
+    });
+    updateChipCount(); hideErr();
+}
+
+/* --------------------------------------------------------------- validation */
+function answered(i) {
+    var q = Q[i], a = answers[q.id];
+    if (q.type === 'multi') return !!(a && a.length);
+    if (q.type === 'short' || q.type === 'long') return q.required ? !!(a && a.trim()) : a !== undefined;
+    return !!a;
+}
+
+function problem() {
+    var q = Q[step], a = answers[q.id];
+    if (q.type === 'multi' && !(a && a.length)) return 'Please choose at least one feature — or go back if you have not used any yet.';
+    if (q.type === 'choice' || q.type === 'scale') { if (!a) return 'Please choose one of the options.'; }
+    if (q.type === 'short' && !(a && a.trim())) return 'Please write a short answer before continuing.';
+    if (q.reveal && a === q.reveal.when) {
+        var v = (answers[q.reveal.id] || '').trim();
+        if (q.reveal.kind === 'email') {
+            if (!/^[^@\s]{1,64}@[^@\s.]+(\.[^@\s.]+)+$/.test(v)) return 'That does not look like an email address. Check it, or answer “No” instead.';
+            if (!answers.contact_consent) return 'Please tick the box to confirm we may store this address.';
+        } else if (q.reveal.required && !v) {
+            return 'Please describe the issue, or answer “No” instead.';
+        }
+    }
+    return null;
+}
+
+function showErr(msg) { var e = document.getElementById('err'); if (e) { e.textContent = msg; e.classList.add('show'); } }
+function hideErr()     { var e = document.getElementById('err'); if (e) e.classList.remove('show'); }
+
+/* ------------------------------------------------------------- navigation */
+function go(dir) {
+    if (dir > 0 && step >= 0 && step < Q.length) {
+        var p = problem();
+        if (p) { showErr(p); return; }
+    }
+    going = dir;
+    step = Math.max(-1, Math.min(Q.length - 1, step + dir));
+    render();
+}
+
+function jump(i) {
+    if (i === step) return;
+    if (i > step) { var p = problem(); if (p) { showErr(p); return; } }
+    going = i > step ? 1 : -1; step = i; render();
+}
+
+/* ------------------------------------------------------------------ submit */
+function payload() {
+    var hpField = document.getElementById('website');
+    var out = {
+        token: token,
+        /* A real person never sees this field, so anything in it came from a bot
+           and the server drops the submission. It has to be read, not assumed. */
+        website: hpField ? hpField.value : '',
+        survey_version: '1',
+        consent_version: CONSENT_VERSION
+    };
+    Q.forEach(function (q) {
+        out[q.id] = q.type === 'multi' ? (answers[q.id] || []) : (answers[q.id] === undefined ? '' : answers[q.id]);
+        if (q.reveal) out[q.reveal.id] = answers[q.reveal.id] === undefined ? '' : answers[q.reveal.id];
+    });
+    if (answers.q10_followup === 'Yes') {
+        out.contact_consent = !!answers.contact_consent;
+        out.consent_at = answers.consent_at || new Date().toISOString();
+    } else {
+        out.followup_email = '';
+        out.contact_consent = false;
+    }
+    return out;
+}
+
+var MESSAGES = {
+    too_fast:     'That was submitted a little too quickly for our spam check. Please wait a few seconds and try again.',
+    expired:      'This page has been open for a long time and the form expired. Reload it and your answers can be sent again.',
+    replayed:     'This response has already been received — thank you.',
+    rate_limited: 'We are receiving a lot of responses right now. Please try again in a few minutes.',
+    busy:         'The server was busy. Please try again.',
+    invalid:      'One of the answers did not pass our checks. Please go back and review them.'
+};
+
+function submit() {
+    var p = problem();
+    if (p) { showErr(p); return; }
+    if (submitted) return;
+
+    var btn = stage.querySelector('[data-act="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+    hideErr();
+
+    var fail = function (msg) {
+        submitted = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
+        showErr(msg + ' If it keeps failing, email us at ' + SUPPORT_EMAIL + '.');
+    };
+
+    var send = function () {
+        fetch(SURVEY_ENDPOINT, {
+            method: 'POST',
+            /* text/plain avoids a CORS preflight, which Apps Script cannot answer */
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload())
+        }).then(function (r) { return r.json(); }).then(function (res) {
+            if (res && res.ok) { submitted = true; done(); return; }
+            var code = (res && res.error) || 'server';
+            if (code === 'replayed') { submitted = true; done(); return; }
+            fail(MESSAGES[code] || 'We could not record your answers.');
+        }).catch(function () {
+            fail('We could not reach the server.');
+        });
+    };
+
+    if (!token) { getToken().then(function () { token ? send() : fail('Our spam check could not start.'); }); }
+    else send();
+}
+
+function done() {
+    progWrap.hidden = true;
+    stage.innerHTML = '<div class="card done swap">' +
+        '<svg class="ring" viewBox="0 0 48 48" fill="none" stroke="#2e7d32" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="24" cy="24" r="21" stroke="#c8e6c9"/><path d="M14 25l7 7 14-15"/></svg>' +
+        '<h2>Thank you — that is genuinely useful.</h2>' +
+        '<p>Your answers have been recorded. They go to the EPIC-AMP team at BCBU and nowhere else.</p>' +
+        '<p>If you asked to be contacted, we will be in touch about a short discussion.</p>' +
+        '<a class="btn btn-primary" href="/">Back to EPIC-AMP</a></div>';
+    var h = stage.querySelector('h2');
+    if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closed(reason) {
+    progWrap.hidden = true;
+    stage.innerHTML = '<div class="card done">' +
+        '<svg class="ring" viewBox="0 0 48 48" fill="none" stroke="#0056a6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="24" cy="24" r="21" stroke="#d0daea"/><path d="M24 15v12M24 32.4v.2"/></svg>' +
+        '<h2>The survey is not open yet</h2>' +
+        '<p>' + esc(reason) + '</p>' +
+        '<p>In the meantime we would still like to hear from you — just write to ' +
+        '<a href="mailto:' + esc(SUPPORT_EMAIL) + '">' + esc(SUPPORT_EMAIL) + '</a>.</p>' +
+        '<a class="btn btn-primary" href="/">Back to EPIC-AMP</a></div>';
+}
+
+function getToken() {
+    return fetch(SURVEY_ENDPOINT + '?action=token', { method: 'GET' })
+        .then(function (r) { return r.json(); })
+        .then(function (res) { if (res && res.token) token = res.token; })
+        .catch(function () { /* retried at submit time */ });
+}
+
+/* -------------------------------------------------------------------- keys */
+document.addEventListener('keydown', function (e) {
+    if (step >= Q.length || submitted) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    var typing = tag === 'textarea' || tag === 'input';
+
+    if (e.key === 'Enter' && !e.shiftKey) {
+        if (typing && tag === 'textarea') return;      /* newlines in long answers */
+        e.preventDefault();
+        if (step === -1) { go(1); return; }
+        if (step === Q.length - 1) submit(); else go(1);
+        return;
+    }
+    if (typing) return;
+    if (step < 0) return;
+    var q = Q[step];
+    if (/^[1-9]$/.test(e.key)) {
+        var k = Number(e.key) - 1;
+        if (q.type === 'choice' || q.type === 'scale') { if (q.options[k]) { e.preventDefault(); pick(q.options[k]); } }
+        else if (q.type === 'multi') { if (q.options[k]) { e.preventDefault(); toggle(q.options[k]); } }
+    } else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    else if (e.key === 'ArrowRight')  { e.preventDefault(); go(1); }
+});
+
+stage.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act');
+    if (act === 'next') go(1);
+    else if (act === 'back') go(-1);
+    else if (act === 'submit') submit();
+});
+dotsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-go]');
+    if (b && !b.disabled) jump(Number(b.getAttribute('data-go')));
+});
+
+/* ------------------------------------------------------------------- start */
+var hp = document.createElement('div');
+hp.className = 'hp';
+hp.innerHTML = '<label for="website">Website</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">';
+document.body.appendChild(hp);
+
+if (!SURVEY_ENDPOINT) {
+    closed('We are still setting it up. Please check back shortly.');
+} else {
+    render();
+    getToken();
+}
+})();
+</script>
+</body>
+</html>

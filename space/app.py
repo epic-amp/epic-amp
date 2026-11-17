@@ -86,7 +86,7 @@ def send_report(to_email, pdf_b64, label, confidence, sequence):
         <h2 style="color:#fff;margin:0">EPIC-AMP Analysis Report</h2>
         <p style="color:#a0c8ff;margin:6px 0 0;font-size:14px">Explainable Antimicrobial Peptide Classification Platform</p>
       </div>
-      <div style="border:1px solid #d0daea;border-top:none;padding:24px;border-radius:0 0 10px 10px">
+      <div style="background:#ffffff;border:1px solid #d0daea;border-top:none;padding:24px;border-radius:0 0 10px 10px">
         <p>Dear Researcher,</p>
         <p>Your peptide sequence has been successfully analyzed using the <strong>EPIC-AMP platform</strong>. Please find your detailed PDF report attached.</p>
         <table style="width:100%;border-collapse:collapse;margin:18px 0;font-size:14px">
@@ -140,7 +140,7 @@ def _survey_html(survey_url, unsubscribe_url):
       <div style="background:#00285a;padding:20px 22px;border-radius:10px 10px 0 0">
         <h2 style="color:#fff;margin:0;font-size:19px">Your EPIC-AMP feedback survey</h2>
       </div>
-      <div style="border:1px solid #d0daea;border-top:none;padding:22px;border-radius:0 0 10px 10px">
+      <div style="background:#ffffff;border:1px solid #d0daea;border-top:none;padding:22px;border-radius:0 0 10px 10px">
         <p>Dear Researcher,</p>
         <p>Thank you for using EPIC-AMP. You asked for our feedback survey when you ran
            your analysis, so here it is &mdash; it is short, and what you tell us decides

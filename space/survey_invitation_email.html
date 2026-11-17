@@ -1,0 +1,83 @@
+<!--
+  EPIC-AMP survey invitation — manual send.
+
+  NOT SendGrid: EPIC-AMP sends through Brevo (api.brevo.com). This file is plain
+  table-based HTML with no provider-specific tags, so it pastes into Brevo's
+  template editor as-is, and would work in SendGrid too if you ever move.
+
+  Nothing sends this. It is for a one-off invitation you compose and send
+  yourself, to people who have already agreed to hear from you. The automatic,
+  consent-gated invitation is a separate thing and lives in space/app.py.
+
+  Replace before sending:
+    {{SURVEY_URL}}       https://epic-amp-v2.vercel.app/feedback
+    {{UNSUBSCRIBE_URL}}  your provider's unsubscribe merge tag
+
+  Subject line:  How is EPIC-AMP working for you? (2 minutes)
+  Preheader:     Ten short questions. Your answers decide what we build next.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EPIC-AMP survey invitation</title>
+</head>
+<body style="margin:0;padding:0;background:#f7f9fc;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Ten short questions. Your answers decide what we build next.</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f9fc;padding:24px 12px;">
+<tr><td align="center">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="max-width:560px;background:#ffffff;border:1px solid #d0daea;border-radius:10px;overflow:hidden;
+              font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:#1a2540;line-height:1.65;">
+
+  <tr><td style="background:#00285a;padding:22px 24px;">
+    <h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:600;">How is EPIC-AMP working for you?</h1>
+    <p style="margin:6px 0 0;color:#a0c8ff;font-size:13.5px;">Ten questions &middot; about two minutes</p>
+  </td></tr>
+
+  <tr><td style="padding:24px;">
+    <p style="margin:0 0 14px;">Dear Researcher,</p>
+
+    <p style="margin:0 0 14px;">You have used <strong>EPIC-AMP</strong> to classify antimicrobial peptides or
+       predict their MIC values. We are deciding what to build next, and we would rather
+       decide that from what users actually need than from what we assume.</p>
+
+    <p style="margin:0 0 20px;">The survey covers how you found the interface, which features you used,
+       whether the predictions were clear enough to act on, and anything that got in your way.</p>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 20px;">
+      <tr><td align="center" bgcolor="#0056a6" style="border-radius:6px;">
+        <a href="{{SURVEY_URL}}"
+           style="display:inline-block;padding:14px 34px;font-size:15.5px;font-weight:600;
+                  color:#ffffff;text-decoration:none;border-radius:6px;">Open the survey</a>
+      </td></tr>
+    </table>
+
+    <p style="margin:0 0 20px;font-size:13px;color:#4a5778;text-align:center;word-break:break-all;">
+      Or paste this into your browser:<br>
+      <a href="{{SURVEY_URL}}" style="color:#1a6fc4;">{{SURVEY_URL}}</a>
+    </p>
+
+    <p style="margin:0 0 14px;">The survey is anonymous. It asks for an email address only at the last
+       question, only if you would like to talk to us further, and only with your explicit agreement.</p>
+
+    <p style="margin:0 0 6px;">Thank you,<br>
+      <strong>The EPIC-AMP Team</strong><br>
+      <span style="color:#666666;font-size:13px;">Bioinformatics &amp; Computational Biology Unit (BCBU)</span></p>
+
+    <hr style="border:none;border-top:1px solid #e0e6f0;margin:22px 0;">
+
+    <p style="margin:0;color:#888888;font-size:11px;line-height:1.7;">
+      Zewail City of Science, Technology and Innovation &middot; BCBU &middot; Giza, Egypt<br>
+      <a href="mailto:epicamp.sup@gmail.com" style="color:#1a6fc4;">epicamp.sup@gmail.com</a><br><br>
+      <a href="{{UNSUBSCRIBE_URL}}" style="color:#1a6fc4;">Unsubscribe from EPIC-AMP emails</a>
+    </p>
+  </td></tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>

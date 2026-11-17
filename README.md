@@ -20,6 +20,7 @@ The deployed site plus new browser-side peptide analysis tools.
 | 3D structure | Step 5 | Interactive 3Dmol.js viewer: ESMFold prediction of the user's sequence, experimental PDB and AlphaFold structures of similar known peptides. Hover/click residues, styles, colouring (type, pLDDT confidence, rainbow, hydrophobicity), surface, spin, PNG/PDB download |
 | Exports | Sequence bar at the top of each analysis tab | CSV / JSON / FASTA with profile, prediction and neighbors |
 | PDF report | Section 1 | Adds a physicochemical profile table and the top 5 known-peptide neighbors |
+| Feedback survey | **/feedback** | Ten questions, one per screen, keyboard-driven, with a progress rail. Stored in a private Google Sheet through Apps Script; admins export a real `.xlsx` from the sheet's own menu. Hidden until `SURVEY_ENDPOINT` is set. See `docs/SURVEY.md` |
 | Optional survey invitation | **Analysis** tab | An unticked opt-in box emails one survey invitation as soon as the analysis finishes. One per address per survey round; the UUID it is sent under is the opt-out token. Hidden until `SURVEY_ENABLED = true`. See `docs/PRIVACY_AND_FEEDBACK.md` |
 
 Citations and licenses for all three databases are in About → Data Sources, in the PDF report and in CSV/JSON exports. Keep those credits.
@@ -28,13 +29,17 @@ Citations and licenses for all three databases are in About → Data Sources, in
 
 ```
 index.html        ← the whole app (replaces the old one)
-unsubscribe.html  ← served at /unsubscribe; cancels the follow-up email
+feedback.html     ← served at /feedback; the ten-question survey
+unsubscribe.html  ← served at /unsubscribe; opts out of survey emails
 data/peptides.json ← 28,258 peptides from DRAMP + dbAMP + UniProt (7.3 MB, ~1.4 MB gzipped, loaded only on search)
-space/app.py      ← the Hugging Face mailer Space: /send, /schedule_feedback, /cancel_feedback
+space/app.py      ← the Hugging Face mailer Space: /send, /send_survey, /unsubscribe_survey
+space/survey_invitation_email.html ← manual invitation template (Brevo, not SendGrid)
 scripts/build_peptides.py        ← rebuilds data/peptides.json
 scripts/consent_ledger.gs        ← Apps Script consent ledger (deploy separately; see the docs)
+scripts/survey_backend.gs        ← Apps Script survey storage, validation and .xlsx export
 scripts/analysis_log_retention.gs ← 12-month retention for the existing analysis log
-docs/PRIVACY_AND_FEEDBACK.md ← the follow-up email, the data map, deployment steps, legal questions
+docs/SURVEY.md               ← the survey: what was built vs asked for, deployment, security tests
+docs/PRIVACY_AND_FEEDBACK.md ← the survey invitation, the data map, deployment steps, legal questions
 docs/EXTERNAL_MODELS.md   ← HemoPI2 / ToxinPred3 assessment and why they are not integrated
 docs/STRUCTURE.md         ← structure module, ColabFold assessment, costs, privacy, limits
 THIRD_PARTY_NOTICES.md    ← licences for every library, dataset and service
