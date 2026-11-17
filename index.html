@@ -1962,7 +1962,7 @@ kbd {
                     <div class="consent-box">
                         <div class="consent-row">
                             <input type="checkbox" id="feedback-consent">
-                            <label for="feedback-consent"><b>Optional.</b> Email me once in two days to ask if this was useful. One email, with a cancel link inside.</label>
+                            <label for="feedback-consent"><b>Optional.</b> Email me your feedback survey. One email with the link, nothing else.</label>
                         </div>
                         <div class="consent-note">Leave it unticked and we send only your report.</div>
                     </div>
@@ -2384,10 +2384,11 @@ kbd {
     const IS_EMAIL_SENDING_ENABLED    = true;
     const MAILER_SPACE_ID             = "nonzeroexit/AMP-Mailer";
     const HF_TOKEN                    = null;
-    /* One optional follow-up email. The 48-hour delay is Brevo's scheduledAt,
-       applied inside the mailer Space, so there is no cron job and no queue here
-       and nothing in this page has to remember anything between visits. */
-    const FEEDBACK_ENABLED            = true;
+    /* One optional survey invitation, sent as soon as the analysis finishes.
+       The Space holds the survey link (SURVEY_URL) and refuses to send without
+       one, so set that before turning this on, or the box offers something that
+       cannot be delivered. Set to false and the box is removed from the page. */
+    const SURVEY_ENABLED              = false;
     const CONSENT_VERSION             = '2026-11-17';
     const SHEET_WEBHOOK_URL           = 'https://script.google.com/macros/s/AKfycbzF8_W8uwshY2THg7atOc9TmRqerLKAJyZbs9_-hP5kj99LMYTqn2e4Ki8SwNzZo8Oc/exec';
     const AA_PROPS = {
@@ -2603,6 +2604,7 @@ kbd {
         sequenceInput?.addEventListener('paste', handlePaste);
         sequenceInput?.addEventListener('keypress', handleKeyPress);
         userEmailInput?.addEventListener('input', updateBtnState);
+        if (!SURVEY_ENABLED) document.querySelector('.consent-box')?.remove();
         feedbackConsent?.addEventListener('change', () => {
             consentGivenAt = feedbackConsent.checked ? new Date().toISOString() : null;
         });
@@ -2799,10 +2801,11 @@ kbd {
         setStep(1, 'active', 'Enter a valid sequence to begin.');
         if (step1Sub) step1Sub.textContent = 'Enter sequence';
     }
-    /* Ask the mailer Space to schedule the single follow-up email. The Space mints
-       the unsubscribe token, records the consent and hands the message to Brevo; if
-       any of that fails it schedules nothing, which is the safe way to fail. */
-    async function scheduleFeedbackEmail(toEmail) {
+    /* Ask the mailer Space to send the one survey invitation. The Space mints the
+       opt-out token, records the consent, refuses if the same address has already
+       been invited or has opted out, and only then mails it. If any of that fails
+       it sends nothing, which is the safe way to fail. */
+    async function sendSurveyInvite(toEmail) {
         let box = document.getElementById('feedback-status');
         if (!box) {
             box = document.createElement('div');
@@ -2811,27 +2814,27 @@ kbd {
             box.style.cssText = 'margin-top:8px;text-align:center;';
             additionalOutput.appendChild(box);
         }
-        box.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scheduling your follow-up email\u2026';
+        box.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending your survey\u2026';
         const warn = msg => { box.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--accent-orange)"></i> ' + msg; };
         try {
             const mailer = await Client.connect(MAILER_SPACE_ID, { hf_token: HF_TOKEN });
-            const res = await mailer.predict('/schedule_feedback', [
+            const res = await mailer.predict('/send_survey', [
                 toEmail, consentGivenAt || new Date().toISOString(), CONSENT_VERSION
             ]);
             const out = String((Array.isArray(res?.data) ? res.data[0] : res?.data) || '');
-            if (out.startsWith('scheduled')) {
-                box.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-green)"></i> One follow-up email is scheduled for about two days from now. You can cancel it from the link inside it.';
+            if (out.startsWith('sent')) {
+                box.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-green)"></i> Survey sent \u2014 it should arrive alongside your report. Thank you.';
             } else if (out.startsWith('skipped:unsubscribed')) {
-                box.innerHTML = '<i class="fas fa-info-circle"></i> You asked us before not to send these, so nothing was scheduled.';
-            } else if (out.startsWith('skipped:already_pending')) {
-                box.innerHTML = '<i class="fas fa-info-circle"></i> A follow-up email is already pending for this address, so no second one was scheduled.';
+                box.innerHTML = '<i class="fas fa-info-circle"></i> You asked us before not to send these, so nothing was sent.';
+            } else if (out.startsWith('skipped:already_invited')) {
+                box.innerHTML = '<i class="fas fa-info-circle"></i> We have already sent you this survey, so we did not send it twice.';
             } else {
-                console.warn('Follow-up not scheduled:', out);
-                warn('The follow-up email could not be scheduled, so none will be sent. Your report was not affected.');
+                console.warn('Survey not sent:', out);
+                warn('The survey could not be sent. Your report was not affected.');
             }
         } catch (err) {
-            console.warn('Follow-up scheduling failed:', err);
-            warn('The follow-up email could not be scheduled, so none will be sent. Your report was not affected.');
+            console.warn('Survey send failed:', err);
+            warn('The survey could not be sent. Your report was not affected.');
         }
     }
     function resetDashboard() {
@@ -3126,8 +3129,8 @@ kbd {
                         emailStatusResult.innerHTML = '<i class="fas fa-info-circle"></i> Email sending disabled — use the download button above.';
                     }
                 }
-                if (FEEDBACK_ENABLED && feedbackConsent?.checked && userEmailInput?.value?.trim()) {
-                    await scheduleFeedbackEmail(userEmailInput.value.trim());
+                if (SURVEY_ENABLED && feedbackConsent?.checked && userEmailInput?.value?.trim()) {
+                    await sendSurveyInvite(userEmailInput.value.trim());
                 }
             } else {
                 clearAdditionalOutput();

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Cancel follow-up email — EPIC-AMP</title>
+<title>Unsubscribe — EPIC-AMP</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,7 +62,7 @@
         <img src="logo.png" alt="" onerror="this.style.display='none'">
         <div>
             <h1>EPIC-AMP</h1>
-            <p>Cancel the follow-up email</p>
+            <p>Survey emails</p>
         </div>
     </div>
     <div class="card-body">
@@ -71,12 +71,12 @@
                 <path d="M12 3a9 9 0 1 0 9 9" />
             </svg>
             <div>
-                <h2 id="title">Cancelling&hellip;</h2>
-                <div id="body"><p class="msg">One moment. Our mail service may take up to a minute to wake up.</p></div>
+                <h2 id="title">One moment&hellip;</h2>
+                <div id="body"><p class="msg">Recording your choice. Our mail service may take up to a minute to wake up.</p></div>
             </div>
         </div>
         <div class="note" id="note">
-            You do not need an account or a password to do this, and you do not have to reply to anything.
+You do not need an account or a password to do this, and you do not have to reply to anything.
         </div>
         <div class="actions"><a class="btn" href="/">Back to EPIC-AMP</a></div>
     </div>
@@ -113,38 +113,34 @@
     const token = new URLSearchParams(location.search).get('t') || '';
     if (!UUID_RE.test(token)) {
         render('warn', 'That link is not complete',
-            ['The cancel link in the email carries a code, and this address does not have a valid one. It may have been shortened or wrapped by your mail program.',
+            ['The unsubscribe link in the email carries a code, and this address does not have a valid one. It may have been shortened or wrapped by your mail program.',
              'Write to ' + mailto + ' and we will take your address off the list by hand.'],
-            'We only ever send one follow-up email per analysis, so there is nothing else queued for you either way.');
+            'We only ever send one survey email, so there is nothing queued for you either way.');
     } else {
         try {
             const mailer = await Client.connect(MAILER_SPACE_ID);
-            const res = await mailer.predict('/cancel_feedback', [token]);
+            const res = await mailer.predict('/unsubscribe_survey', [token]);
             const out = String((Array.isArray(res?.data) ? res.data[0] : res?.data) || '');
 
-            if (out.startsWith('cancelled')) {
-                render('ok', 'Done — that email will not be sent',
-                    ['We have removed it from the queue before it went out, and recorded that you do not want these, so a later analysis will not schedule another one.'],
-                    'We kept no copy of your address to do this. The record is a one-way hash, which is enough to recognise a repeat request and not enough to write to you.');
-            } else if (out.startsWith('already_sent')) {
-                render('ok', 'Noted — we will not send another',
-                    ['That message had already gone out, so there was nothing left to cancel. We have recorded your choice, and a later analysis will not schedule another follow-up.'],
-                    'There was only ever one email, so you can ignore the one in your inbox.');
+            if (out.startsWith('unsubscribed')) {
+                render('ok', 'Done — we will not send you these again',
+                    ['Your choice is recorded. No later analysis, and no future survey, will send anything to this address.'],
+                    'We kept no copy of your address to do this. The record is a one-way hash, which is enough to recognise the same address again and not enough to write to it.');
             } else if (out.startsWith('unknown')) {
-                render('info', 'Nothing was pending under that link',
-                    ['Either it has been used already or the record has passed its retention period and been deleted. Either way, nothing is queued for you.',
+                render('info', 'Nothing was found under that link',
+                    ['Either it has been used already or the record has passed its retention period and been deleted. Either way, nothing further will be sent to you.',
                      'If you are still getting mail from us, write to ' + mailto + ' and we will deal with it.'], null);
             } else {
-                console.warn('cancel_feedback returned:', out);
+                console.warn('unsubscribe_survey returned:', out);
                 render('warn', 'We could not complete that just now',
                     ['Our mail service did not answer. Please reload this page in a minute.',
-                     'If it keeps failing, write to ' + mailto + ' and we will cancel it by hand. Your request will be honoured either way.'], null);
+                     'If it keeps failing, write to ' + mailto + ' and we will record it by hand. Your request will be honoured either way.'], null);
             }
         } catch (err) {
             console.warn(err);
             render('warn', 'We could not reach the mail service',
                 ['This page talks to our mail service directly, and it did not answer. Please reload in a minute.',
-                 'If it still fails, write to ' + mailto + ' and we will cancel it by hand.'], null);
+                 'If it still fails, write to ' + mailto + ' and we will record it by hand.'], null);
         }
     }
 </script>

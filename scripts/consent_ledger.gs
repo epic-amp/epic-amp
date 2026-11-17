@@ -1,13 +1,15 @@
 /**
- * EPIC-AMP follow-up consent ledger.
+ * EPIC-AMP survey consent ledger.
  *
  * A Google Apps Script web app bound to its own spreadsheet. It is the only
- * place that remembers anything about the optional follow-up email:
+ * place that remembers anything about the optional survey invitation:
  *
- *   - that someone consented, when, and to which version of the notice
- *   - that one request is still pending, so a second click cannot book a second
- *     email (the check and the write happen inside one LockService lock)
- *   - that someone cancelled, so no later analysis can ever book another
+ *   - that someone consented, when, and to which version of the wording
+ *   - that this address has already been invited to this survey round, so
+ *     running three analyses does not send three invitations (the check and the
+ *     write happen inside one LockService lock)
+ *   - that someone opted out, so no later analysis and no later survey round
+ *     can ever invite them again
  *
  * The address itself is NOT stored. We keep an HMAC-SHA256 of it under a salt
  * held in Script Properties. That is enough to recognise the same address again
@@ -38,7 +40,7 @@
 
 var SHEET_NAME = 'consent';
 var HEADERS = ['token', 'email_sha256', 'consent_at', 'consent_version',
-               'scheduled_for', 'status', 'brevo_message_id', 'unsubscribed_at',
+               'survey_round', 'status', 'brevo_message_id', 'unsubscribed_at',
                'created_at', 'purge_after', 'detail'];
 var COL = {};
 for (var i = 0; i < HEADERS.length; i++) COL[HEADERS[i]] = i;
@@ -152,9 +154,13 @@ function doPost(e) {
 }
 
 /**
- * Decide whether one more follow-up may be booked for this address, and record
- * the consent if so. The lock makes the decision and the write one step, so two
- * simultaneous submissions cannot both be told to proceed.
+ * Decide whether this address may be invited, and record the consent if so.
+ * The lock makes the decision and the write one step, so two simultaneous
+ * submissions cannot both be told to proceed.
+ *
+ * Refuses an address that ever opted out, and one already invited to this
+ * survey round. Bumping SURVEY_ROUND in the Space opens a new round, so people
+ * who have not opted out can be invited to a genuinely new survey.
  */
 function handleClaim(body) {
   if (!body.email || !body.token) return { ok: false, proceed: false, reason: 'missing_fields' };
@@ -165,17 +171,18 @@ function handleClaim(body) {
     var sh = sheet();
     var hash = emailHash(body.email);
     var now = new Date();
+    var round = String(body.survey_round || '1');
     var data = rows(sh);
 
     for (var i = 0; i < data.length; i++) {
       if (String(data[i][COL.email_sha256]) !== hash) continue;
       var status = String(data[i][COL.status]);
+      // An opt-out outlives every round.
       if (status === 'unsubscribed') return { ok: true, proceed: false, reason: 'unsubscribed' };
-      if (status === 'claimed' || status === 'scheduled') {
-        var due = new Date(data[i][COL.scheduled_for]);
-        if (!isNaN(due.getTime()) && due > now) {
-          return { ok: true, proceed: false, reason: 'already_pending' };
-        }
+      // Already invited to this round, or an invitation is mid-flight.
+      if ((status === 'sent' || status === 'claimed') &&
+          String(data[i][COL.survey_round]) === round) {
+        return { ok: true, proceed: false, reason: 'already_invited' };
       }
     }
 
@@ -185,7 +192,7 @@ function handleClaim(body) {
     row[COL.email_sha256]     = hash;
     row[COL.consent_at]       = String(body.consent_at || nowIso());
     row[COL.consent_version]  = String(body.consent_version || 'unversioned');
-    row[COL.scheduled_for]    = String(body.scheduled_for || '');
+    row[COL.survey_round]     = round;
     row[COL.status]           = 'claimed';
     row[COL.brevo_message_id] = '';
     row[COL.unsubscribed_at]  = '';
@@ -221,7 +228,7 @@ function handleMark(body) {
 }
 
 /**
- * Someone used the cancel link. The row becomes a permanent suppression: the
+ * Someone used the opt-out link. The row becomes a permanent suppression: the
  * hash stays so we can recognise the address, everything else is cleared, and
  * the retention purge leaves it alone.
  */
@@ -233,7 +240,7 @@ function handleUnsubscribe(body) {
     var sh = sheet();
     var hit = findRowByToken(sh, String(body.token));
     if (!hit) return { ok: true, found: false };
-    var wasPending = String(hit.values[COL.status]) === 'scheduled' ||
+    var wasPending = String(hit.values[COL.status]) === 'sent' ||
                      String(hit.values[COL.status]) === 'claimed';
     sh.getRange(hit.index, COL.status + 1).setValue('unsubscribed');
     sh.getRange(hit.index, COL.unsubscribed_at + 1).setValue(nowIso());
@@ -248,9 +255,9 @@ function handleUnsubscribe(body) {
 /* ------------------------------------------------------------- retention -- */
 
 /**
- * Daily. Deletes consent records past their retention date. Cancellations are
- * kept, because forgetting one would mean emailing someone who said no; they
- * are a bare hash with no address, date or sequence attached.
+ * Daily. Deletes consent records past their retention date. Opt-outs are kept,
+ * because forgetting one would mean emailing someone who said no; they are a
+ * bare hash with no address, date or sequence attached.
  */
 function purgeExpired() {
   var lock = LockService.getScriptLock();

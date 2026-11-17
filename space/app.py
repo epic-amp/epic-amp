@@ -2,28 +2,28 @@
 EPIC-AMP mailer Space.
 
 Three endpoints:
-  /send              - the report email (unchanged)
-  /schedule_feedback - books ONE follow-up email ~48 h out, on explicit consent
-  /cancel_feedback   - cancels/suppresses it from the link inside that email
+  /send               - the report email (unchanged)
+  /send_survey        - sends ONE survey invitation at once, on explicit consent
+  /unsubscribe_survey - records "do not send me these" from the link inside it
 
-There is no cron job and no queue. Brevo's transactional API accepts a
-`scheduledAt` up to 72 hours ahead and lets us cancel by the `batchId` we mint,
-so the 48 h delay and the unsubscribe are both handled by the mail provider.
-Docs: https://developers.brevo.com/docs/schedule-batch-sendings
+One invitation per address per survey round, ever. There is no queue, no cron
+and no mailing list: the address is not kept anywhere, and the ledger holds only
+a salted hash of it, which is enough to avoid inviting the same person twice.
 
 Secrets come from the Space's environment, never from the browser:
-  BREVO_API_KEY        (required)
-  CONSENT_LOG_URL      Apps Script /exec URL that owns the consent sheet
-  CONSENT_LOG_SECRET   shared secret for that script
-  SITE_URL             default https://epic-amp-v2.vercel.app
-  FOLLOWUP_DELAY_HOURS default 48
+  BREVO_API_KEY       (required)
+  SURVEY_URL          (required, or nothing is sent) the survey to link to
+  SURVEY_ROUND        default 1; bump it to invite past recipients to a new one
+  CONSENT_LOG_URL     Apps Script /exec URL that owns the consent sheet
+  CONSENT_LOG_SECRET  shared secret for that script
+  SITE_URL            default https://epic-amp-v2.vercel.app
 """
 
 import gradio as gr
 import os
 import re
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import requests
 
@@ -36,8 +36,10 @@ CONSENT_URL    = os.environ.get("CONSENT_LOG_URL", "").strip()
 CONSENT_SECRET = os.environ.get("CONSENT_LOG_SECRET", "").strip()
 SITE_URL       = os.environ.get("SITE_URL", "https://epic-amp-v2.vercel.app").rstrip("/")
 
-# Brevo refuses a scheduledAt more than 72 h out; stay clear of the edge.
-DELAY_HOURS = max(1.0, min(70.0, float(os.environ.get("FOLLOWUP_DELAY_HOURS", "48"))))
+# Set this to the live survey. While it is empty, /send_survey refuses, so a
+# missing link can never go out in an email.
+SURVEY_URL   = os.environ.get("SURVEY_URL", "").strip()
+SURVEY_ROUND = (os.environ.get("SURVEY_ROUND", "1").strip() or "1")[:20]
 
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s.]+(\.[^@\s.]+)+$")
 UUID_RE  = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
@@ -132,107 +134,113 @@ def send_report(to_email, pdf_b64, label, confidence, sequence):
 # --------------------------------------------------------------------------- #
 #  2. the follow-up email
 # --------------------------------------------------------------------------- #
-def _followup_html(cancel_url, consent_at):
+def _survey_html(survey_url, unsubscribe_url):
     return f"""
     <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:560px;margin:auto;color:#1a2540;line-height:1.65">
       <div style="background:#00285a;padding:20px 22px;border-radius:10px 10px 0 0">
-        <h2 style="color:#fff;margin:0;font-size:19px">How did EPIC-AMP work out?</h2>
+        <h2 style="color:#fff;margin:0;font-size:19px">Your EPIC-AMP feedback survey</h2>
       </div>
       <div style="border:1px solid #d0daea;border-top:none;padding:22px;border-radius:0 0 10px 10px">
         <p>Dear Researcher,</p>
-        <p>You ran a peptide through EPIC-AMP a couple of days ago and asked us to check back
-           once. This is that one email &mdash; there will not be another.</p>
-        <p style="margin:18px 0;padding:14px 16px;background:#f0f4fa;border-left:3px solid #0056a6;border-radius:6px">
-           <strong>Was the result useful to you, and is there anything that got in your way?</strong><br>
-           <span style="font-size:13px;color:#4a5778">A one-line reply to this message is plenty. We read every one.</span>
+        <p>Thank you for using EPIC-AMP. You asked for our feedback survey when you ran
+           your analysis, so here it is &mdash; it is short, and what you tell us decides
+           what we build next.</p>
+        <p style="text-align:center;margin:26px 0">
+          <a href="{survey_url}"
+             style="display:inline-block;background:#0056a6;color:#fff;text-decoration:none;
+                    padding:13px 30px;border-radius:6px;font-weight:600;font-size:15px">
+            Open the survey
+          </a>
         </p>
-        <p>If you would rather not have been asked, that is useful to know too &mdash; just use the
-           link at the bottom and we will not do it again.</p>
+        <p style="font-size:13px;color:#4a5778;text-align:center;word-break:break-all">
+          Or paste this into your browser:<br><a href="{survey_url}" style="color:#1a6fc4">{survey_url}</a>
+        </p>
+        <p>If you would rather just tell us directly, a reply to this message reaches us too.</p>
         <p style="margin-top:20px">Thank you,<br><strong>The EPIC-AMP Team</strong><br>
            <span style="color:#666;font-size:13px">Bioinformatics &amp; Computational Biology Unit (BCBU)</span></p>
         <hr style="border:none;border-top:1px solid #e0e6f0;margin:22px 0">
         <p style="color:#888;font-size:11px;margin:0">
-          You are getting this because you ticked the optional follow-up box on
-          epic-amp-v2.vercel.app on {consent_at}. It is the only reason we hold your address.<br>
+          You are getting this one email because you ticked the survey box on
+          epic-amp-v2.vercel.app. We will not send it to you again.<br>
           Zewail City of Science and Technology &middot; BCBU &middot; Giza, Egypt &middot;
           <a href="mailto:{REPLY_TO}" style="color:#1a6fc4">{REPLY_TO}</a><br><br>
-          <a href="{cancel_url}" style="color:#1a6fc4">Cancel this and do not ask me again</a>
+          <a href="{unsubscribe_url}" style="color:#1a6fc4">Do not send me these again</a>
         </p>
       </div>
     </div>
     """
 
 
-def _followup_text(cancel_url, consent_at):
+def _survey_text(survey_url, unsubscribe_url):
     return (
         "Dear Researcher,\n\n"
-        "You ran a peptide through EPIC-AMP a couple of days ago and asked us to check\n"
-        "back once. This is that one email - there will not be another.\n\n"
-        "Was the result useful to you, and is there anything that got in your way?\n"
-        "A one-line reply to this message is plenty.\n\n"
+        "Thank you for using EPIC-AMP. You asked for our feedback survey when you\n"
+        "ran your analysis, so here it is - it is short, and what you tell us\n"
+        "decides what we build next.\n\n"
+        "Open the survey:\n%s\n\n"
+        "If you would rather just tell us directly, a reply to this message\n"
+        "reaches us too.\n\n"
         "Thank you,\nThe EPIC-AMP Team\n"
         "Bioinformatics & Computational Biology Unit (BCBU)\n"
         "Zewail City of Science and Technology, Giza, Egypt\n\n"
         "---\n"
-        "You are getting this because you ticked the optional follow-up box on\n"
-        "epic-amp-v2.vercel.app on %s. It is the only reason we hold your address.\n"
-        "Cancel and do not ask again: %s\n" % (consent_at, cancel_url)
+        "You are getting this one email because you ticked the survey box on\n"
+        "epic-amp-v2.vercel.app. We will not send it to you again.\n"
+        "Do not send me these again: %s\n" % (survey_url, unsubscribe_url)
     )
 
 
-def schedule_feedback(to_email, consent_at, consent_version):
-    """Book one follow-up email. Returns scheduled:<token> | skipped:<why> | error:<why>."""
+def send_survey(to_email, consent_at, consent_version):
+    """Send one survey invitation now. sent:<token> | skipped:<why> | error:<why>."""
     to_email = (to_email or "").strip()
     if not EMAIL_RE.match(to_email):
         return "error:invalid_email"
 
+    # An invitation with no survey behind it is worse than no invitation.
+    if not SURVEY_URL:
+        return "error:survey_not_configured"
+
     consent_at = (consent_at or "").strip()[:40] or datetime.now(timezone.utc).isoformat()
     consent_version = (consent_version or "").strip()[:40] or "unversioned"
 
-    # No consent ledger means no provable consent, so send nothing at all.
+    # No consent ledger means no provable consent, and no way to tell whether
+    # this person has already been invited or has opted out. So: send nothing.
     if not CONSENT_URL or not CONSENT_SECRET:
         return "error:consent_log_not_configured"
 
     token = str(uuid.uuid4())
-    when  = datetime.now(timezone.utc) + timedelta(hours=DELAY_HOURS)
-    when_s = when.strftime("%Y-%m-%dT%H:%M:%S") + "+00:00"
-
-    # Claim first. The script holds a lock while it checks the suppression list and
-    # any still-pending request for this address, so two clicks cannot both win.
     claim = _consent(
         "claim",
         email=to_email,
         consent_at=consent_at,
         consent_version=consent_version,
         token=token,
-        scheduled_for=when_s,
+        survey_round=SURVEY_ROUND,
     )
     if claim is None:
         return "error:consent_log_unreachable"
     if not claim.get("proceed"):
         return "skipped:%s" % (claim.get("reason") or "refused")
 
-    cancel_url = "%s/unsubscribe?t=%s" % (SITE_URL, token)
+    unsubscribe_url = "%s/unsubscribe?t=%s" % (SITE_URL, token)
     try:
         resp = _brevo("POST", BREVO_SEND, json={
             "sender":      {"email": FROM_EMAIL, "name": FROM_NAME},
             "to":          [{"email": to_email}],
             "replyTo":     {"email": REPLY_TO, "name": FROM_NAME},
-            "subject":     "How did EPIC-AMP work out for you?",
-            "htmlContent": _followup_html(cancel_url, consent_at[:10]),
-            "textContent": _followup_text(cancel_url, consent_at[:10]),
-            "scheduledAt": when_s,
+            "subject":     "Your EPIC-AMP feedback survey",
+            "htmlContent": _survey_html(SURVEY_URL, unsubscribe_url),
+            "textContent": _survey_text(SURVEY_URL, unsubscribe_url),
             "batchId":     token,
-            "headers":     {"List-Unsubscribe": "<%s>" % cancel_url},
+            "headers":     {"List-Unsubscribe": "<%s>" % unsubscribe_url},
         })
     except Exception as exc:                      # noqa: BLE001
         _consent("mark", token=token, status="failed", detail=repr(exc)[:120])
         return "error:brevo_unreachable"
 
     if resp.status_code not in (200, 201, 202):
-        _consent("mark", token=token, status="failed",
-                 detail="HTTP %s" % resp.status_code)
-        print("brevo schedule failed %s: %s" % (resp.status_code, resp.text[:300]))
+        _consent("mark", token=token, status="failed", detail="HTTP %s" % resp.status_code)
+        print("brevo survey send failed %s: %s" % (resp.status_code, resp.text[:300]))
         return "error:brevo:%s" % resp.status_code
 
     message_id = ""
@@ -240,34 +248,27 @@ def schedule_feedback(to_email, consent_at, consent_version):
         message_id = (resp.json() or {}).get("messageId", "") or ""
     except Exception:                             # noqa: BLE001
         pass
-    _consent("mark", token=token, status="scheduled", message_id=str(message_id)[:120])
-    return "scheduled:%s" % token
+    _consent("mark", token=token, status="sent", message_id=str(message_id)[:120])
+    return "sent:%s" % token
 
 
-def cancel_feedback(token):
-    """From the link in the email. cancelled | already_sent | unknown | error:<why>."""
+def unsubscribe_survey(token):
+    """From the link in the email. unsubscribed | unknown | error:<why>.
+
+    The invitation is sent at once, so there is never anything queued at Brevo to
+    recall. What this does is make the choice stick: the ledger marks the address
+    hash as opted out, and no later analysis or survey round can invite it again.
+    """
     token = (token or "").strip().lower()
     if not UUID_RE.match(token):
         return "error:invalid_token"
 
-    # Record the choice first: even if Brevo is unreachable, the suppression stands
-    # and no later analysis can schedule another email for this address.
     record = _consent("unsubscribe", token=token)
-
-    try:
-        resp = _brevo("DELETE", "https://api.brevo.com/v3/smtp/email/%s" % token)
-        code = resp.status_code
-    except Exception as exc:                      # noqa: BLE001
-        print("brevo cancel unreachable: %r" % (exc,))
-        return "cancelled" if record and record.get("ok") else "error:brevo_unreachable"
-
-    if code in (200, 204):
-        return "cancelled"
-    if code in (400, 404):
-        # Already delivered, or past its window: nothing left in the queue.
-        return "already_sent" if record and record.get("found") else "unknown"
-    print("brevo cancel HTTP %s: %s" % (code, resp.text[:200]))
-    return "error:brevo:%s" % code
+    if record is None:
+        return "error:consent_log_unreachable"
+    if not record.get("ok"):
+        return "error:%s" % (record.get("error") or "refused")
+    return "unsubscribed" if record.get("found") else "unknown"
 
 
 # --------------------------------------------------------------------------- #
@@ -277,8 +278,9 @@ with gr.Blocks() as demo:
     gr.Markdown(
         "### EPIC-AMP mailer\n"
         "Internal service for https://epic-amp-v2.vercel.app. "
-        "`/send` delivers a report. `/schedule_feedback` books one consented "
-        "follow-up for ~%g h later. `/cancel_feedback` cancels it." % DELAY_HOURS
+        "`/send` delivers a report. `/send_survey` sends one consented survey "
+        "invitation (round %s). `/unsubscribe_survey` opts an address out.%s"
+        % (SURVEY_ROUND, "" if SURVEY_URL else "  \n\n**SURVEY_URL is not set, so no invitation will be sent.**")
     )
     with gr.Tab("Report"):
         with gr.Row():
@@ -294,25 +296,25 @@ with gr.Blocks() as demo:
             outputs=result,
             api_name="send",
         )
-    with gr.Tab("Follow-up"):
+    with gr.Tab("Survey"):
         with gr.Row():
-            fb_email   = gr.Text(label="Recipient Email")
-            fb_consent = gr.Text(label="Consent timestamp (ISO 8601)")
-            fb_version = gr.Text(label="Consent notice version")
-        fb_result = gr.Text(label="Status")
-        gr.Button("Schedule").click(
-            fn=schedule_feedback,
-            inputs=[fb_email, fb_consent, fb_version],
-            outputs=fb_result,
-            api_name="schedule_feedback",
+            sv_email   = gr.Text(label="Recipient Email")
+            sv_consent = gr.Text(label="Consent timestamp (ISO 8601)")
+            sv_version = gr.Text(label="Consent notice version")
+        sv_result = gr.Text(label="Status")
+        gr.Button("Send survey invitation").click(
+            fn=send_survey,
+            inputs=[sv_email, sv_consent, sv_version],
+            outputs=sv_result,
+            api_name="send_survey",
         )
-        cancel_token  = gr.Text(label="Unsubscribe token")
-        cancel_result = gr.Text(label="Status")
-        gr.Button("Cancel").click(
-            fn=cancel_feedback,
-            inputs=[cancel_token],
-            outputs=cancel_result,
-            api_name="cancel_feedback",
+        un_token  = gr.Text(label="Unsubscribe token")
+        un_result = gr.Text(label="Status")
+        gr.Button("Unsubscribe").click(
+            fn=unsubscribe_survey,
+            inputs=[un_token],
+            outputs=un_result,
+            api_name="unsubscribe_survey",
         )
 
 demo.launch(ssr_mode=False)

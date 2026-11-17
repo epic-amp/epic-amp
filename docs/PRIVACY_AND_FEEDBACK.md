@@ -1,4 +1,4 @@
-# The follow-up email, and what EPIC-AMP does with personal data
+# The survey invitation, and what EPIC-AMP does with personal data
 
 Written for whoever runs EPIC-AMP next, and for a lawyer reviewing it.
 Everything below was read from the code and from the providers' own
@@ -22,27 +22,24 @@ None of those exist. What is actually deployed:
 So the feature was built on what is there, and it needs **no cron job, no queue
 and no database**.
 
-## 2. How the 48-hour delay works without a scheduler
+## 2. One invitation, sent at once
 
-Brevo's transactional endpoint takes a `scheduledAt` timestamp **up to 72 hours
-ahead**, and lets you cancel by an identifier you supply yourself
-(<https://developers.brevo.com/docs/schedule-batch-sendings>). 48 < 72, so the
-delay is the mail provider's job:
+The invitation goes out as soon as the analysis finishes. There is no delay, no
+queue and no scheduler:
 
 1. The visitor ticks the box. The browser records the moment of ticking.
-2. After the analysis, the browser asks the Space to `schedule_feedback`.
-3. The Space asks the consent ledger whether it may (see §3), mints a UUIDv4,
-   and hands Brevo the message with `scheduledAt = now + 48 h` and
-   `batchId = <that UUID>`.
-4. Brevo holds it and sends it 48 hours later. Nothing on our side runs in
-   between, so there is nothing to miss a tick, retry twice, or wake up wrong.
-5. The UUID is the unsubscribe token. `/unsubscribe?t=<uuid>` asks the Space to
-   `DELETE /v3/smtp/email/<uuid>`, which removes it from Brevo's queue if it has
-   not gone out, and the ledger records the suppression either way.
+2. After the analysis, the browser asks the Space to `send_survey`.
+3. The Space refuses unless `SURVEY_URL` is set — an invitation with no survey
+   behind it is worse than no invitation — then asks the ledger whether this
+   address may be invited (§3), mints a UUIDv4, and mails it through Brevo.
+4. That UUID is the opt-out token. `/unsubscribe?t=<uuid>` records the choice in
+   the ledger, and no later analysis or survey round can reach that address.
 
-A UUIDv4 is unguessable, so the token works as a capability: the cancel link
-needs no login, no password and no reply, and it cannot be used to cancel
-anybody else's.
+A UUIDv4 is unguessable, so the opt-out link works as a capability: it needs no
+login, no password and no reply, and it cannot be used against anybody else.
+
+Nothing is queued at Brevo, so there is never anything to recall. What the
+opt-out does is make the choice stick for the future.
 
 ## 3. Duplicate prevention is a real lock, not a hope
 
@@ -55,7 +52,9 @@ write are one step and two simultaneous submissions cannot both be told to
 proceed. It refuses when:
 
 - the address has ever used a cancel link → `unsubscribed` (permanent), or
-- that address already has a follow-up pending → `already_pending`.
+- that address was already invited to this survey round → `already_invited`.
+  Bumping `SURVEY_ROUND` opens a new round, so people who have not opted out can
+  be invited to a genuinely new survey later.
 
 The lock timing out refuses too. If the ledger cannot be reached at all, the
 Space schedules **nothing** — no provable consent means no email.
@@ -84,7 +83,7 @@ assumed.
 table was added to the About tab and then removed at the project owner's
 request on 2026-11-17. The consent checkbox still states the purpose, the
 frequency and that it can be cancelled, which is what makes that consent
-informed, and the follow-up email itself repeats why it was sent. Everything
+informed, and the invitation itself repeats why it was sent. Everything
 else in this table is now undisclosed. See §6.4.
 
 ## 5. Deploying it
@@ -107,7 +106,8 @@ Keep the `/exec` URL.
 | `CONSENT_LOG_URL` | the `/exec` URL from step A |
 | `CONSENT_LOG_SECRET` | the same string as `SHARED_SECRET` |
 | `SITE_URL` | `https://epic-amp-v2.vercel.app` |
-| `FOLLOWUP_DELAY_HOURS` | `48` (clamped to 70 max, because Brevo's limit is 72) |
+| `SURVEY_URL` | the live survey. **While it is empty nothing is sent at all.** |
+| `SURVEY_ROUND` | `1`; bump it to invite past recipients to a new survey |
 
 `/send` is unchanged, so the report email keeps working while you do this.
 
@@ -118,10 +118,14 @@ because `vercel.json` sets `cleanUrls`.
 `scripts/analysis_log_retention.gs` to match the real sheet, run `dryRunPurge()`
 and read the output, then `installRetentionTrigger()`.
 
-**E. Check it end to end.** Set `FOLLOWUP_DELAY_HOURS=1` in the Space, run one
-analysis with the box ticked against an address you own, confirm the row in the
-ledger says `scheduled`, use the cancel link, confirm the row says
-`unsubscribed` and that nothing arrives. Then set it back to 48.
+**E. Turn it on.** The box is hidden until `SURVEY_ENABLED = true` in
+`index.html`, so set `SURVEY_URL` in the Space first, then flip that constant.
+In that order the box never offers something that cannot be delivered.
+
+**F. Check it end to end.** Run one analysis with the box ticked against an
+address you own. Confirm the invitation arrives, the ledger row says `sent`, a
+second run with the same address is refused as `already_invited`, and the
+opt-out link flips the row to `unsubscribed` and blocks a third.
 
 ## 6. For legal review — not compliance advice
 
@@ -189,31 +193,33 @@ to Meta's public ESMFold endpoint, so researchers can judge that for themselves.
 
 **6.7 Residual abuse risk — a product risk, not a legal one.** The Space's
 endpoints are public, as they must be for a static site. Someone could submit
-another person's address and cause one email 48 hours later. The dedup means at
-most one pending email per address, the message says why it was sent and offers
-one-click cancellation, and nothing is ever sent twice. The same is already true
-of the report email. If that is not acceptable, the next step is a challenge on
-submission (captcha or proof of work) or per-IP rate limiting at the Space.
+another person's address and cause one invitation. The dedup means one per
+address per round, the message says why it was sent and offers a one-click
+opt-out, and nothing is ever sent twice. The same is already true of the report
+email. If that is not acceptable, the next step is a challenge on submission
+(captcha or proof of work) or per-IP rate limiting at the Space.
 
 ## 7. What was verified, and what was not
 
 Verified by running it:
 
-- Space logic — 30 cases: valid/invalid addresses, consent-log down, consent-log
-  refusing, Brevo refusing, Brevo unreachable, malformed and non-v4 tokens,
-  already-sent, and the exact payload handed to Brevo (48.00 h ahead, batchId,
-  `List-Unsubscribe`, cancel link in both HTML and plain text, no key in body).
-- Ledger logic — 27 cases, Google services stubbed: wrong/empty secret, bad JSON,
-  unknown action, first claim, duplicate while pending, case and whitespace
-  variants of the same address, a different address, mark, unsubscribe,
-  permanent suppression, an expired pending row not blocking, lock contention,
-  no plaintext address in the sheet, and the purge keeping cancellations.
-- Front end — in a real browser: the box is unchecked by default, its wording
-  carries the purpose and the cancellation, Clear unticks it, no scheduling call
-  happens when it is not ticked, the scheduling path runs when it is, failure is
-  reported honestly when the mailer is unreachable, the report still downloads,
-  and the unsubscribe page handles all four of its states. The privacy-notice
-  assertions were dropped when the notice was removed.
+- Space logic — 20 cases: valid/invalid addresses, `SURVEY_URL` unset (refuses
+  and touches nothing), ledger down, ledger refusing, Brevo refusing, Brevo
+  unreachable, malformed and non-v4 tokens, and the exact payload handed to
+  Brevo (no `scheduledAt`, batchId, `List-Unsubscribe`, survey link and opt-out
+  link in both HTML and plain text, no key in the body).
+- Ledger logic — 29 cases, Google services stubbed: wrong/empty secret, bad
+  JSON, unknown action, first claim, the same address refused twice in a round,
+  case and whitespace variants, a different address, mark, unsubscribe,
+  permanent opt-out, a new round inviting a past recipient, an opt-out
+  outliving a new round, lock contention, no plaintext address in the sheet,
+  and the purge keeping opt-outs.
+- Front end — 19 cases in a real browser, in both states of `SURVEY_ENABLED`:
+  off, the box is absent and a full run sends nothing; on, it is unchecked by
+  default, the wording names the survey and the single email, Clear unticks it,
+  no call reaches the survey endpoint when it is not ticked, the send path runs
+  when it is, failure is reported honestly when the mailer is unreachable, the
+  report still downloads, and the unsubscribe page handles its states.
 
 **Not verified, because it cannot be from here:** nothing is deployed. The Apps
 Script was tested against stubs, not Google's runtime; the Space was tested

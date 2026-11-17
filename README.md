@@ -20,7 +20,7 @@ The deployed site plus new browser-side peptide analysis tools.
 | 3D structure | Step 5 | Interactive 3Dmol.js viewer: ESMFold prediction of the user's sequence, experimental PDB and AlphaFold structures of similar known peptides. Hover/click residues, styles, colouring (type, pLDDT confidence, rainbow, hydrophobicity), surface, spin, PNG/PDB download |
 | Exports | Sequence bar at the top of each analysis tab | CSV / JSON / FASTA with profile, prediction and neighbors |
 | PDF report | Section 1 | Adds a physicochemical profile table and the top 5 known-peptide neighbors |
-| Optional follow-up email | **Analysis** tab | An unticked opt-in box books one feedback email ~48 h later. Brevo's `scheduledAt` does the waiting, so there is no cron job; the UUID it is booked under is the unsubscribe token. See `docs/PRIVACY_AND_FEEDBACK.md` |
+| Optional survey invitation | **Analysis** tab | An unticked opt-in box emails one survey invitation as soon as the analysis finishes. One per address per survey round; the UUID it is sent under is the opt-out token. Hidden until `SURVEY_ENABLED = true`. See `docs/PRIVACY_AND_FEEDBACK.md` |
 
 Citations and licenses for all three databases are in About → Data Sources, in the PDF report and in CSV/JSON exports. Keep those credits.
 
