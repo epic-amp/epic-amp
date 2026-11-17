@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Cancel follow-up email — EPIC-AMP</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --ncbi-blue: #0056a6; --ncbi-blue-dark: #003f7d; --ncbi-blue-light: #e8f0fb;
+        --accent-green: #2e7d32; --accent-orange: #e65100;
+        --bg-primary: #f7f9fc; --bg-white: #fff; --bg-panel: #f0f4fa;
+        --border: #d0daea; --text-primary: #1a2540; --text-secondary: #4a5778; --text-muted: #8a94a8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.6;
+        color: var(--text-primary); background: var(--bg-primary);
+        min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+    }
+    .card {
+        background: var(--bg-white); border: 1px solid var(--border); border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,63,125,0.12); max-width: 560px; width: 100%; overflow: hidden;
+    }
+    .card-head {
+        background: var(--ncbi-blue-dark); color: #fff; padding: 20px 26px;
+        display: flex; align-items: center; gap: 13px;
+    }
+    .card-head img { width: 36px; height: 36px; border-radius: 6px; background: #fff; object-fit: contain; }
+    .card-head h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.2px; }
+    .card-head p { font-size: 12.5px; color: #a0c8ff; margin-top: 2px; }
+    .card-body { padding: 26px; }
+    .state { display: flex; gap: 14px; align-items: flex-start; }
+    .mark { flex: 0 0 auto; width: 28px; height: 28px; margin-top: 1px; }
+    .mark.spin { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    p.msg { color: var(--text-secondary); font-size: 14px; }
+    p.msg + p.msg { margin-top: 10px; }
+    .note {
+        margin-top: 20px; padding: 13px 15px; background: var(--bg-panel);
+        border: 1px solid var(--border); border-left: 3px solid var(--ncbi-blue); border-radius: 6px;
+        font-size: 12.5px; color: var(--text-secondary);
+    }
+    a { color: var(--ncbi-blue); }
+    .actions { margin-top: 22px; }
+    .btn {
+        display: inline-block; padding: 9px 18px; border-radius: 6px; font-size: 13.5px; font-weight: 500;
+        text-decoration: none; background: var(--ncbi-blue); color: #fff; border: 1px solid var(--ncbi-blue);
+    }
+    .btn:hover { background: var(--ncbi-blue-dark); }
+    footer { margin-top: 18px; font-size: 11.5px; color: var(--text-muted); text-align: center; }
+</style>
+</head>
+<body>
+<main class="card">
+    <div class="card-head">
+        <img src="logo.png" alt="" onerror="this.style.display='none'">
+        <div>
+            <h1>EPIC-AMP</h1>
+            <p>Cancel the follow-up email</p>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="state">
+            <svg class="mark spin" id="mark" viewBox="0 0 24 24" fill="none" stroke="#0056a6" stroke-width="2.2" stroke-linecap="round">
+                <path d="M12 3a9 9 0 1 0 9 9" />
+            </svg>
+            <div>
+                <h2 id="title">Cancelling&hellip;</h2>
+                <div id="body"><p class="msg">One moment. Our mail service may take up to a minute to wake up.</p></div>
+            </div>
+        </div>
+        <div class="note" id="note">
+            You do not need an account or a password to do this, and you do not have to reply to anything.
+        </div>
+        <div class="actions"><a class="btn" href="/">Back to EPIC-AMP</a></div>
+    </div>
+</main>
+<footer>Zewail City of Science and Technology &middot; BCBU &middot; Giza, Egypt</footer>
+
+<script type="module">
+    import { Client } from "https://esm.sh/@gradio/client";
+
+    const MAILER_SPACE_ID = "nonzeroexit/AMP-Mailer";
+    const SUPPORT_EMAIL   = "epicamp.sup@gmail.com";
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+    const ICONS = {
+        ok:    '<path d="M4 12.5l5 5L20 6.5" />',
+        info:  '<circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.6v.2" />',
+        warn:  '<path d="M12 4l8.5 15H3.5L12 4z" /><path d="M12 10v4.4M12 17.2v.2" />'
+    };
+    const mark = document.getElementById('mark');
+    const titleEl = document.getElementById('title');
+    const bodyEl  = document.getElementById('body');
+    const noteEl  = document.getElementById('note');
+
+    function render(kind, title, paras, note) {
+        mark.classList.remove('spin');
+        mark.innerHTML = ICONS[kind];
+        mark.setAttribute('stroke', kind === 'ok' ? '#2e7d32' : kind === 'warn' ? '#e65100' : '#0056a6');
+        titleEl.textContent = title;
+        bodyEl.innerHTML = paras.map(t => '<p class="msg">' + t + '</p>').join('');
+        if (note) noteEl.innerHTML = note;
+    }
+    const mailto = '<a href="mailto:' + SUPPORT_EMAIL + '">' + SUPPORT_EMAIL + '</a>';
+
+    const token = new URLSearchParams(location.search).get('t') || '';
+    if (!UUID_RE.test(token)) {
+        render('warn', 'That link is not complete',
+            ['The cancel link in the email carries a code, and this address does not have a valid one. It may have been shortened or wrapped by your mail program.',
+             'Write to ' + mailto + ' and we will take your address off the list by hand.'],
+            'We only ever send one follow-up email per analysis, so there is nothing else queued for you either way.');
+    } else {
+        try {
+            const mailer = await Client.connect(MAILER_SPACE_ID);
+            const res = await mailer.predict('/cancel_feedback', [token]);
+            const out = String((Array.isArray(res?.data) ? res.data[0] : res?.data) || '');
+
+            if (out.startsWith('cancelled')) {
+                render('ok', 'Done — that email will not be sent',
+                    ['We have removed it from the queue before it went out, and recorded that you do not want these, so a later analysis will not schedule another one.'],
+                    'We kept no copy of your address to do this. The record is a one-way hash, which is enough to recognise a repeat request and not enough to write to you.');
+            } else if (out.startsWith('already_sent')) {
+                render('ok', 'Noted — we will not send another',
+                    ['That message had already gone out, so there was nothing left to cancel. We have recorded your choice, and a later analysis will not schedule another follow-up.'],
+                    'There was only ever one email, so you can ignore the one in your inbox.');
+            } else if (out.startsWith('unknown')) {
+                render('info', 'Nothing was pending under that link',
+                    ['Either it has been used already or the record has passed its retention period and been deleted. Either way, nothing is queued for you.',
+                     'If you are still getting mail from us, write to ' + mailto + ' and we will deal with it.'], null);
+            } else {
+                console.warn('cancel_feedback returned:', out);
+                render('warn', 'We could not complete that just now',
+                    ['Our mail service did not answer. Please reload this page in a minute.',
+                     'If it keeps failing, write to ' + mailto + ' and we will cancel it by hand. Your request will be honoured either way.'], null);
+            }
+        } catch (err) {
+            console.warn(err);
+            render('warn', 'We could not reach the mail service',
+                ['This page talks to our mail service directly, and it did not answer. Please reload in a minute.',
+                 'If it still fails, write to ' + mailto + ' and we will cancel it by hand.'], null);
+        }
+    }
+</script>
+</body>
+</html>

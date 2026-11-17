@@ -20,6 +20,8 @@ The deployed site plus new browser-side peptide analysis tools.
 | 3D structure | Step 5 | Interactive 3Dmol.js viewer: ESMFold prediction of the user's sequence, experimental PDB and AlphaFold structures of similar known peptides. Hover/click residues, styles, colouring (type, pLDDT confidence, rainbow, hydrophobicity), surface, spin, PNG/PDB download |
 | Exports | Sequence bar at the top of each analysis tab | CSV / JSON / FASTA with profile, prediction and neighbors |
 | PDF report | Section 1 | Adds a physicochemical profile table and the top 5 known-peptide neighbors |
+| Optional follow-up email | **Analysis** tab | An unticked opt-in box books one feedback email ~48 h later. Brevo's `scheduledAt` does the waiting, so there is no cron job; the UUID it is booked under is the unsubscribe token. See `docs/PRIVACY_AND_FEEDBACK.md` |
+| Privacy notice | About tab | What is collected, why, where it goes and for how long. Linked from the consent box and the footer |
 
 Citations and licenses for all three databases are in About → Data Sources, in the PDF report and in CSV/JSON exports. Keep those credits.
 
@@ -27,8 +29,13 @@ Citations and licenses for all three databases are in About → Data Sources, in
 
 ```
 index.html        ← the whole app (replaces the old one)
+unsubscribe.html  ← served at /unsubscribe; cancels the follow-up email
 data/peptides.json ← 28,258 peptides from DRAMP + dbAMP + UniProt (7.3 MB, ~1.4 MB gzipped, loaded only on search)
-scripts/build_peptides.py ← rebuilds data/peptides.json
+space/app.py      ← the Hugging Face mailer Space: /send, /schedule_feedback, /cancel_feedback
+scripts/build_peptides.py        ← rebuilds data/peptides.json
+scripts/consent_ledger.gs        ← Apps Script consent ledger (deploy separately; see the docs)
+scripts/analysis_log_retention.gs ← 12-month retention for the existing analysis log
+docs/PRIVACY_AND_FEEDBACK.md ← the follow-up email, the data map, deployment steps, legal questions
 docs/EXTERNAL_MODELS.md   ← HemoPI2 / ToxinPred3 assessment and why they are not integrated
 docs/STRUCTURE.md         ← structure module, ColabFold assessment, costs, privacy, limits
 THIRD_PARTY_NOTICES.md    ← licences for every library, dataset and service
@@ -37,7 +44,10 @@ vercel.json, *.png, *.jpg  ← unchanged, copied from the live site
 
 ## Deploy
 
-`README.md` and `scripts/` are listed in `.vercelignore`, so they stay on your computer and are not published.
+`README.md`, `scripts/`, `docs/`, `space/` and `THIRD_PARTY_NOTICES.md` are listed in `.vercelignore`, so they stay on your computer and are not published.
+
+The follow-up email needs the Space and the Apps Script ledger deployed too, and
+it does nothing at all until they are. Follow `docs/PRIVACY_AND_FEEDBACK.md` §5.
 
 Predictions connect directly from the browser to the Hugging Face Space
 (`nonzeroexit/AMP-Classifier`) with `@gradio/client`, the same way as the earlier version.

@@ -450,6 +450,28 @@ body {
     color: var(--text-muted);
     margin-top: 4px;
 }
+.consent-box {
+    margin-top: 10px; padding: 10px 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ncbi-blue-mid);
+    border-radius: var(--radius-md);
+}
+.consent-row { display: flex; align-items: flex-start; gap: 9px; }
+.consent-row input[type="checkbox"] {
+    margin-top: 1px; flex: 0 0 auto; width: 15px; height: 15px;
+    accent-color: var(--ncbi-blue); cursor: pointer;
+}
+.consent-row label { font-size: 12px; line-height: 1.55; color: var(--text-secondary); cursor: pointer; }
+.consent-row label b { color: var(--text-primary); font-weight: 600; }
+.consent-note { font-size: 11px; line-height: 1.55; color: var(--text-muted); margin-top: 6px; padding-left: 24px; }
+.consent-note a, .privacy-table a { color: var(--ncbi-blue); }
+.privacy-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 10px 0 4px; }
+.privacy-table th, .privacy-table td {
+    border: 1px solid var(--border); padding: 7px 9px; text-align: left; vertical-align: top; line-height: 1.5;
+}
+.privacy-table th { background: var(--bg-panel); color: var(--ncbi-blue-dark); font-weight: 600; }
+.privacy-table td:first-child { font-weight: 600; color: var(--text-primary); }
 .error-msg {
     display: none;
     background: #fff3f3;
@@ -1943,6 +1965,13 @@ kbd {
                     </div>
                     <div id="email-error" class="error-msg" style="margin-top:6px;padding:6px 10px;font-size:12px;"></div>
                     <div id="email-status" class="field-help"></div>
+                    <div class="consent-box">
+                        <div class="consent-row">
+                            <input type="checkbox" id="feedback-consent">
+                            <label for="feedback-consent"><b>Optional.</b> Email me once, about two days from now, to ask whether these results were useful. One email, nothing else, and it carries a cancel link you can use at any time.</label>
+                        </div>
+                        <div class="consent-note">Leave this unticked and we will send only the report you asked for. <a href="#" data-goto="about" data-scroll-to="privacy-notice">What we store, and for how long</a>.</div>
+                    </div>
                     <div class="settings-title" style="margin-top:16px;"><span class="settings-num">3</span> Run the analysis</div>
                     <div class="btn-row" style="margin-top:0;">
                         <button class="btn btn-primary btn-submit" id="predict-btn" disabled>
@@ -2274,6 +2303,37 @@ kbd {
                     <a href="https://doi.org/10.1093/bioinformatics/btu829" target="_blank" rel="noopener"><i class="fas fa-file-alt"></i> Article (DOI)</a>
                 </div>
             </div>
+            <div class="section-h3" id="privacy-notice">Privacy and Your Data</div>
+            <p class="prose">EPIC-AMP is run by the Bioinformatics and Computational Biology Unit (BCBU) at Zewail City of Science and Technology, Giza, Egypt, which is responsible for the data described below. This site sets no cookies, runs no analytics and no trackers, and stores nothing in your browser. We never sell or share your details, and we never send marketing.</p>
+            <table class="privacy-table">
+                <tr><th>What</th><th>Why we need it</th><th>Where it goes</th><th>How long it is kept</th></tr>
+                <tr>
+                    <td>Your peptide sequence</td>
+                    <td>To run the classifier and the MIC models</td>
+                    <td>Our prediction service on Hugging Face. If you open the 3D Structure step it also goes to Meta's public ESMFold endpoint, which builds the model.</td>
+                    <td>We do not store it</td>
+                </tr>
+                <tr>
+                    <td>Your email address</td>
+                    <td>Only to send you the PDF report you asked for</td>
+                    <td>Brevo, the service that delivers the message</td>
+                    <td>Held by Brevo for delivery; we keep no separate copy</td>
+                </tr>
+                <tr>
+                    <td>Analysis log: the address you entered, the predicted label and confidence, and the first 50 residues</td>
+                    <td>So we can see that the tool is working and how much it is being used</td>
+                    <td>A private Google Sheet only our team can open</td>
+                    <td>12 months</td>
+                </tr>
+                <tr>
+                    <td>Your consent to the follow-up email, if you tick that box</td>
+                    <td>To show that you agreed to it, and to make a cancellation stick</td>
+                    <td>A private Google Sheet. Your address is kept only as a salted hash, never in readable form.</td>
+                    <td>24 months. A cancellation is kept as a hash for as long as the tool runs, so that we cannot email you again by accident.</td>
+                </tr>
+            </table>
+            <p class="prose">We send you the report because you asked for it. The follow-up email is different: we send it <strong>only</strong> if you tick the optional box, it is one single message asking whether the results were useful, and it carries a cancel link that works both before and after it is sent. Addresses in the analysis log are never used for it &mdash; only addresses where that box was ticked. Cancelling costs you one click and needs no account, no password and no reply.</p>
+            <p class="prose">To see what we hold about you, to have it corrected or deleted, or to withdraw your consent, write to <a href="mailto:epicamp.sup@gmail.com" style="color:var(--ncbi-blue);">epicamp.sup@gmail.com</a>. If you are in the European Union, the EEA or the United Kingdom you may also complain to your national data protection authority. Our processors are Hugging Face, Brevo and Google; some of them operate outside Egypt and the EU.</p>
             <div class="section-h3">Contact</div>
             <p class="prose">For questions, collaboration inquiries, or feedback: <a href="mailto:epicamp.sup@gmail.com" style="color:var(--ncbi-blue);">epicamp.sup@gmail.com</a></p>
         </div>
@@ -2353,7 +2413,8 @@ kbd {
     <p class="use-badge"><i class="fas fa-graduation-cap"></i> For academic research and education only — not licensed for commercial use</p>
     <p style="margin-bottom:4px;">© 2025 Bioinformatics and Computational Biology Unit (BCBU) — Zewail City</p>
     <address style="font-style:normal;color:rgba(255,255,255,0.55);font-size:11px;">Ahmed Zewail Street, October Gardens, Giza, Egypt</address>
-    <p style="margin-top:6px;font-size:11px;"><a href="mailto:epicamp.sup@gmail.com" style="color:rgba(160,200,255,0.85);text-decoration:none;">epicamp.sup@gmail.com</a></p>
+    <p style="margin-top:6px;font-size:11px;"><a href="mailto:epicamp.sup@gmail.com" style="color:rgba(160,200,255,0.85);text-decoration:none;">epicamp.sup@gmail.com</a>
+        &nbsp;·&nbsp; <a href="#" data-goto="about" data-scroll-to="privacy-notice" style="color:rgba(160,200,255,0.85);text-decoration:none;">Privacy and your data</a></p>
 </footer>
 <script type="module">
     import { Client } from "https://esm.sh/@gradio/client";
@@ -2361,6 +2422,11 @@ kbd {
     const IS_EMAIL_SENDING_ENABLED    = true;
     const MAILER_SPACE_ID             = "nonzeroexit/AMP-Mailer";
     const HF_TOKEN                    = null;
+    /* One optional follow-up email. The 48-hour delay is Brevo's scheduledAt,
+       applied inside the mailer Space, so there is no cron job and no queue here
+       and nothing in this page has to remember anything between visits. */
+    const FEEDBACK_ENABLED            = true;
+    const CONSENT_VERSION             = '2026-11-17';
     const SHEET_WEBHOOK_URL           = 'https://script.google.com/macros/s/AKfycbzF8_W8uwshY2THg7atOc9TmRqerLKAJyZbs9_-hP5kj99LMYTqn2e4Ki8SwNzZo8Oc/exec';
     const AA_PROPS = {
         A:'hydrophobic', V:'hydrophobic', I:'hydrophobic', L:'hydrophobic',
@@ -2399,6 +2465,9 @@ kbd {
     const additionalOutput = document.getElementById('additional-details-output');
     const micCheckboxes    = document.querySelectorAll('.bacteria-grid input[type="checkbox"]');
     const userEmailInput   = document.getElementById('user-email');
+    const feedbackConsent  = document.getElementById('feedback-consent');
+    /* Recorded when the box is ticked, because that is the moment of consent. */
+    let consentGivenAt = null;
     const emailErrorDiv    = document.getElementById('email-error');
     const emailStatusDiv   = document.getElementById('email-status');
     const emailStatusResult= document.getElementById('email-status-result');
@@ -2572,6 +2641,9 @@ kbd {
         sequenceInput?.addEventListener('paste', handlePaste);
         sequenceInput?.addEventListener('keypress', handleKeyPress);
         userEmailInput?.addEventListener('input', updateBtnState);
+        feedbackConsent?.addEventListener('change', () => {
+            consentGivenAt = feedbackConsent.checked ? new Date().toISOString() : null;
+        });
         clearBtn?.addEventListener('click', clearAll);
         predictBtn?.addEventListener('click', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(runPrediction, 300); });
         clearAll();
@@ -2749,6 +2821,9 @@ kbd {
         if (seqValidMsg) seqValidMsg.style.color = 'var(--text-muted)';
         clearError();
         userEmailInput.value = '';
+        if (feedbackConsent) feedbackConsent.checked = false;
+        consentGivenAt = null;
+        document.getElementById('feedback-status')?.remove();
         emailErrorDiv.style.display = 'none';
         emailStatusDiv.textContent = IS_EMAIL_SENDING_ENABLED ? 'Report will be emailed automatically after analysis.' : 'Email sending is currently disabled.';
         if (alignViewer) alignViewer.style.display = 'none';
@@ -2761,6 +2836,41 @@ kbd {
         updateBtnState();
         setStep(1, 'active', 'Enter a valid sequence to begin.');
         if (step1Sub) step1Sub.textContent = 'Enter sequence';
+    }
+    /* Ask the mailer Space to schedule the single follow-up email. The Space mints
+       the unsubscribe token, records the consent and hands the message to Brevo; if
+       any of that fails it schedules nothing, which is the safe way to fail. */
+    async function scheduleFeedbackEmail(toEmail) {
+        let box = document.getElementById('feedback-status');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'feedback-status';
+            box.className = 'field-help';
+            box.style.cssText = 'margin-top:8px;text-align:center;';
+            additionalOutput.appendChild(box);
+        }
+        box.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scheduling your follow-up email\u2026';
+        const warn = msg => { box.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--accent-orange)"></i> ' + msg; };
+        try {
+            const mailer = await Client.connect(MAILER_SPACE_ID, { hf_token: HF_TOKEN });
+            const res = await mailer.predict('/schedule_feedback', [
+                toEmail, consentGivenAt || new Date().toISOString(), CONSENT_VERSION
+            ]);
+            const out = String((Array.isArray(res?.data) ? res.data[0] : res?.data) || '');
+            if (out.startsWith('scheduled')) {
+                box.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-green)"></i> One follow-up email is scheduled for about two days from now. You can cancel it from the link inside it.';
+            } else if (out.startsWith('skipped:unsubscribed')) {
+                box.innerHTML = '<i class="fas fa-info-circle"></i> You asked us before not to send these, so nothing was scheduled.';
+            } else if (out.startsWith('skipped:already_pending')) {
+                box.innerHTML = '<i class="fas fa-info-circle"></i> A follow-up email is already pending for this address, so no second one was scheduled.';
+            } else {
+                console.warn('Follow-up not scheduled:', out);
+                warn('The follow-up email could not be scheduled, so none will be sent. Your report was not affected.');
+            }
+        } catch (err) {
+            console.warn('Follow-up scheduling failed:', err);
+            warn('The follow-up email could not be scheduled, so none will be sent. Your report was not affected.');
+        }
     }
     function resetDashboard() {
         ampClassOutput.innerHTML = '<div class="class-result-display"><div class="class-label pending">Awaiting input…</div></div>';
@@ -3054,6 +3164,9 @@ kbd {
                         emailStatusResult.innerHTML = '<i class="fas fa-info-circle"></i> Email sending disabled — use the download button above.';
                     }
                 }
+                if (FEEDBACK_ENABLED && feedbackConsent?.checked && userEmailInput?.value?.trim()) {
+                    await scheduleFeedbackEmail(userEmailInput.value.trim());
+                }
             } else {
                 clearAdditionalOutput();
                 const errEl = document.createElement('div');
@@ -3300,7 +3413,15 @@ kbd {
             const exp = e.target.closest('[data-export]');
             if (exp) return exportProfile(exp.dataset.export);
             const go = e.target.closest('[data-goto]');
-            if (go) { e.preventDefault(); showMainTab(go.dataset.goto); return; }
+            if (go) {
+                e.preventDefault();
+                showMainTab(go.dataset.goto);
+                if (go.dataset.scrollTo) {
+                    const target = document.getElementById(go.dataset.scrollTo);
+                    if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+                }
+                return;
+            }
             if (e.target.closest('[data-load-example]')) {
                 sequenceInput.value = 'GIGKFLHSAKKFGKAFVGEIMNS';
                 onSeqInput();
@@ -4053,8 +4174,20 @@ kbd {
         if (!proto.epicGuarded) {
             const resize = proto.resize, render = proto.render;
             const drawable = inst => { const box = viewerBox.get(inst); return !box || hasSize(box); };
+            // The canvas keeps the size it had when it was last resized. If that
+            // happened while the panel was hidden the buffer is 0x0, and drawing into
+            // it raises "Framebuffer is incomplete: Attachment has zero size". So
+            // re-sync the canvas before drawing instead of drawing into nothing.
+            const unsized = inst => { const c = inst.renderer && inst.renderer.domElement; return !!c && (c.width < 2 || c.height < 2); };
             proto.resize = function (...a) { if (drawable(this)) return resize.apply(this, a); };
-            proto.render = function (...a) { if (drawable(this)) return render.apply(this, a); };
+            proto.render = function (...a) {
+                if (!drawable(this)) return;
+                if (!this.epicResizing && unsized(this)) {
+                    this.epicResizing = true;
+                    try { resize.apply(this); } finally { this.epicResizing = false; }
+                }
+                return render.apply(this, a);
+            };
             proto.epicGuarded = true;
         }
         const r = v.renderer;
@@ -4074,6 +4207,18 @@ kbd {
         const v = guardViewer($3Dmol.createViewer(el, { backgroundColor: 'black', antialias: true }), el);
         v.setHoverDuration(60);
         structState.viewer = v;
+        if (window.ResizeObserver && !structState.molRO) {
+            let queued = false;
+            structState.molRO = new ResizeObserver(() => {
+                if (queued) return;
+                queued = true;
+                requestAnimationFrame(() => {
+                    queued = false;
+                    if (structState.viewer && hasSize(el)) { structState.viewer.resize(); structState.viewer.render(); }
+                });
+            });
+            structState.molRO.observe(el);
+        }
         return v;
     }
     function showMolOverlay(html) { molOverlay.innerHTML = html; molOverlay.classList.remove('hidden'); }
@@ -4175,11 +4320,14 @@ kbd {
             return { text: await fetchText(j.pdbUrl), fmt: 'pdb' };
         }
         let lastErr;
-        for (let attempt = 0; attempt < 2; attempt++) {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if (attempt) await new Promise(r => setTimeout(r, attempt * 2500));
             try { return { text: await fetchText('https://api.esmatlas.com/foldSequence/v1/pdb/', { method: 'POST', body: it.seq }, 90000), fmt: 'pdb' }; }
             catch (err) { lastErr = err; }
         }
-        throw new Error('ESMFold is busy right now (' + lastErr.message + '). Please try again in a minute.');
+        throw new Error(/HTTP 5\d\d|timed out/.test(lastErr.message)
+            ? 'ESMFold did not answer after three tries (' + lastErr.message + '). It is a free public service run by Meta and is sometimes overloaded. Try again in a few minutes, or open a structure of a similar known peptide from the list.'
+            : 'ESMFold could not fold this sequence (' + lastErr.message + ').');
     }
     async function loadStructure(it) {
         const id = ++structState.loadId;
@@ -4371,9 +4519,11 @@ kbd {
         document.getElementById('mol-tb-spin').classList.toggle('on', molSpin.checked);
     }
     function refreshMolSize() {
-        requestAnimationFrame(() => {
-            if (structState.viewer) { structState.viewer.resize(); structState.viewer.render(); }
-        });
+        // Leaving full screen fires fullscreenchange before the page is re-laid out,
+        // so a single frame still measures the full-screen box and the canvas stays
+        // viewport-sized, overflowing its panel and swallowing clicks. Sync twice.
+        const sync = () => { if (structState.viewer && hasSize(document.getElementById('mol-viewer'))) { structState.viewer.resize(); structState.viewer.render(); } };
+        requestAnimationFrame(() => { sync(); requestAnimationFrame(sync); });
     }
     function setFsIcon(on) {
         document.querySelector('#mol-fs i').className = on ? 'fas fa-compress' : 'fas fa-expand';
@@ -4706,6 +4856,13 @@ kbd {
         const RED  = [198, 40, 40];
         const LGRAY= [210, 218, 232];
         const isAMP = label.toLowerCase().includes('amp') && !label.toLowerCase().includes('non-amp');
+        // autoTable sizes a column by its longest unbreakable word, so a comma-joined
+        // activity list with no spaces pushes the whole table off the page.
+        const pdfCell = function (v, max) {
+            var t = String(v == null ? '' : v).replace(/[,;\/|]/g, function (m) { return m + ' '; }).replace(/\s+/g, ' ').trim();
+            if (!t) return '-';
+            return t.length > max ? t.slice(0, max - 3).replace(/[\s,;]+$/, '') + '...' : t;
+        };
         const dateStr = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
         const logoB64   = await getBase64(document.querySelector('.header-logo img')?.src || '');
         const banner64  = await getBase64('image2.png');
@@ -5014,7 +5171,7 @@ kbd {
                 startY: y,
                 head: [['Entry', 'Name', 'Score', 'Length', 'Databases', 'Activity']],
                 body: nbPdf.hits.slice(0, 5).map(function(h) {
-                    return [h.rec[0], h.rec[2] || '-', h.score.toFixed(1) + '%', h.rec[1].length + ' aa', dbNames(h.rec).join(', '), h.rec[3] || '-'];
+                    return [h.rec[0], pdfCell(h.rec[2], 46), h.score.toFixed(1) + '%', h.rec[1].length + ' aa', dbNames(h.rec).join(', '), pdfCell(h.rec[3], 88)];
                 }),
                 theme: 'striped',
                 headStyles: { fillColor: [0,102,102], textColor: 255, fontSize: 8, fontStyle: 'bold', cellPadding: 3 },
@@ -5178,7 +5335,7 @@ kbd {
                     },
                     columnStyles: {
                         0: { cellWidth: 8,  fillColor: [237,242,252] },
-                        1: { cellWidth: 88, fillColor: [237,242,252] },
+                        1: { fillColor: [237,242,252] },
                         2: { cellWidth: 26, halign:'center' },
                         3: { cellWidth: 22, halign:'right' }
                     },
