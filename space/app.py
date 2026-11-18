@@ -132,7 +132,7 @@ def send_report(to_email, pdf_b64, label, confidence, sequence):
 
 
 # --------------------------------------------------------------------------- #
-#  2. the follow-up email
+#  2. the survey invitation
 # --------------------------------------------------------------------------- #
 def _survey_html(survey_url, unsubscribe_url):
     return f"""
@@ -160,8 +160,6 @@ def _survey_html(survey_url, unsubscribe_url):
            <span style="color:#666;font-size:13px">Bioinformatics &amp; Computational Biology Unit (BCBU)</span></p>
         <hr style="border:none;border-top:1px solid #e0e6f0;margin:22px 0">
         <p style="color:#888;font-size:11px;margin:0">
-          You are getting this one email because you ticked the survey box on
-          epic-amp-v2.vercel.app. We will not send it to you again.<br>
           Zewail City of Science and Technology &middot; BCBU &middot; Giza, Egypt &middot;
           <a href="mailto:{REPLY_TO}" style="color:#1a6fc4">{REPLY_TO}</a><br><br>
           <a href="{unsubscribe_url}" style="color:#1a6fc4">Do not send me these again</a>
@@ -184,8 +182,6 @@ def _survey_text(survey_url, unsubscribe_url):
         "Bioinformatics & Computational Biology Unit (BCBU)\n"
         "Zewail City of Science and Technology, Giza, Egypt\n\n"
         "---\n"
-        "You are getting this one email because you ticked the survey box on\n"
-        "epic-amp-v2.vercel.app. We will not send it to you again.\n"
         "Do not send me these again: %s\n" % (survey_url, unsubscribe_url)
     )
 

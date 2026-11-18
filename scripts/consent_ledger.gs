@@ -209,7 +209,7 @@ function handleClaim(body) {
   }
 }
 
-/** Follow-up on a claim: scheduled (with Brevo's id) or failed. */
+/** Follow-up on a claim: sent (with Brevo's id) or failed. */
 function handleMark(body) {
   if (!body.token) return { ok: false, error: 'missing_token' };
   var lock = LockService.getScriptLock();
