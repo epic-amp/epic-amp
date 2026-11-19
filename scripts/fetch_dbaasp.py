@@ -36,15 +36,19 @@ import json
 import os
 import re
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 API = "https://dbaasp.org"
 PAGE = 200
 CANON = re.compile(r"^[ACDEFGHIKLMNPQRSTVWY]+$")
 MIN_LEN, MAX_LEN = 10, 100
 PAUSE = 0.12          # be a polite guest on someone else's server
+WORKERS = 8           # the detail endpoint is latency-bound; 8 in flight is modest
+SAVE_EVERY = 200
 RETRIES = 3
 UA = "epic-amp-dataset-builder/1.0"
 
@@ -192,25 +196,42 @@ def main():
         todo = todo[:cap]
     print("fetching detail for %d peptides (%d already cached)" % (len(todo), len(keep) - len(todo)))
 
-    done = 0
+    lock = threading.Lock()
+    state = {"done": 0, "failed": 0, "t0": time.time()}
+
+    def one(row):
+        pid = str(row.get("id"))
+        try:
+            detail = get("/peptides/%s" % pid)
+        except Exception as exc:                          # noqa: BLE001
+            with lock:
+                state["failed"] += 1
+            return pid, None, exc
+        return pid, compact(detail, row), None
+
     try:
-        for row in todo:
-            pid = str(row.get("id"))
-            try:
-                detail = get("/peptides/%s" % pid)
-            except Exception as exc:                      # noqa: BLE001
-                print("\n  skipped %s: %r" % (pid, exc), file=sys.stderr)
-                continue
-            cache["records"][pid] = compact(detail, row)
-            done += 1
-            if done % 25 == 0:
-                print("\r  detail %d/%d" % (done, len(todo)), end="", file=sys.stderr)
-            if done % 500 == 0:
-                save(out_path, cache)
-            time.sleep(PAUSE)
+        with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+            futures = {pool.submit(one, r): r for r in todo}
+            for fut in as_completed(futures):
+                pid, rec, err = fut.result()
+                with lock:
+                    if rec is not None:
+                        cache["records"][pid] = rec
+                    state["done"] += 1
+                    n = state["done"]
+                    if n % 50 == 0:
+                        rate = n / max(1e-6, time.time() - state["t0"])
+                        left = (len(todo) - n) / max(1e-6, rate)
+                        print("\r  detail %d/%d  %.0f/s  ~%d min left  (%d failed)"
+                              % (n, len(todo), rate, left / 60, state["failed"]),
+                              end="", file=sys.stderr)
+                    if n % SAVE_EVERY == 0:
+                        save(out_path, cache)
     except KeyboardInterrupt:
         print("\ninterrupted - saving what we have", file=sys.stderr)
     print(file=sys.stderr)
+    if state["failed"]:
+        print("%d peptides could not be fetched; re-run to retry just those" % state["failed"])
     save(out_path, cache)
     print("wrote %s with %d peptides" % (out_path, len(cache["records"])))
 
