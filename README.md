@@ -72,8 +72,22 @@ To keep the same URL, deploy it to the existing epic-amp-v2 project.
 Unzip each .xlsx into a folder, then run:
 `python3 scripts/build_peptides.py <dramp_dir> <dbamp_dir> <uniprot.tsv> data/peptides.json`
 
-Not included: APD (all rights reserved, so ask the authors for permission), CAMP (no bulk download, so contact the authors),
-ADAM (server offline), and DBAASP (no license found).
+### Databases not included, and why
+
+Each was checked on 2026-11-19 unless stated otherwise.
+
+| Database | Why it is not in `data/peptides.json` |
+|---|---|
+| **DBAASP** | **The one real candidate.** Its terms were read verbatim on 2026-10-29 and permit redistribution with acknowledgement (`docs/EXTERNAL_MODELS.md` §3). It adds what the others do not: measured MIC values with target organism and strain, plus haemolysis and cytotoxicity. Not merged yet. *An earlier version of this note said "no license found" — that was wrong.* The terms could not be re-read on 2026-11-19: the site renders dynamically and `dbaasp.niaid.nih.gov/DBAASP_Terms_And_Conditions.pdf` now 301-redirects to the homepage. Re-confirm before merging. |
+| **APD6** (was APD3) | Live, ~5,680 peptides, but the downloads page still states *"All Rights Reserved"* and the term of use grants citation for research and education — not redistribution. Ask the authors before bundling it. |
+| **BaAMPs** | Live, but the site states *"© 2026 BaAMPs. All rights reserved."* No redistribution licence. Small and specialised (biofilm-active peptides). |
+| **InverPep** | The URL given in its paper and in Database Commons returns 404. Its own pages last showed an update in 2017, with inconsistent counts (702 vs 774). Treat as defunct. |
+| **PhytAMP** | Returns HTTP 500. Down. |
+| **CAMPR4** (was CAMP) | Live, and now CAMPR4 (NAR 2023), but `/download.php` returns an empty page — no bulk download reachable. Contact the authors. |
+| **ADAM** | Server offline. |
+| **AMPSphere** | Live and **CC BY 4.0** (Zenodo), ~860k peptides — but they are *predicted from metagenomes*, not experimentally validated. Showing them in "Known Peptides" beside measured entries would misrepresent what is known. If ever added, it must be a separate, clearly labelled layer. |
+
+DRAMP 4.0 is superseded — this project already uses **DRAMP 5.0**, the current release.
 
 
 ## Licensing note
